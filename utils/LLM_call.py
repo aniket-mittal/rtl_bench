@@ -8,6 +8,7 @@ from asynciolimiter import Limiter
 import anthropic
 from google import genai
 from utils.config import Config
+import random
 
 
 def extract_between_markers(text: str, begin_marker: str, end_marker: str) -> str:
@@ -40,14 +41,20 @@ class LLMClient:
     async def call(self, msg: str, model: str="deepseek", model_id: str="", temperature: float=0.8) -> None:
         if model == "deepseek":
             messages = [{"role": "user", "content": msg}]
-            return await self.call_deepseek(messages, model_id, temperature)
+            return await self.call(messages, model_id, temperature)
         elif model == "claude":
             messages = [{"role": "user", "content": msg}]
             return await self.call_claude(messages, model_id)
         elif model == "gemini":
             return await self.call_gemini(msg, model_id)
+        elif model == "random":
+            return await self.call_random(msg, model_id, temperature)
         else:
             raise ValueError(f"Invalid model: {model}, valid models: deepseek, claude, gemini")
+
+    async def call_random(self, msg: str, model_id: str="", temperature: float=0.8) -> None:
+        model = random.choice(["deepseek", "claude", "gemini"])
+        return await self.call(msg, model, model_id, temperature)
 
     async def call_claude(self, msgs: str, model_id: str=""):
         """Generate something w/ Claude
@@ -92,7 +99,7 @@ class LLMClient:
         answer = response.text
         return answer, (start_time, exec_time)
 
-    async def call_deepseek(self, msgs, reasoner: bool=False, temperature: float=0.6):
+    async def call_deepseek(self, msgs, model_id: str="", reasoner: bool=False, temperature: float=0.6):
         """Generate something w/ Deepseek
 
         Args:

@@ -7,12 +7,11 @@ from pathlib import Path
 from utils.config import Config
 
 async def run():
-    # Load existing designs from JSONL file
-    with open("./data/designs.jsonl", "r") as f:
-        data = [json.loads(line) for line in f]
-
     config = Config("config.yaml")
     client = LLMClient(config)
+
+    with open(config.original_designs_path, "r") as f:
+        data = [json.loads(line) for line in f]
 
     debug_enabled, debug_log_file = config.get_debug_settings()
 
@@ -41,7 +40,7 @@ async def run():
             all_questions.extend(result["questions"])
     
     # Save flattened questions to JSONL file
-    with open("./results/questions_new.jsonl", "w") as f:
+    with open(config.output_path, "w") as f:
         for question in all_questions:
             f.write(json.dumps(question, ensure_ascii=False) + "\n")
     
