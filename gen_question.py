@@ -70,7 +70,7 @@ async def gen_question(design: str, debug_enabled: bool = False, debug_log_file:
     with open("config.yaml", "r") as f:
         config = yaml.safe_load(f)
     client = LLMClient((config["calls_per_min"], 60), config["api_key"])
-    response, metadata = await client.call(msg)
+    response, metadata = await client.call(msg, model="deepseek", model_id="")
     question = extract_question(response)
     return question
 
@@ -100,7 +100,7 @@ async def gen_question_bulk(designs: List[str], debug_enabled: bool = False, deb
     with open("config.yaml", "r") as f:
         config = yaml.safe_load(f)
     client = LLMClient((config["calls_per_min"], 60), config["api_key"])
-    tasks = [client.call(msg) for msg in msgs]
+    tasks = [client.call(msg, model="deepseek", model_id="") for msg in msgs]
     results = await asyncio.gather(*tasks)
     # results is a list of (response, metadata) tuples
     responses = [resp for resp, _ in results]
@@ -141,7 +141,7 @@ async def verify_question(question: str, design: str, n: int, k: int, client: LL
     
     # Generate all designs in parallel
     print(f"Generating {n} candidate designs")
-    tasks = [client.call(msg) for msg in msgs]
+    tasks = [client.call(msg, model="deepseek", model_id="") for msg in msgs]
     results = await asyncio.gather(*tasks, return_exceptions=True)
     
     # Process results

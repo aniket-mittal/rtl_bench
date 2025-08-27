@@ -12,6 +12,7 @@ from typing import List, Dict, Any
 from utils.generators import create_generators, DebugLogger
 from entry_types import DesignEntry
 from utils.LLM_call import LLMClient
+from utils.config import Config
 
 
 async def test_mutation_pipeline():
@@ -19,22 +20,21 @@ async def test_mutation_pipeline():
     
     # Load configuration
     try:
-        with open("config.yaml", "r") as f:
-            config = yaml.safe_load(f)
-        api_key = config["api_key"]
+        config = Config("config.yaml")
+        api_key = config.deepseek_api_key
     except FileNotFoundError:
         print("Error: config.yaml not found. Please create it with your API key.")
         return
-    except KeyError:
-        print("Error: config.yaml missing 'api_key' field.")
+    except AttributeError:
+        print("Error: config.yaml missing 'deepseek_api_key' field.")
         return
     
     # Initialize LLM client
-    client = LLMClient((60, 60), api_key)
+    client = LLMClient(config)
     
     # Enable debug logging
-    debug_enabled = True
-    debug_log_file = "./logs/mutation_test_debug.log"
+    debug_enabled = config.debug_enabled
+    debug_log_file = config.debug_log_file
     
     # Sample designs to test (you can modify these or load from file)
     sample_designs = [
@@ -101,15 +101,12 @@ endmodule"""
             qg, ag, vqg, mg, mutg = create_generators(
                 design_entry=design_entry,
                 client=client,
-                n_answers=3,
-                max_concurrent_yosys=2,
-                debug_enabled=debug_enabled,
-                debug_log_file=debug_log_file
+                config=config
             )
             
             # Step 1: Generate bug categories
             print("  Generating bug categories...")
-            bug_categories = await mg.generate_bug_categories(temperature=0.7)
+            bug_categories = await mg.generate_bug_categories(model="deepseek", model_id="", temperature=0.7)
             print(f"  Generated {len(bug_categories)} bug categories")
             
             # Display bug categories
@@ -118,7 +115,7 @@ endmodule"""
             
             # Step 2: Generate mutants
             print("  Generating mutants...")
-            mutants = await mutg.generate_mutants(bug_categories, temperature=0.8)
+            mutants = await mutg.generate_mutants(bug_categories, model="deepseek", model_id="", temperature=0.8)
             print(f"  Generated {len(mutants)} mutants")
             
             # Display mutants
@@ -190,11 +187,10 @@ async def test_single_design(design_name: str, verilog_code: str):
     """Test mutation pipeline on a single design."""
     
     # Load configuration
-    with open("config.yaml", "r") as f:
-        config = yaml.safe_load(f)
+    config = Config("config.yaml")
     
-    client = LLMClient((60, 60), config["api_key"])
-    debug_logger = DebugLogger(enabled=True, log_file="./logs/single_test_debug.log")
+    client = LLMClient(config)
+    debug_logger = DebugLogger(config)
     
     print(f"Testing single design: {design_name}")
     print("=" * 60)
@@ -206,15 +202,12 @@ async def test_single_design(design_name: str, verilog_code: str):
     qg, ag, vqg, mg, mutg = create_generators(
         design_entry=design_entry,
         client=client,
-        n_answers=2,
-        max_concurrent_yosys=2,
-        debug_enabled=True,
-        debug_log_file="./logs/single_test_debug.log"
+        config=config
     )
     
     # Generate bug categories
     print("Generating bug categories...")
-    bug_categories = await mg.generate_bug_categories(temperature=0.7)
+    bug_categories = await mg.generate_bug_categories(model="deepseek", model_id="", temperature=0.7)
     
     print(f"Generated {len(bug_categories)} bug categories:")
     for i, bug in enumerate(bug_categories):
@@ -222,7 +215,7 @@ async def test_single_design(design_name: str, verilog_code: str):
     
     # Generate mutants
     print("\nGenerating mutants...")
-    mutants = await mutg.generate_mutants(bug_categories, temperature=0.8)
+    mutants = await mutg.generate_mutants(bug_categories, model="deepseek", model_id="", temperature=0.8)
     
     print(f"Generated {len(mutants)} mutants:")
     for i, (mutant_code, bug_type) in enumerate(mutants):

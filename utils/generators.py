@@ -9,15 +9,18 @@ from entry_types import DesignEntry
 from utils.LLM_call import LLMClient, extract_between_markers
 from utils.equivalence_check import check_equivalence
 from utils.mutate import standardize
+from utils.config import Config
+from pydantic import BaseModel
+import traceback
 
 
 class DebugLogger:
     """Centralized debug logging system for all generators."""
     
-    def __init__(self, enabled: bool = False, log_file: str = "generator_debug.log"):
-        self.enabled = enabled
-        self.log_file = log_file
-        self._log_file_path = Path(log_file)
+    def __init__(self, config: Config):
+        self.enabled = config.debug_enabled
+        self.log_file = config.debug_log_file
+        self._log_file_path = Path(self.log_file)
         
         # Ensure log directory exists
         self._log_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -29,12 +32,17 @@ class DebugLogger:
             
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"[{timestamp}] [{level}] {message}"
+
+        if level == "ERROR":
+            print(f"Error: {message}")
+            print(traceback.format_exc())
         
         try:
             with open(self._log_file_path, 'a', encoding='utf-8') as f:
                 f.write(log_entry + '\n')
         except Exception as e:
             print(f"Error writing to log file: {e}")
+        
     
     def log_llm_call(self, messages: List[Dict[str, str]], response: str, metadata: Dict):
         """Log LLM API calls with request and response."""
@@ -57,10 +65,11 @@ class QuestionGenerator:
     convenience classmethod to generate a question without instantiating.
     """
 
-    def __init__(self, design_entry: DesignEntry, client: LLMClient, debug_logger: Optional[DebugLogger] = None) -> None:
+    def __init__(self, design_entry: DesignEntry, client: LLMClient, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
         self.design_entry = design_entry
         self.client = client
-        self.debug_logger = debug_logger or DebugLogger(enabled=False)
+        self.config = config
+        self.debug_logger = debug_logger or DebugLogger(config)
 
     @staticmethod
     def _build_prompt(verilog_module: str) -> List[Dict[str, str]]:
@@ -98,10 +107,10 @@ class QuestionGenerator:
             {"role": "user", "content": user_msg},
         ]
 
-    async def generate(self, model="deepseek", temperature: float = 0.6) -> str:
+    async def generate(self, model="deepseek", model_id: str = "", temperature: float = 0.6) -> str:
         """Instance method: generate a question for the held design."""
         msgs = self._build_prompt(self.design_entry.content)
-        response, metadata = await self.client.call(msgs, model, temperature=temperature)
+        response, metadata = await self.client.call(msgs, model, model_id=model_id, temperature=temperature)
         
         # Log the LLM call if debug is enabled
         self.debug_logger.log_llm_call(msgs, response, metadata)
@@ -115,6 +124,8 @@ class QuestionGenerator:
         cls,
         design_entry: DesignEntry,
         client: LLMClient,
+        model="deepseek",
+        model_id: str = "",
         temperature: float = 0.6,
         debug_logger: Optional[DebugLogger] = None
     ) -> str:
@@ -125,7 +136,7 @@ class QuestionGenerator:
         Returns the extracted question text.
         """
         msgs = cls._build_prompt(design_entry.content)
-        response, metadata = await client.call(msgs, temperature=temperature)
+        response, metadata = await client.call(msgs, model, model_id=model_id, temperature=temperature)
         
         # Log the LLM call if debug is enabled
         if debug_logger:
@@ -140,15 +151,16 @@ class AnswerGenerator:
     Generates Verilog answers (modules) for a given natural-language question.
 
     Usage:
-        ag = AnswerGenerator(question_text, client)
+        ag = AnswerGenerator(question_text, client, config)
         answers: List[str] = await ag.generate_answers(n)
     """
 
-    def __init__(self, question: str, client: LLMClient, prompt_path: str = "./templates/rtl_gen.txt", debug_logger: Optional[DebugLogger] = None) -> None:
+    def __init__(self, question: str, client: LLMClient, config: Config, prompt_path: str = "./templates/rtl_gen.txt", debug_logger: Optional[DebugLogger] = None) -> None:
         self.question = question
         self.client = client
+        self.config = config
         self.prompt = self._load_prompt(prompt_path)
-        self.debug_logger = debug_logger or DebugLogger(enabled=False)
+        self.debug_logger = debug_logger or DebugLogger(config)
 
     @staticmethod
     def _load_prompt(prompt_path: str) -> str:
@@ -160,13 +172,13 @@ class AnswerGenerator:
         full_prompt = f"{self.prompt}{self.question}"
         return [{"role": "system", "content": full_prompt}]
 
-    async def generate_answers(self, n: int, temperature: float = 0.6) -> List[str]:
+    async def generate_answers(self, n: int, model="deepseek", model_id: str = "", temperature: float = 0.6) -> List[str]:
         """
         Generate n candidate Verilog answers for the stored question.
         Returns a list of n strings (best-effort; may be fewer if some calls fail).
         """
         msgs = self._build_messages()
-        tasks = [self.client.call(msgs, temperature=temperature) for _ in range(n)]
+        tasks = [self.client.call(msgs, model, model_id=model_id, temperature=temperature) for _ in range(n)]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
         print("done")
@@ -214,26 +226,28 @@ class ValidQuestionGenerator:
       answer verifies against the original design.
     """
 
-    def __init__(self, qg: QuestionGenerator, ag: AnswerGenerator, n: int, max_concurrent_yosys: int = 4, debug_logger: Optional[DebugLogger] = None) -> None:
+    def __init__(self, qg: QuestionGenerator, ag: AnswerGenerator, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
         self.qg = qg
         self.ag = ag
-        self.n = n
+        self.config = config
+        self.n = config.question_validation_n
         self.valid_question: bool = False
         # Limit concurrent Yosys processes to prevent resource exhaustion
-        self.semaphore = asyncio.Semaphore(max_concurrent_yosys)
-        self.debug_logger = debug_logger or DebugLogger(enabled=False)
+        self.semaphore = asyncio.Semaphore(config.max_concurrent_yosys)
+        self.debug_logger = debug_logger or DebugLogger(config)
+        self.generated_answers = []
 
     async def validate(self) -> bool:
         """Validate the question by generating answers and checking equivalence."""
         self.debug_logger.log("Starting question validation...")
         
         # Ensure yosys batch dir exists
-        batch_dir = Path("./yosys_files/")
+        batch_dir = Path(self.config.batch_dir_path)
         batch_dir.mkdir(parents=True, exist_ok=True)
 
         # Generate n candidate answers
         self.debug_logger.log(f"Generating {self.n} candidate answers...")
-        answers: List[str] = await self.ag.generate_answers(self.n)
+        answers: List[str] = await self.ag.generate_answers(self.n, model="deepseek", model_id="")
         answers = [a for a in answers if isinstance(a, str) and a.strip()]
         
         if not answers:
@@ -242,6 +256,9 @@ class ValidQuestionGenerator:
             return self.valid_question
 
         self.debug_logger.log(f"Generated {len(answers)} valid answers, checking equivalence...")
+
+        # Store generated answers for later access
+        self.generated_answers = answers
 
         # Verify all answers in parallel against the ground truth design
         ground_truth = self.qg.design_entry.content
@@ -276,6 +293,14 @@ class ValidQuestionGenerator:
         return self.valid_question
 
 
+class BugCategory(BaseModel):
+    bug_type: str
+    description: str
+    applicability: str
+
+class BugCategories(BaseModel):
+    bug_categories: list[BugCategory]
+
 class MutationGenerator:
     """
     Analyzes an RTL design and generates a tailored list of possible bug categories
@@ -286,15 +311,16 @@ class MutationGenerator:
     by a specific implementation detail relevant to the design.
     
     Usage:
-        mg = MutationGenerator(design_entry, client, n=5)
+        mg = MutationGenerator(design_entry, client, config)
         bug_categories = await mg.generate_bug_categories()
     """
-    
-    def __init__(self, design_entry: DesignEntry, client: LLMClient, n: int = 5, debug_logger: Optional[DebugLogger] = None) -> None:
+
+    def __init__(self, design_entry: DesignEntry, client: LLMClient, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
         self.design_entry = design_entry
         self.client = client
-        self.n = n
-        self.debug_logger = debug_logger or DebugLogger(enabled=False)
+        self.config = config
+        self.n = config.bug_categories_n
+        self.debug_logger = debug_logger or DebugLogger(config)
 
     @staticmethod
     def _build_prompt(verilog_module: str, n: int) -> List[Dict[str, str]]:
@@ -318,17 +344,17 @@ class MutationGenerator:
             "- Technically feasible to implement\n"
             "- Would change the design's functionality while still being valid Verilog\n"
             "- Relevant to the specific characteristics of this design\n"
-            "- Common in real RTL development\n\n"
-            "Return ONLY the bug categories between the exact markers below.\n"
-            "Each category should be on its own line with the format:\n"
-            "BUG_TYPE: DESCRIPTION\n\n"
-            "BUG CATEGORIES BEGIN\n"
-            "<write the bug categories here>\n"
-            "BUG CATEGORIES END\n\n"
-            "Target Verilog module to analyze:\n"
+            # "Return ONLY the bug categories between the exact markers below.\n"
+            # "Each category should be on its own line with the format:\n"
+            # "BUG_TYPE: DESCRIPTION\n\n"
+            # "BUG CATEGORIES BEGIN\n"
+            # "<write the bug categories here>\n"
+            # "BUG CATEGORIES END\n\n"
+            # "Target Verilog module to analyze:\n"
             "----- BEGIN VERILOG -----\n"
             f"{verilog_module}\n"
             "----- END VERILOG -----\n"
+            # "Do not include any other text in your response."
         )
 
         return [
@@ -336,7 +362,7 @@ class MutationGenerator:
             {"role": "user", "content": user_msg},
         ]
 
-    async def generate_bug_categories(self, temperature: float = 0.6) -> List[Dict[str, str]]:
+    async def generate_bug_categories(self, model="gpt", model_id: str = "gpt-4o-mini", temperature: float = 0.6) -> List[Dict[str, str]]:
         """
         Generate n tailored bug categories for the specific design using LLM analysis.
         
@@ -344,26 +370,18 @@ class MutationGenerator:
             List of dictionaries, each containing:
             - 'bug_type': General category of the bug
             - 'description': Specific description relevant to this design
-            - 'applicability': Why this bug type is relevant to this design
         """
         msgs = self._build_prompt(self.design_entry.content, self.n)
-        response, metadata = await self.client.call(msgs, temperature=temperature)
-        
+        response, metadata = await self.client.call(msgs, model, model_id=model_id, temperature=temperature, gpt_json_schema=BugCategories)
+        bug_categories = response.bug_categories
+        bug_categories = [{'bug_type': bug_category.bug_type, 'description': bug_category.description, 'applicability': bug_category.applicability} for bug_category in bug_categories]
         # Log the LLM call if debug is enabled
         self.debug_logger.log_llm_call(msgs, response, metadata)
-        
-        # Extract bug categories from the response
-        bug_categories_text = extract_between_markers(response, "BUG CATEGORIES BEGIN", "BUG CATEGORIES END")
-        self.debug_logger.log(f"Generated bug categories text: {bug_categories_text[:200]}...")
-        
-        # Parse the bug categories into structured format
-        bug_categories = self._parse_bug_categories(bug_categories_text)
-
         # Limit to requested number and ensure we have enough
         if len(bug_categories) < self.n:
             self.debug_logger.log(f"Warning: Only generated {len(bug_categories)} categories, requested {self.n}", "WARNING")
         
-        return bug_categories[:self.n]
+        return bug_categories
 
     def _parse_bug_categories(self, categories_text: str) -> List[Dict[str, str]]:
         """
@@ -434,7 +452,9 @@ class MutationGenerator:
         cls,
         design_entry: DesignEntry,
         client: LLMClient,
-        n: int = 5,
+        config: Config,
+        model="deepseek",
+        model_id: str = "",
         temperature: float = 0.6,
         debug_logger: Optional[DebugLogger] = None
     ) -> List[Dict[str, str]]:
@@ -444,8 +464,8 @@ class MutationGenerator:
 
         Returns the extracted and parsed bug categories.
         """
-        mg = cls(design_entry, client, n, debug_logger)
-        return await mg.generate_bug_categories(temperature)
+        mg = cls(design_entry, client, config, debug_logger)
+        return await mg.generate_bug_categories(model, model_id, temperature)
 
 
 class MutantGenerator:
@@ -456,15 +476,16 @@ class MutantGenerator:
     and uses LLMs to generate mutant Verilog code that implements each bug.
     
     Usage:
-        mg = MutantGenerator(design_entry, client, n=3)
+        mg = MutantGenerator(design_entry, client, config)
         mutants = await mg.generate_mutants(bug_categories)
     """
     
-    def __init__(self, design_entry: DesignEntry, client: LLMClient, n: int = 6, debug_logger: Optional[DebugLogger] = None) -> None:
+    def __init__(self, design_entry: DesignEntry, client: LLMClient, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
         self.design_entry = design_entry
         self.client = client
-        self.n = n
-        self.debug_logger = debug_logger or DebugLogger(enabled=False)
+        self.config = config
+        self.n = config.mutants_n
+        self.debug_logger = debug_logger or DebugLogger(config)
 
     @staticmethod
     def _build_prompt(verilog_module: str, bug_type: str, bug_description: str) -> List[Dict[str, str]]:
@@ -484,10 +505,8 @@ class MutantGenerator:
             f"BUG DESCRIPTION: {bug_description}\n\n"
             f"Requirements:\n"
             f"- The mutant must be valid, compilable Verilog\n"
-            f"- Apply the bug in a realistic way that would actually change the design's behavior\n"
             f"- Keep the same module interface (ports, parameters)\n"
             f"- Make minimal changes to introduce the bug\n"
-            f"- Ensure the code still compiles and is syntactically correct\n\n"
             f"Return ONLY the mutant Verilog code between the exact markers below.\n\n"
             f"MUTANT VERILOG BEGIN\n"
             f"<write the mutant Verilog code here>\n"
@@ -496,6 +515,7 @@ class MutantGenerator:
             f"----- BEGIN VERILOG -----\n"
             f"{verilog_module}\n"
             f"----- END VERILOG -----\n"
+            f"Do not include any other text in your response."
         )
 
         return [
@@ -503,12 +523,14 @@ class MutantGenerator:
             {"role": "user", "content": user_msg},
         ]
 
-    async def generate_mutants(self, bug_categories: List[Dict[str, str]], temperature: float = 0.7) -> List[Tuple[str, str]]:
+    async def generate_mutants(self, bug_categories: List[Dict[str, str]], model="deepseek", model_id: str = "", temperature: float = 0.7) -> List[Tuple[str, str]]:
         """
         Generate n mutant Verilog codes by randomly selecting bug categories and applying them.
         
         Args:
             bug_categories: List of bug categories from MutationGenerator
+            model: Model to use for generation (default: "deepseek")
+            model_id: Specific model ID to use (default: "")
             temperature: Temperature for LLM generation
             
         Returns:
@@ -530,7 +552,7 @@ class MutantGenerator:
             try:
                 self.debug_logger.log(f"Generating mutant {i+1} for bug: {bug['bug_type']}")
                 
-                mutant_code = await self._generate_single_mutant(bug, temperature)
+                mutant_code = await self._generate_single_mutant(bug, model, model_id, temperature)
                 if mutant_code:
                     mutants.append((mutant_code, bug['bug_type']))
                     self.debug_logger.log(f"Successfully generated mutant {i+1}")
@@ -544,12 +566,12 @@ class MutantGenerator:
         self.debug_logger.log(f"Generated {len(mutants)} successful mutants out of {len(selected_bugs)} attempts")
         return mutants
 
-    async def _generate_single_mutant(self, bug: Dict[str, str], temperature: float, model: str = "deepseek") -> Optional[str]:
+    async def _generate_single_mutant(self, bug: Dict[str, str], model: str = "deepseek", model_id: str = "", temperature: float = 0.7) -> Optional[str]:
         """Generate a single mutant for a specific bug category."""
         msgs = self._build_prompt(self.design_entry.content, bug['bug_type'], bug['description'])
         
         try:
-            response, metadata = await self.client.call(msgs, model, temperature=temperature)
+            response, metadata = await self.client.call(msgs, model, model_id=model_id, temperature=temperature)
             
             # Log the LLM call if debug is enabled
             self.debug_logger.log_llm_call(msgs, response, metadata)
@@ -578,7 +600,7 @@ class MutantGenerator:
                 return mutant_code.strip()
                 
         except Exception as e:
-            self.debug_logger.log(f"Error calling LLM for {bug['bug_type']}: {e}", "ERROR")
+            self.debug_logger.log(f"Error calling LLM for {bug['bug_type']}", "ERROR")
             return None
 
     def select_bugs_randomly(self, bug_categories: List[Dict[str, str]], n: int = None) -> List[Dict[str, str]]:
@@ -606,8 +628,10 @@ class MutantGenerator:
         cls,
         design_entry: DesignEntry,
         client: LLMClient,
+        config: Config,
         bug_categories: List[Dict[str, str]],
-        n: int = 3,
+        model="deepseek",
+        model_id: str = "",
         temperature: float = 0.7,
         debug_logger: Optional[DebugLogger] = None
     ) -> List[Tuple[str, str]]:
@@ -617,24 +641,24 @@ class MutantGenerator:
         Args:
             design_entry: The design entry to mutate
             client: LLM client for API calls
+            config: Configuration object
             bug_categories: List of bug categories from MutationGenerator
-            n: Number of mutants to generate
+            model: Model to use for generation (default: "deepseek")
+            model_id: Specific model ID to use (default: "")
             temperature: Temperature for LLM generation
             debug_logger: Optional debug logger
             
         Returns:
             List of tuples: (mutant_verilog_code, bug_type_used)
         """
-        mg = cls(design_entry, client, n, debug_logger)
-        return await mg.generate_mutants(bug_categories, temperature)
+        mg = cls(design_entry, client, config, debug_logger)
+        return await mg.generate_mutants(bug_categories, model, model_id, temperature)
+
 # Convenience function to create all generators with shared debug logging
 def create_generators(
     design_entry: DesignEntry, 
     client: LLMClient, 
-    n_answers: int = 10, 
-    max_concurrent_yosys: int = 4,
-    debug_enabled: bool = False,
-    debug_log_file: str = "generator_debug.log"
+    config: Config
 ) -> Tuple[QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator]:
     """
     Create all five generators with shared debug logging.
@@ -642,21 +666,18 @@ def create_generators(
     Args:
         design_entry: The design entry to generate questions for
         client: LLM client for API calls
-        n_answers: Number of answers to generate for validation
-        max_concurrent_yosys: Maximum concurrent Yosys processes
-        debug_enabled: Whether to enable debug logging
-        debug_log_file: Path to debug log file
+        config: Configuration object containing all necessary parameters
         
     Returns:
         Tuple of (QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator)
     """
-    debug_logger = DebugLogger(enabled=debug_enabled, log_file=debug_log_file)
+    debug_logger = DebugLogger(config)
     
-    qg = QuestionGenerator(design_entry, client, debug_logger)
-    ag = AnswerGenerator("", client, debug_logger=debug_logger)  # Question will be set later
-    vqg = ValidQuestionGenerator(qg, ag, n_answers, max_concurrent_yosys, debug_logger)
-    mg = MutationGenerator(design_entry, client, n=10, debug_logger=debug_logger)
-    mutg = MutantGenerator(design_entry, client, n=6, debug_logger=debug_logger)
+    qg = QuestionGenerator(design_entry, client, config, debug_logger)
+    ag = AnswerGenerator("", client, config, debug_logger=debug_logger)  # Question will be set later
+    vqg = ValidQuestionGenerator(qg, ag, config, debug_logger)
+    mg = MutationGenerator(design_entry, client, config, debug_logger)
+    mutg = MutantGenerator(design_entry, client, config, debug_logger)
     
     return qg, ag, vqg, mg, mutg
 

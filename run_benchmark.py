@@ -8,25 +8,27 @@ from entry_types import DesignEntry
 
 async def main():
     questions = []
+    question_mutant_seen = set()
     correct_answers = []
     pass_one_acc = 0
     pass_five_acc = 0
-    with open("./results/questions.jsonl", "r") as f:
+    with open("./results/questions_gpt5.jsonl", "r") as f:
         for line in f:
             data = json.loads(line)
-            if data['question_valid']:
+            if data['question_valid'] and (data['original_design_hash'], data['mutant_index']) not in question_mutant_seen:
                 questions.append(DesignEntry(data['question_text']))
                 correct_answers.append(data['mutant_code'])
+                question_mutant_seen.add((data['original_design_hash'], data['mutant_index']))
 
     config = Config("config.yaml")
     client = LLMClient(config)
 
     ags = []
     for question in questions:
-        ags.append(AnswerGenerator(question.content, client))
+        ags.append(AnswerGenerator(question.content, client, config))
 
     print(f"Generating {5*len(questions)} answers for {len(questions)} questions")
-    task_answers = [ag.generate_answers(5) for ag in ags]
+    task_answers = [ag.generate_answers(5, model="deepseek", model_id="") for ag in ags]
     answers = await asyncio.gather(*task_answers)
     print("Answers generated")
 

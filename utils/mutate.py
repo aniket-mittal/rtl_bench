@@ -507,7 +507,7 @@ Return only the complete mutated Verilog module with the subtle bug introduced:"
     async def generate_mutant():
         try:
             messages = [{"role": "system", "content": mutation_prompt}]
-            response, metadata = await client.call(messages, temperature=0.8)
+            response, metadata = await client.call(messages, model="deepseek", model_id="", temperature=0.8)
             
             # Extract Verilog code from response
             # Look for code blocks marked with ```verilog or ```
