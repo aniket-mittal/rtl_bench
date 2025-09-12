@@ -44,21 +44,23 @@ async def create_yosys_files(batch_file_path: str, initial_code: str, ground_tru
         import uuid
         instance_id = str(uuid.uuid4())[:8]
     
-    verilog_gen_path = Path(batch_file_path) / f"verilog_gen_{instance_id}.v"
-    verilog_truth_path = Path(batch_file_path) / f"verilog_truth_{instance_id}.v"
+    verilog_gen_path = Path(batch_file_path) / f"verilog_gen_{instance_id}.sv"
+    verilog_truth_path = Path(batch_file_path) / f"verilog_truth_{instance_id}.sv"
     yosys_script_path = Path(batch_file_path) / f"equivalence_check_{instance_id}.ys"
     
+    initial_code, mod_module_list = rename_modules_and_instantiations(initial_code, obscure_names=True)
+    modified_module_golden, mod_module_list = rename_modules_and_instantiations(ground_truth, obscure_names=True)
+    modified_module_golden, mod_module_list = rename_modules_and_instantiations(modified_module_golden)
     with open(verilog_gen_path, 'w', encoding='utf-8') as f:
         f.write(initial_code)
-    modified_module_golden, mod_module_list = rename_modules_and_instantiations(ground_truth)
     with open(verilog_truth_path, 'w', encoding='utf-8') as f:
         f.write(modified_module_golden)
     yosys_stdout_list = []
     for original_module_name in mod_module_list:
         module_name = mod_module_list[original_module_name]
         equivalence_string = f"""
-        read_verilog {verilog_truth_path}
-        read_verilog {verilog_gen_path}
+        read_verilog -sv {verilog_truth_path}
+        read_verilog -sv {verilog_gen_path}
         prep; proc; opt; memory;
         clk2fflogic;
         miter -equiv -flatten {module_name} {original_module_name} miter
@@ -71,7 +73,7 @@ async def create_yosys_files(batch_file_path: str, initial_code: str, ground_tru
         try:
             # Use asyncio.create_subprocess_exec for awaitable subprocess
             # Remove -i flag to prevent TTY input issues
-            print(f"yosys -s {yosys_script_path}")
+            # print(f"yosys -s {yosys_script_path}")
             process = await asyncio.create_subprocess_exec(
                 'bash', '-c', f"yosys -s {yosys_script_path}",
                 stdout=asyncio.subprocess.PIPE,
