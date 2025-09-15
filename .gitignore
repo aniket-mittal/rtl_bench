@@ -1,6 +1,7 @@
 config.yaml
 yosys_files/*
 tests/
+analysis/
 __*__
 main_old.py
 data_temp
@@ -10,5 +11,7 @@ mutants
 parsetab.py
 data/valid_questions.jsonl
 logs/generator_debug.log
-logs/generator_debug.log
-logs/generator_debug.log
+tmp/
+*_results/*
+dataset_spec-to-rtl/*
+generator_debut.log

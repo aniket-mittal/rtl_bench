@@ -145,6 +145,26 @@ class QuestionGenerator:
         question = extract_between_markers(response, "QUESTION BEGIN", "QUESTION END")
         return question
 
+def extract_code(content: str) -> str:
+    """
+    Extract code from a response by looking for fenced blocks (``` or ---).
+    If no block is found, return the original content.
+    """
+    inside = False
+    lines = content.split("\n")
+    collected: List[str] = []
+    saw_block = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("```") or stripped.startswith("---"):
+            inside = not inside
+            saw_block = True
+            continue
+        if inside:
+            collected.append(line)
+    if not saw_block:
+        return content
+    return "\n".join(collected)
 
 class AnswerGenerator:
     """
@@ -181,7 +201,68 @@ class AnswerGenerator:
         tasks = [self.client.call(msgs, model, model_id=model_id, temperature=temperature) for _ in range(n)]
         results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        print("done")
+        # print("done")
+        answers: List[str] = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                self.debug_logger.log(f"Error generating answer {i+1}: {result}", "ERROR")
+                continue
+                
+            response, metadata = result
+            self.debug_logger.log(f"Generated answer {i+1}: {response[:100]}...")
+            
+            # Extract Verilog code from response
+            code = extract_code(response)
+            try:
+                standardized_code = standardize(code)
+                answers.append(standardized_code)
+                self.debug_logger.log(f"Standardized answer {i+1}: {standardized_code[:100]}...")
+            except Exception as e:
+                self.debug_logger.log(f"Error standardizing answer {i+1}: {e}", "ERROR")
+                # print(f"{response}")
+        
+        self.debug_logger.log(f"Generated {len(answers)} valid answers out of {n} attempts")
+        return answers
+
+
+class AssistedAnswerGenerator:
+    """
+    Generates Verilog answers (modules) for a given natural-language question,
+    with assistance from a reference design.
+
+    Usage:
+        aag = AssistedAnswerGenerator(question_text, client, config, design)
+        answers: List[str] = await aag.generate_answers(n)
+    """
+
+    def __init__(self, question: str, client: LLMClient, config: Config, design: str, prompt_path: str = "./templates/rtl_gen.txt", debug_logger: Optional[DebugLogger] = None) -> None:
+        self.question = question
+        self.client = client
+        self.config = config
+        self.design = design
+        self.prompt = self._load_prompt(prompt_path)
+        self.debug_logger = debug_logger or DebugLogger(config)
+
+    @staticmethod
+    def _load_prompt(prompt_path: str) -> str:
+        path = Path(prompt_path)
+        return path.read_text(encoding="utf-8")
+
+    def _build_messages(self) -> List[Dict[str, str]]:
+        # Include the design in the prompt to provide assistance
+        full_prompt = f"{self.prompt}\n\n{self.question}\n\nIn addition, here is a design that is slightly different that the one requested. Use this design to help you generate the answer:\n\n{self.design}"
+        return [{"role": "system", "content": full_prompt}]
+
+    async def generate_answers(self, n: int, model="deepseek", model_id: str = "", temperature: float = 0.6) -> List[str]:
+        """
+        Generate n candidate Verilog answers for the stored question.
+        Returns a list of n strings (best-effort; may be fewer if some calls fail).
+        """
+        msgs = self._build_messages()
+        tasks = [self.client.call(msgs, model, model_id=model_id, temperature=temperature) for _ in range(n)]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        # print("done")
         answers: List[str] = []
         for i, result in enumerate(results):
             if isinstance(result, Exception):
@@ -226,7 +307,7 @@ class ValidQuestionGenerator:
       answer verifies against the original design.
     """
 
-    def __init__(self, qg: QuestionGenerator, ag: AnswerGenerator, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
+    def __init__(self, qg: QuestionGenerator, ag: AssistedAnswerGenerator, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
         self.qg = qg
         self.ag = ag
         self.config = config
@@ -659,9 +740,9 @@ def create_generators(
     design_entry: DesignEntry, 
     client: LLMClient, 
     config: Config
-) -> Tuple[QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator]:
+) -> Tuple[QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator, AssistedAnswerGenerator]:
     """
-    Create all five generators with shared debug logging.
+    Create all six generators with shared debug logging.
     
     Args:
         design_entry: The design entry to generate questions for
@@ -669,22 +750,24 @@ def create_generators(
         config: Configuration object containing all necessary parameters
         
     Returns:
-        Tuple of (QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator)
+        Tuple of (QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator, AssistedAnswerGenerator)
     """
     debug_logger = DebugLogger(config)
     
     qg = QuestionGenerator(design_entry, client, config, debug_logger)
     ag = AnswerGenerator("", client, config, debug_logger=debug_logger)  # Question will be set later
-    vqg = ValidQuestionGenerator(qg, ag, config, debug_logger)
+    aag = AssistedAnswerGenerator("", client, config, design_entry.content, debug_logger=debug_logger)
+    vqg = ValidQuestionGenerator(qg, aag, config, debug_logger)  # Use AssistedAnswerGenerator for validation
     mg = MutationGenerator(design_entry, client, config, debug_logger)
     mutg = MutantGenerator(design_entry, client, config, debug_logger)
     
-    return qg, ag, vqg, mg, mutg
+    return qg, ag, vqg, mg, mutg, aag
 
 # Backward compatibility aliases
 __all__ = [
     'QuestionGenerator',
     'AnswerGenerator', 
+    'AssistedAnswerGenerator',
     'ValidQuestionGenerator',
     'DebugLogger',
     'MutationGenerator',
