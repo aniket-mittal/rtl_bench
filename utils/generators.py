@@ -2,12 +2,18 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Tuple, Optional, NamedTuple
 from datetime import datetime
 
 from entry_types import DesignEntry
 from utils.LLM_call import LLMClient, extract_between_markers
-from utils.equivalence_check import check_equivalence
+from utils.equivalence_check import (
+    check_equivalence,
+    check_equivalence_detailed,
+    check_elaborates,
+    equiv_settings,
+    EquivStatus,
+)
 from utils.mutate import standardize
 from utils.config import Config
 from pydantic import BaseModel
@@ -88,7 +94,15 @@ class QuestionGenerator:
         user_msg = (
             "Create a LeetCode-style question whose unique correct answer is the\n"
             "following Verilog module. The question should:\n"
-            "- Clearly describe the required behavior, I/O interface, and any timing/edge conditions.\n"
+            "- State the exact module name and every port with its exact name, direction and width\n"
+            "  (answers are checked by formal equivalence, so names and widths must match).\n"
+            "- Describe the required behavior functionally: what the circuit computes, its reset\n"
+            "  behavior, timing (combinational vs. registered, which clock edge), and edge cases.\n"
+            "- Be precise enough that only circuits equivalent to the target satisfy it, including\n"
+            "  any unusual or non-standard behavior the target has (do not 'correct' it).\n"
+            "- NOT read as pseudocode: do not list next-state equations bit by bit, name internal\n"
+            "  registers, or describe the code structure. A solver should have to design the\n"
+            "  circuit, not transcribe it.\n"
             "- Avoid revealing implementation details or providing code.\n"
             "- Be self-contained and unambiguous.\n"
             "- Fit within 150-300 words.\n\n"
@@ -298,79 +312,85 @@ class AssistedAnswerGenerator:
 
 class ValidQuestionGenerator:
     """
-    Validates that a generated question is sound by checking whether at least
-    one of n generated answers is formally equivalent to the original design.
+    Validates that a generated question pins down its target design.
 
-    - Takes a `QuestionGenerator`, an `AnswerGenerator`, and an integer n.
-    - Exposes a `valid_question` flag (default False).
-    - `validate()` generates n answers and sets `valid_question` True if any
-      answer verifies against the original design.
+    The answer generator is given ONLY the question text (never the target
+    code). It samples n candidate solutions, and each is formally checked
+    against the target with Yosys. All n are checked (no early exit) so the
+    result doubles as a difficulty signal.
+
+    After `validate()`:
+      valid_question       True if at least one sample is equivalent
+      solve_rate           fraction of samples that are equivalent
+      answer_statuses      per-sample EquivStatus values (as strings)
+      generated_answers    the sampled answers
+      proof_strength       "proven" if some sample was proven equivalent,
+                           "bounded" if the best was only bounded, else None
+
+    Bounded results (no counterexample within the step limit but induction did
+    not close) count as passing only if config.equiv_accept_bounded is true.
     """
 
-    def __init__(self, qg: QuestionGenerator, ag: AssistedAnswerGenerator, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
+    def __init__(self, qg: QuestionGenerator, ag: AnswerGenerator, config: Config, debug_logger: Optional[DebugLogger] = None) -> None:
         self.qg = qg
         self.ag = ag
         self.config = config
         self.n = config.question_validation_n
-        self.valid_question: bool = False
-        # Limit concurrent Yosys processes to prevent resource exhaustion
-        self.semaphore = asyncio.Semaphore(config.max_concurrent_yosys)
+        self.accept_bounded = getattr(config, "equiv_accept_bounded", True)
+        self.equiv_kwargs = equiv_settings(config)
+        self.semaphore = asyncio.Semaphore(getattr(config, "max_concurrent_yosys", 4))
         self.debug_logger = debug_logger or DebugLogger(config)
-        self.generated_answers = []
+        self.valid_question: bool = False
+        self.solve_rate: float = 0.0
+        self.answer_statuses: List[str] = []
+        self.generated_answers: List[str] = []
+        self.proof_strength: Optional[str] = None
 
-    async def validate(self) -> bool:
-        """Validate the question by generating answers and checking equivalence."""
-        self.debug_logger.log("Starting question validation...")
-        
-        # Ensure yosys batch dir exists
-        batch_dir = Path(self.config.batch_dir_path)
-        batch_dir.mkdir(parents=True, exist_ok=True)
+    async def validate(self, model: str = "deepseek", model_id: str = "", temperature: float = 0.6) -> bool:
+        """Validate the question by sampling answers from the question alone and checking equivalence."""
+        if not getattr(self.ag, "question", "").strip():
+            raise ValueError("ValidQuestionGenerator.validate(): the answer generator has no question set")
+        if getattr(self.ag, "design", None):
+            raise ValueError("ValidQuestionGenerator.validate(): answer generator must not be given the target design")
 
-        # Generate n candidate answers
-        self.debug_logger.log(f"Generating {self.n} candidate answers...")
-        answers: List[str] = await self.ag.generate_answers(self.n, model="deepseek", model_id="")
-        answers = [a for a in answers if isinstance(a, str) and a.strip()]
-        
-        if not answers:
-            self.debug_logger.log("No valid answers generated", "WARNING")
-            self.valid_question = False
-            return self.valid_question
+        self.debug_logger.log(f"Validating question: sampling {self.n} unassisted answers...")
+        answers = await self.ag.generate_answers(self.n, model=model, model_id=model_id, temperature=temperature)
+        self.generated_answers = [a for a in answers if isinstance(a, str) and a.strip()]
+        if not self.generated_answers:
+            self.debug_logger.log("No usable answers generated", "WARNING")
+            return False
 
-        self.debug_logger.log(f"Generated {len(answers)} valid answers, checking equivalence...")
-
-        # Store generated answers for later access
-        self.generated_answers = answers
-
-        # Verify all answers in parallel against the ground truth design
         ground_truth = self.qg.design_entry.content
-        
-        async def check_with_semaphore(ans):
-            async with self.semaphore:
-                return await check_equivalence(str(batch_dir), ans, ground_truth)
-        
-        tasks = [
-            check_with_semaphore(ans) for ans in answers
-        ]
-        
-        self.debug_logger.log(f"Running {len(tasks)} equivalence checks in parallel...")
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        batch_dir = self.config.batch_dir_path
 
-        # Process results
-        valid_count = 0
+        async def check(ans: str):
+            async with self.semaphore:
+                return await check_equivalence_detailed(batch_dir, ans, ground_truth, **self.equiv_kwargs)
+
+        results = await asyncio.gather(*[check(a) for a in self.generated_answers], return_exceptions=True)
+
+        statuses: List[EquivStatus] = []
         for i, res in enumerate(results):
             if isinstance(res, Exception):
-                self.debug_logger.log(f"Equivalence check {i+1} failed: {res}", "ERROR")
-            elif isinstance(res, bool) and res:
-                valid_count += 1
-                self.debug_logger.log(f"Answer {i+1} is equivalent to ground truth")
-                self.valid_question = True
-                break
+                self.debug_logger.log(f"Equivalence check {i+1} raised: {res}", "ERROR")
+                statuses.append(EquivStatus.ERROR)
+            else:
+                statuses.append(res.status)
+        self.answer_statuses = [s.value for s in statuses]
 
-        if self.valid_question:
-            self.debug_logger.log(f"Question validation successful! {valid_count} equivalent answer(s) found.")
-        else:
-            self.debug_logger.log(f"Question validation failed. No equivalent answers found.")
-        
+        passing = [s for s in statuses if s == EquivStatus.EQUIVALENT or (self.accept_bounded and s == EquivStatus.BOUNDED)]
+        # Denominator is n requested samples, so failed generations count against the question.
+        self.solve_rate = len(passing) / self.n if self.n else 0.0
+        self.valid_question = bool(passing)
+        if EquivStatus.EQUIVALENT in statuses:
+            self.proof_strength = "proven"
+        elif passing:
+            self.proof_strength = "bounded"
+
+        self.debug_logger.log(
+            f"Validation {'passed' if self.valid_question else 'failed'}: "
+            f"{len(passing)}/{self.n} samples equivalent (statuses: {self.answer_statuses})"
+        )
         return self.valid_question
 
 
@@ -627,25 +647,54 @@ class MutantGenerator:
         
         self.debug_logger.log(f"Selected {len(selected_bugs)} bug categories for mutation generation")
         
-        # Generate mutants for each selected bug
-        mutants = []
-        for i, bug in enumerate(selected_bugs):
-            try:
-                self.debug_logger.log(f"Generating mutant {i+1} for bug: {bug['bug_type']}")
-                
-                mutant_code = await self._generate_single_mutant(bug, model, model_id, temperature)
-                if mutant_code:
-                    mutants.append((mutant_code, bug['bug_type']))
-                    self.debug_logger.log(f"Successfully generated mutant {i+1}")
-                else:
-                    self.debug_logger.log(f"Failed to generate mutant {i+1}", "WARNING")
-                    
-            except Exception as e:
-                self.debug_logger.log(f"Error generating mutant {i+1}: {e}", "ERROR")
+        # Generate all candidate mutants concurrently
+        candidates = await asyncio.gather(
+            *[self._generate_single_mutant(bug, model, model_id, temperature) for bug in selected_bugs],
+            return_exceptions=True,
+        )
+
+        mutants: List[Tuple[str, str]] = []
+        self.rejections: List[Dict[str, str]] = []
+        for bug, code in zip(selected_bugs, candidates):
+            if isinstance(code, Exception) or not code:
+                self.rejections.append({"bug_type": bug["bug_type"], "reason": "generation_failed"})
                 continue
-        
-        self.debug_logger.log(f"Generated {len(mutants)} successful mutants out of {len(selected_bugs)} attempts")
+            reason = await self._reject_reason(code, [m for m, _ in mutants])
+            if reason:
+                self.rejections.append({"bug_type": bug["bug_type"], "reason": reason})
+                self.debug_logger.log(f"Rejected mutant for '{bug['bug_type']}': {reason}", "WARNING")
+                continue
+            mutants.append((code, bug["bug_type"]))
+
+        self.debug_logger.log(
+            f"Kept {len(mutants)}/{len(selected_bugs)} mutants; rejections: {self.rejections}"
+        )
         return mutants
+
+    async def _reject_reason(self, mutant_code: str, accepted: List[str]) -> Optional[str]:
+        """
+        A mutant is kept only if it is a genuinely new circuit:
+          - it must parse and elaborate in Yosys,
+          - Yosys must find a counterexample against the original (DIFFERENT);
+            BOUNDED/UNKNOWN means we could not show it differs, so it is rejected,
+          - it must not be equivalent to a mutant already kept for this design.
+        """
+        kw = equiv_settings(self.config)
+        batch_dir = self.config.batch_dir_path
+
+        elab = await check_elaborates(batch_dir, mutant_code, **kw)
+        if elab.status != EquivStatus.EQUIVALENT:
+            return f"does_not_elaborate ({elab.status.value}: {elab.detail[:120]})"
+
+        vs_orig = await check_equivalence_detailed(batch_dir, mutant_code, self.design_entry.content, **kw)
+        if vs_orig.status != EquivStatus.DIFFERENT:
+            return f"not_distinct_from_original ({vs_orig.status.value})"
+
+        for other in accepted:
+            r = await check_equivalence_detailed(batch_dir, mutant_code, other, **kw)
+            if r.status in (EquivStatus.EQUIVALENT, EquivStatus.BOUNDED):
+                return f"duplicate_of_kept_mutant ({r.status.value})"
+        return None
 
     async def _generate_single_mutant(self, bug: Dict[str, str], model: str = "deepseek", model_id: str = "", temperature: float = 0.7) -> Optional[str]:
         """Generate a single mutant for a specific bug category."""
@@ -736,35 +785,44 @@ class MutantGenerator:
         return await mg.generate_mutants(bug_categories, model, model_id, temperature)
 
 # Convenience function to create all generators with shared debug logging
+class Generators(NamedTuple):
+    qg: QuestionGenerator
+    ag: AnswerGenerator
+    vqg: ValidQuestionGenerator
+    mg: MutationGenerator
+    mutg: MutantGenerator
+    aag: AssistedAnswerGenerator
+
+
 def create_generators(
-    design_entry: DesignEntry, 
-    client: LLMClient, 
-    config: Config
-) -> Tuple[QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator, AssistedAnswerGenerator]:
+    design_entry: DesignEntry,
+    client: LLMClient,
+    config: Config,
+    question: str = "",
+) -> Generators:
     """
-    Create all six generators with shared debug logging.
-    
-    Args:
-        design_entry: The design entry to generate questions for
-        client: LLM client for API calls
-        config: Configuration object containing all necessary parameters
-        
-    Returns:
-        Tuple of (QuestionGenerator, AnswerGenerator, ValidQuestionGenerator, MutationGenerator, MutantGenerator, AssistedAnswerGenerator)
+    Create all generators for one design with shared debug logging.
+
+    Access fields by name (gens.qg, gens.vqg, ...) rather than unpacking.
+    `vqg` validates with the plain AnswerGenerator `ag`, which only ever sees
+    the question text. Pass `question` here or set `gens.ag.question` before
+    calling `gens.vqg.validate()`. `aag` (which is shown the target design)
+    is kept for experiments but must never be used for validation.
     """
     debug_logger = DebugLogger(config)
-    
+
     qg = QuestionGenerator(design_entry, client, config, debug_logger)
-    ag = AnswerGenerator("", client, config, debug_logger=debug_logger)  # Question will be set later
-    aag = AssistedAnswerGenerator("", client, config, design_entry.content, debug_logger=debug_logger)
-    vqg = ValidQuestionGenerator(qg, aag, config, debug_logger)  # Use AssistedAnswerGenerator for validation
+    ag = AnswerGenerator(question, client, config, debug_logger=debug_logger)
+    aag = AssistedAnswerGenerator(question, client, config, design_entry.content, debug_logger=debug_logger)
+    vqg = ValidQuestionGenerator(qg, ag, config, debug_logger)
     mg = MutationGenerator(design_entry, client, config, debug_logger)
     mutg = MutantGenerator(design_entry, client, config, debug_logger)
-    
-    return qg, ag, vqg, mg, mutg, aag
+
+    return Generators(qg, ag, vqg, mg, mutg, aag)
 
 # Backward compatibility aliases
 __all__ = [
+    'Generators',
     'QuestionGenerator',
     'AnswerGenerator', 
     'AssistedAnswerGenerator',

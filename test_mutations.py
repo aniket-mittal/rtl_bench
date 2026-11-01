@@ -98,7 +98,7 @@ endmodule"""
             design_entry = DesignEntry(design_data["content"])
             
             # Create all generators
-            qg, ag, vqg, mg, mutg = create_generators(
+            qg, ag, vqg, mg, mutg, _aag = create_generators(
                 design_entry=design_entry,
                 client=client,
                 config=config
@@ -199,7 +199,7 @@ async def test_single_design(design_name: str, verilog_code: str):
     design_entry = DesignEntry(verilog_code)
     
     # Create generators
-    qg, ag, vqg, mg, mutg = create_generators(
+    qg, ag, vqg, mg, mutg, _aag = create_generators(
         design_entry=design_entry,
         client=client,
         config=config

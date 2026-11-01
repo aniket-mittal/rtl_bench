@@ -167,6 +167,29 @@ def collect_conditions(ast):
     traverse(ast)
     return conditions
 
+def _replace_node(root, target, new) -> bool:
+    """Replace `target` (matched by identity) with `new` wherever it appears under `root`."""
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if not hasattr(node, '__dict__'):
+            continue
+        for attr, value in vars(node).items():
+            if value is target:
+                setattr(node, attr, new)
+                return True
+            if isinstance(value, (list, tuple)):
+                for i, item in enumerate(value):
+                    if item is target:
+                        if isinstance(value, list):
+                            value[i] = new
+                        else:
+                            setattr(node, attr, value[:i] + (new,) + value[i + 1:])
+                        return True
+        if hasattr(node, 'children'):
+            stack.extend(node.children())
+    return False
+
 def stuck_at_mutant(ast, p=1):
     """Stuck-at Mutants (SM): Force the signal to a fixed value."""
     assignments = collect_assignments(ast)
@@ -243,22 +266,8 @@ def operator_mutant(ast, p=1):
             new_operator_class = random.choice(operator_replacements[operator_type])
             new_operator = new_operator_class(operator.left, operator.right)
             
-            # Find and replace the operator in the AST
-            def replace_operator(node):
-                if hasattr(node, 'children'):
-                    children = list(node.children())
-                    for i, child in enumerate(children):
-                        if child == operator:
-                            children[i] = new_operator
-                        else:
-                            replace_operator(child)
-                    # Update the node's children
-                    if hasattr(node, 'left') and hasattr(node, 'right'):
-                        if hasattr(node, 'left') and node.left == operator:
-                            node.left = new_operator
-                        if hasattr(node, 'right') and node.right == operator:
-                            node.right = new_operator
-        
+            _replace_node(mutated_ast, operator, new_operator)
+
         mutated_operators = collect_operators(mutated_ast)
     
     return mutated_ast
@@ -333,7 +342,7 @@ def branch_operator_mutant(ast, p=1):
         if new_condition is not None:
             # Replace the condition in the if statement
             def replace_condition(node):
-                if isinstance(node, IfStatement) and node.cond == condition:
+                if isinstance(node, IfStatement) and node.cond is condition:
                     node.cond = new_condition
                 elif hasattr(node, 'children'):
                     for child in node.children():
@@ -372,7 +381,7 @@ def surplus_condition_mutant(ast, p=1):
         
         # Replace the condition in the if statement
         def replace_condition(node):
-            if isinstance(node, IfStatement) and node.cond == condition:
+            if isinstance(node, IfStatement) and node.cond is condition:
                 node.cond = new_condition
             elif hasattr(node, 'children'):
                 for child in node.children():
@@ -405,7 +414,7 @@ def missing_condition_mutant(ast, p=1):
             
             # Replace the condition in the if statement
             def replace_condition(node):
-                if isinstance(node, IfStatement) and node.cond == condition:
+                if isinstance(node, IfStatement) and node.cond is condition:
                     node.cond = simplified_condition
                 elif hasattr(node, 'children'):
                     for child in node.children():

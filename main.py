@@ -1,800 +1,253 @@
-from utils.generators import create_generators, DebugLogger
-from entry_types import DesignEntry, Database
-from utils.LLM_call import LLMClient
+"""
+Mutation-based question generation pipeline.
+
+For each original design:
+  1. an LLM proposes design-specific bug categories,
+  2. an LLM writes one mutant per selected category; each mutant is kept only if
+     Yosys finds a counterexample against the original (so it is a genuinely new
+     circuit) and it is not equivalent to a mutant already kept,
+  3. an LLM writes `questions_n` LeetCode-style questions per mutant,
+  4. each question is validated by sampling `question_validation_n` answers from
+     the question text alone and formally checking them against the mutant.
+
+Every question (valid or not) is written to the output JSONL with its
+validation stats, so you can filter by `question_valid`, `solve_rate` and
+`proof_strength` downstream.
+
+Usage:
+  python main.py run                       # DeepSeek profile, all designs
+  python main.py run --profile gpt5 --only-missing
+  python main.py run --limit 2             # quick smoke test on 2 designs
+  python main.py combine                   # merge output_path + GPT-5 output
+"""
+import argparse
 import asyncio
 import json
+import time
 from pathlib import Path
+from typing import Dict, List
+
+from entry_types import DesignEntry
 from utils.config import Config
-import traceback
+from utils.generators import create_generators
+from utils.LLM_call import LLMClient
 
-async def run():
-    config = Config("config.yaml")
-    client = LLMClient(config)
+# Which model does which stage. Validation answers use a fixed model across
+# profiles so solve rates are comparable.
+PROFILES: Dict[str, Dict[str, tuple]] = {
+    "deepseek": {
+        "bugs": ("gpt", "gpt-4o-mini"),
+        "mutants": ("deepseek", ""),
+        "questions": ("deepseek", ""),
+        "validation": ("deepseek", ""),
+    },
+    "gpt5": {
+        "bugs": ("gpt", "gpt-4o-mini"),
+        "mutants": ("gpt", "gpt-5"),
+        "questions": ("gpt", "gpt-5"),
+        "validation": ("deepseek", ""),
+    },
+}
 
-    with open(config.original_designs_path, "r") as f:
-        data = [json.loads(line) for line in f]
+GPT5_OUTPUT_PATH = "./results/questions_gpt5.jsonl"
 
-    debug_enabled, debug_log_file = config.get_debug_settings()
 
-    # Create output directory for results
-    output_dir = Path("./results")
-    output_dir.mkdir(exist_ok=True)
-
-    tasks = [
-        process_single_design(design["content"], client, config) for design in data
-    ]
-    print(f"Processing {len(tasks)} designs with mutation pipeline")
-    results = await asyncio.gather(*tasks)
-    
-    # Flatten all questions from all designs into a single list
-    all_questions = []
-    successful_designs = 0
-    failed_designs = 0
-    
-    for result in results:
-        if "error" in result:
-            failed_designs += 1
-            continue
-        
-        successful_designs += 1
-        if "questions" in result and result["questions"] is not None:
-            all_questions.extend(result["questions"])
-    
-    # Save flattened questions to JSONL file
-    with open(config.output_path, "w") as f:
-        for question in all_questions:
-            f.write(json.dumps(question, ensure_ascii=False) + "\n")
-    
-    # Print summary
-    print(f"\nSummary:")
-    print(f"  Total designs processed: {len(results)}")
-    print(f"  Successful: {successful_designs}")
-    print(f"  Failed: {failed_designs}")
-    print(f"  Total questions generated: {len(all_questions)}")
-    
-    return all_questions
-
-async def process_single_design(verilog_code: str, client: LLMClient, config: Config):
-    """Process a single design through the complete mutation and question generation pipeline."""
-    design_entry = DesignEntry(verilog_code)
-    
-    print(f"\nProcessing design: {design_entry.hash}")
-    print("-" * 60)
-    
+def read_jsonl(path: str) -> List[dict]:
     try:
-        # Create all generators
-        qg, ag, vqg, mg, mutg = create_generators(
-            design_entry=design_entry,
-            client=client,
-            config=config
-        )
-        
-        print("  Generating bug categories...")
-        bug_categories = await mg.generate_bug_categories(temperature=0.7)
-        print(f"  Generated {len(bug_categories)} bug categories")
-        
-        print("  Generating mutants...")
-        mutants = await mutg.generate_mutants(bug_categories, model="deepseek", model_id="", temperature=0.8)
-        print(f"  Generated {len(mutants)} mutants")
-
-        print("  Generating questions for each mutant...")
-        async def generate_questions_for_mutant(mutant_data, mutant_index, return_invalid: bool = False, return_duplicate: bool = False):
-            """Generate questions for a single mutant."""
-            mutant_code, bug_type = mutant_data
-            print(f"    Processing mutant {mutant_index + 1} (bug: {bug_type})...")
-            
-            # Create a new design entry for the mutant
-            mutant_design_entry = DesignEntry(mutant_code)
-            
-            # Create generators for the mutant
-            mutant_qg, mutant_ag, mutant_vqg, _, _ = create_generators(
-                design_entry=mutant_design_entry,
-                client=client,
-                config=config
-            )
-            
-            # Generate questions for this mutant in parallel
-            question_tasks = [mutant_qg.generate(model="deepseek", model_id="", temperature=0.6) for _ in range(config.questions_n)]
-            
-            try:
-                questions = await asyncio.gather(*question_tasks, return_exceptions=True)
-
-                # Prepare validation tasks for all questions
-                validation_tasks = []
-                valid_question_generators = []
-                for j, question in enumerate(questions):
-                    if isinstance(question, Exception):
-                        print(f"      Error generating question {j+1}: {question}")
-                        validation_tasks.append(None)
-                        valid_question_generators.append(None)
-                        continue
-                    
-                    question_design_entry = DesignEntry(mutant_code)
-                    
-                    question_qg, question_ag, question_vqg, _, _ = create_generators(
-                        design_entry=question_design_entry,
-                        client=client,
-                        config=config
-                    )
-                    
-                    # Set the question for the answer generator
-                    question_ag.question = question
-                    
-                    valid_question_generators.append((question_vqg, question_ag, question, j))
-                    validation_tasks.append(question_vqg.validate())
-
-                # Run all validations in parallel (skip None entries)
-                results = []
-                if validation_tasks:
-                    # Only run asyncio.gather on non-None tasks
-                    filtered_tasks = [task for task in validation_tasks if task is not None]
-                    validation_results = await asyncio.gather(*filtered_tasks, return_exceptions=True)
-                else:
-                    validation_results = []
-
-                mutant_questions = []
-                result_idx = 0
-                for idx, vqg_tuple in enumerate(valid_question_generators):
-                    if vqg_tuple is None:
-                        continue  # This was an exception in question generation
-                    question_vqg_instance, question_ag_instance, question, j = vqg_tuple
-                    validation_result = validation_results[result_idx]
-                    result_idx += 1
-                    
-                    try:
-                        if isinstance(validation_result, Exception):
-                            raise validation_result
-                        
-                        # The answers were already generated during validation
-                        # We need to access them from the ValidQuestionGenerator
-                        # Since validate() was called, the answers are stored in the AnswerGenerator
-                        # but we need to get them from the validation process
-                        
-                        # Create question dictionary with all required information
-                        question_dict = {
-                            "question_valid": question_vqg_instance.valid_question,
-                            "question_text": question,
-                            "mutant_code": mutant_code,
-                            "bug_type": bug_type,
-                            "original_code": design_entry.content,
-                            "original_design_hash": design_entry.hash,
-                            "answers": question_vqg_instance.generated_answers,  # Use answers from validation
-                            "question_number": j + 1,
-                            "mutant_index": mutant_index + 1
-                        }
-                        if return_invalid:
-                            mutant_questions.append(question_dict)
-                            continue
-                        if return_duplicate:
-                            if not question_dict['question_valid']:
-                                continue
-
-                            seen_mutants = set()
-                            if question_dict['mutant_index'] not in seen_mutants:
-                                mutant_questions += 1
-                                seen_mutants.add(question_dict['mutant_index'])
-                                mutant_questions.append(question_dict)
-                        print(f"      Completed question {j+1} with validation")
-                        
-                    except Exception as e:
-                        print(f"      Error processing question {j+1}: {e}")
-                        # Add question with error information
-                        question_dict = {
-                            "question_valid": False,
-                            "question_text": question,
-                            "mutant_code": mutant_code,
-                            "bug_type": bug_type,
-                            "original_code": design_entry.content,
-                            "original_design_hash": design_entry.hash,
-                            "answers": [],
-                            "validation_result": False,
-                            "question_number": j + 1,
-                            "mutant_index": mutant_index + 1,
-                            "error": str(e)
-                        }
-                        mutant_questions.append(question_dict)
-                        continue
-                
-                print(f"    Generated {len(mutant_questions)} questions for mutant {mutant_index + 1}")
-                return mutant_questions
-                
-            except Exception as e:
-                print(f"    Error processing mutant {mutant_index + 1}: {e}")
-                return []
-        
-        # Process all mutants in parallel
-        mutant_tasks = [
-            generate_questions_for_mutant(mutant_data, i) 
-            for i, mutant_data in enumerate(mutants)
-        ]
-        
-        all_questions_lists = await asyncio.gather(*mutant_tasks, return_exceptions=True)
-        
-        # Flatten the results
-        all_questions = []
-        for questions_list in all_questions_lists:
-            if isinstance(questions_list, Exception):
-                print(f"  Error processing mutant: {questions_list}")
-                continue
-            all_questions.extend(questions_list)
-        
-        # Store comprehensive results
-        result = {
-            "design_hash": design_entry.hash,
-            "original_code": verilog_code,
-            "bug_categories": bug_categories,
-            "mutants": [
-                {
-                    "bug_type": bug_type,
-                    "mutant_code": mutant_code,
-                    "code_length": len(mutant_code)
-                }
-                for mutant_code, bug_type in mutants
-            ],
-            "questions": all_questions,
-            "total_mutants": len(mutants),
-            "total_questions": len(all_questions),
-            "timestamp": asyncio.get_event_loop().time()
-        }
-        
-        print(f"  ✓ Successfully processed design with {len(mutants)} mutants and {len(all_questions)} questions")
-        return result
-        
-    except Exception as e:
-        print(f"  ✗ Error processing design: {e}")
-        return {
-            "design_hash": design_entry.hash,
-            "error": str(e),
-            "timestamp": asyncio.get_event_loop().time()
-        }
-
-async def run_gpt5_pipeline():
-    """Run the mutation pipeline using GPT-5 for all models, but only on designs that don't already have valid questions."""
-    config = Config("config.yaml")
-    client = LLMClient(config)
-
-    # Load existing questions to find designs that already have valid questions
-    try:
-        with open(config.output_path, "r") as f:
-            existing_questions = [json.loads(line) for line in f]
-        print(f"Loaded {len(existing_questions)} existing questions")
+        with open(path, "r", encoding="utf-8") as f:
+            return [json.loads(line) for line in f if line.strip()]
     except FileNotFoundError:
-        print(f"No existing questions file found at {config.output_path}")
-        existing_questions = []
-
-    # Load original designs
-    with open(config.original_designs_path, "r") as f:
-        original_designs = [json.loads(line) for line in f]
-    print(f"Loaded {len(original_designs)} original designs")
-
-    # Create a set of design hashes that already have valid questions
-    designs_with_valid_questions = set()
-    for question in existing_questions:
-        if question['question_valid'] == True:
-            designs_with_valid_questions.add(question.get('original_design_hash', ''))
-
-    print(f"Designs with valid questions: {len(designs_with_valid_questions)}")
-
-    # Find designs that don't have valid questions
-    designs_needing_questions = []
-    for design in original_designs:
-        design_hash = DesignEntry(design["content"]).hash
-        if design_hash not in designs_with_valid_questions:
-            designs_needing_questions.append(design)
-
-    print(f"Designs needing questions: {len(designs_needing_questions)}")
-
-    if not designs_needing_questions:
-        print("No designs need questions. All designs already have valid questions!")
         return []
 
-    # Create output directory for results
-    output_dir = Path("./results")
-    output_dir.mkdir(exist_ok=True)
 
-    # Process only designs that need questions
-    tasks = [
-        process_single_design_gpt5(design["content"], client, config) 
-        for design in designs_needing_questions
-    ]
-    
-    print(f"Processing {len(tasks)} designs with GPT-5 mutation pipeline")
-    results = await asyncio.gather(*tasks)
-    
-    # Flatten all questions from all designs into a single list
-    all_questions = []
-    successful_designs = 0
-    failed_designs = 0
-    
-    for result in results:
-        if "error" in result:
-            failed_designs += 1
-            continue
-        
-        successful_designs += 1
-        if "questions" in result and result["questions"] is not None:
-            all_questions.extend(result["questions"])
-    
-    # Save new questions to a separate file to avoid overwriting existing ones
-    gpt5_output_path = "./results/questions_gpt5.jsonl"
-    with open(gpt5_output_path, "w") as f:
-        for question in all_questions:
-            f.write(json.dumps(question, ensure_ascii=False) + "\n")
-    
-    # Print summary
-    print(f"\nGPT-5 Pipeline Summary:")
-    print(f"  Total designs processed: {len(results)}")
-    print(f"  Successful: {successful_designs}")
-    print(f"  Failed: {failed_designs}")
-    print(f"  Total questions generated: {len(all_questions)}")
-    print(f"  Output saved to: {gpt5_output_path}")
-    
-    return all_questions
+def write_jsonl(path: str, rows: List[dict]) -> None:
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "w", encoding="utf-8") as f:
+        for row in rows:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
 
-async def process_single_design_gpt5(verilog_code: str, client: LLMClient, config: Config):
-    """Process a single design through the complete mutation and question generation pipeline using GPT-5."""
+
+async def process_mutant(
+    mutant_code: str,
+    bug_type: str,
+    mutant_index: int,
+    original: DesignEntry,
+    client: LLMClient,
+    config: Config,
+    profile: Dict[str, tuple],
+    profile_name: str,
+) -> List[dict]:
+    """Generate and validate `questions_n` questions for one mutant."""
+    mutant_entry = DesignEntry(mutant_code)
+    q_model, q_model_id = profile["questions"]
+    v_model, v_model_id = profile["validation"]
+
+    gens = create_generators(mutant_entry, client, config)
+    raw = await asyncio.gather(
+        *[gens.qg.generate(model=q_model, model_id=q_model_id, temperature=0.6) for _ in range(config.questions_n)],
+        return_exceptions=True,
+    )
+
+    base = {
+        "mutant_code": mutant_code,
+        "mutant_hash": mutant_entry.hash,
+        "bug_type": bug_type,
+        "original_code": original.content,
+        "original_design_hash": original.hash,
+        "mutant_index": mutant_index,
+        "model_profile": profile_name,
+        "question_model": q_model_id or q_model,
+        "validation_model": v_model_id or v_model,
+    }
+
+    async def validate_one(j: int, question) -> dict:
+        row = {**base, "question_number": j + 1}
+        if isinstance(question, Exception) or not str(question).strip():
+            return {**row, "question_text": "", "question_valid": False, "solve_rate": 0.0,
+                    "answers": [], "answer_statuses": [], "proof_strength": None,
+                    "error": f"question generation failed: {question}"}
+        # Fresh generators per question: the validator only ever sees this question text.
+        qgens = create_generators(mutant_entry, client, config, question=question)
+        try:
+            await qgens.vqg.validate(model=v_model, model_id=v_model_id)
+            err = None
+        except Exception as e:
+            err = str(e)
+        v = qgens.vqg
+        out = {**row, "question_text": question, "question_valid": v.valid_question,
+               "solve_rate": v.solve_rate, "answers": v.generated_answers,
+               "answer_statuses": v.answer_statuses, "proof_strength": v.proof_strength}
+        if err:
+            out["error"] = err
+        return out
+
+    rows = await asyncio.gather(*[validate_one(j, q) for j, q in enumerate(raw)])
+    n_valid = sum(r["question_valid"] for r in rows)
+    print(f"    mutant {mutant_index} ({bug_type}): {n_valid}/{len(rows)} questions valid")
+    return list(rows)
+
+
+async def process_single_design(
+    verilog_code: str, client: LLMClient, config: Config, profile_name: str = "deepseek"
+) -> dict:
+    """Run the full mutation + question pipeline for one design."""
+    profile = PROFILES[profile_name]
     design_entry = DesignEntry(verilog_code)
-    
-    print(f"\nProcessing design with GPT-5: {design_entry.hash}")
-    print("-" * 60)
-    
+    print(f"\nProcessing design {design_entry.hash[:16]} [{profile_name}]")
+
     try:
-        # Create all generators
-        qg, ag, vqg, mg, mutg = create_generators(
-            design_entry=design_entry,
-            client=client,
-            config=config
+        gens = create_generators(design_entry, client, config)
+
+        b_model, b_model_id = profile["bugs"]
+        bug_categories = await gens.mg.generate_bug_categories(model=b_model, model_id=b_model_id, temperature=0.7)
+        print(f"  {len(bug_categories)} bug categories")
+
+        m_model, m_model_id = profile["mutants"]
+        mutants = await gens.mutg.generate_mutants(bug_categories, model=m_model, model_id=m_model_id, temperature=0.8)
+        rejections = getattr(gens.mutg, "rejections", [])
+        print(f"  {len(mutants)} mutants kept, {len(rejections)} rejected")
+
+        per_mutant = await asyncio.gather(
+            *[process_mutant(code, bug, i + 1, design_entry, client, config, profile, profile_name)
+              for i, (code, bug) in enumerate(mutants)],
+            return_exceptions=True,
         )
-        
-        print("  Generating bug categories with GPT-4o-mini...")
-        bug_categories = await mg.generate_bug_categories(model="gpt", model_id="gpt-4o-mini", temperature=0.7)
-        print(f"  Generated {len(bug_categories)} bug categories")
-        
-        print("  Generating mutants with GPT-5...")
-        mutants = await mutg.generate_mutants(bug_categories, model="gpt", model_id="gpt-5", temperature=0.8)
-        print(f"  Generated {len(mutants)} mutants")
-
-        print("  Generating questions for each mutant with GPT-5...")
-        async def generate_questions_for_mutant_gpt5(mutant_data, mutant_index):
-            """Generate questions for a single mutant using GPT-5."""
-            mutant_code, bug_type = mutant_data
-            print(f"    Processing mutant {mutant_index + 1} (bug: {bug_type})...")
-            
-            # Create a new design entry for the mutant
-            mutant_design_entry = DesignEntry(mutant_code)
-            
-            # Create generators for the mutant
-            mutant_qg, mutant_ag, mutant_vqg, _, _ = create_generators(
-                design_entry=mutant_design_entry,
-                client=client,
-                config=config
-            )
-            
-            # Generate questions for this mutant in parallel using GPT-5
-            question_tasks = [
-                mutant_qg.generate(model="gpt", model_id="gpt-5", temperature=0.6) 
-                for _ in range(config.questions_n)
-            ]
-            
-            try:
-                questions = await asyncio.gather(*question_tasks, return_exceptions=True)
-
-                # Prepare validation tasks for all questions
-                validation_tasks = []
-                valid_question_generators = []
-                for j, question in enumerate(questions):
-                    if isinstance(question, Exception):
-                        print(f"      Error generating question {j+1}: {question}")
-                        validation_tasks.append(None)
-                        valid_question_generators.append(None)
-                        continue
-                    
-                    question_design_entry = DesignEntry(mutant_code)
-                    
-                    question_qg, question_ag, question_vqg, _, _ = create_generators(
-                        design_entry=question_design_entry,
-                        client=client,
-                        config=config
-                    )
-                    
-                    # Set the question for the answer generator
-                    question_ag.question = question
-                    
-                    valid_question_generators.append((question_vqg, question_ag, question, j))
-                    validation_tasks.append(question_vqg.validate())
-
-                # Run all validations in parallel (skip None entries)
-                results = []
-                if validation_tasks:
-                    # Only run asyncio.gather on non-None tasks
-                    filtered_tasks = [task for task in validation_tasks if task is not None]
-                    validation_results = await asyncio.gather(*filtered_tasks, return_exceptions=True)
-                else:
-                    validation_results = []
-
-                mutant_questions = []
-                result_idx = 0
-                for idx, vqg_tuple in enumerate(valid_question_generators):
-                    if vqg_tuple is None:
-                        continue  # This was an exception in question generation
-                    question_vqg_instance, question_ag_instance, question, j = vqg_tuple
-                    validation_result = validation_results[result_idx]
-                    result_idx += 1
-                    
-                    try:
-                        if isinstance(validation_result, Exception):
-                            raise validation_result
-                        
-                        # Create question dictionary with all required information
-                        question_dict = {
-                            "question_valid": question_vqg_instance.valid_question,
-                            "question_text": question,
-                            "mutant_code": mutant_code,
-                            "bug_type": bug_type,
-                            "original_code": design_entry.content,
-                            "original_design_hash": design_entry.hash,
-                            "answers": question_vqg_instance.generated_answers,
-                            "question_number": j + 1,
-                            "mutant_index": mutant_index + 1,
-                            "model_used": "gpt-5"  # Track which model was used
-                        }
-                        
-                        mutant_questions.append(question_dict)
-                        print(f"      Completed question {j+1} with validation")
-                        
-                    except Exception as e:
-                        print(f"      Error processing question {j+1}: {e}")
-                        # Add question with error information
-                        question_dict = {
-                            "question_valid": False,
-                            "question_text": question,
-                            "mutant_code": mutant_code,
-                            "bug_type": bug_type,
-                            "original_code": design_entry.content,
-                            "original_design_hash": design_entry.hash,
-                            "answers": [],
-                            "validation_result": False,
-                            "question_number": j + 1,
-                            "mutant_index": mutant_index + 1,
-                            "error": str(e),
-                            "model_used": "gpt-5"
-                        }
-                        mutant_questions.append(question_dict)
-                        continue
-                
-                print(f"    Generated {len(mutant_questions)} questions for mutant {mutant_index + 1}")
-                return mutant_questions
-                
-            except Exception as e:
-                print(f"    Error processing mutant {mutant_index + 1}: {e}")
-                return []
-        
-        # Process all mutants in parallel
-        mutant_tasks = [
-            generate_questions_for_mutant_gpt5(mutant_data, i) 
-            for i, mutant_data in enumerate(mutants)
-        ]
-        
-        all_questions_lists = await asyncio.gather(*mutant_tasks, return_exceptions=True)
-        
-        # Flatten the results
-        all_questions = []
-        for questions_list in all_questions_lists:
-            if isinstance(questions_list, Exception):
-                print(f"  Error processing mutant: {questions_list}")
+        questions: List[dict] = []
+        for res in per_mutant:
+            if isinstance(res, Exception):
+                print(f"  error processing mutant: {res}")
                 continue
-            all_questions.extend(questions_list)
-        
-        # Store comprehensive results
-        result = {
-            "design_hash": design_entry.hash,
-            "original_code": verilog_code,
-            "bug_categories": bug_categories,
-            "mutants": [
-                {
-                    "bug_type": bug_type,
-                    "mutant_code": mutant_code,
-                    "code_length": len(mutant_code)
-                }
-                for mutant_code, bug_type in mutants
-            ],
-            "questions": all_questions,
-            "total_mutants": len(mutants),
-            "total_questions": len(all_questions),
-            "timestamp": asyncio.get_event_loop().time(),
-            "model_used": "gpt-5"
-        }
-        
-        print(f"  ✓ Successfully processed design with {len(mutants)} mutants and {len(all_questions)} questions")
-        return result
-        
-    except Exception as e:
-        print(f"  ✗ Error processing design: {e}")
-        print(traceback.format_exc())
+            questions.extend(res)
+
         return {
             "design_hash": design_entry.hash,
-            "error": str(e),
-            "timestamp": asyncio.get_event_loop().time(),
-            "model_used": "gpt-5"
+            "original_code": verilog_code,
+            "model_profile": profile_name,
+            "bug_categories": bug_categories,
+            "mutants": [{"bug_type": bug, "mutant_code": code} for code, bug in mutants],
+            "mutant_rejections": rejections,
+            "questions": questions,
+            "total_mutants": len(mutants),
+            "total_questions": len(questions),
+            "valid_questions": sum(q["question_valid"] for q in questions),
         }
+    except Exception as e:
+        print(f"  error processing design: {e}")
+        return {"design_hash": design_entry.hash, "model_profile": profile_name, "error": str(e)}
 
-async def test_mutation_pipeline():
-    """Test the complete mutation pipeline on sample designs."""
-    
+
+async def run(profile_name: str = "deepseek", only_missing: bool = False,
+              limit: int = 0, output_path: str = "") -> List[dict]:
     config = Config("config.yaml")
     client = LLMClient(config)
-    
-    # Sample designs to test
-    sample_designs = [
-        {
-            "name": "8-bit Adder",
-            "content": """module adder_8bit(
-    input [7:0] a,
-    input [7:0] b,
-    input cin,
-    output [7:0] sum,
-    output cout
-);
-    assign {cout, sum} = a + b + cin;
-endmodule"""
-        },
-        {
-            "name": "4-bit Counter",
-            "content": """module counter_4bit(
-    input clk,
-    input reset,
-    input enable,
-    output reg [3:0] count
-);
-    always @(posedge clk or posedge reset) begin
-        if (reset)
-            count <= 4'b0000;
-        else if (enable)
-            count <= count + 1'b1;
-    end
-endmodule"""
-        }
-    ]
-    
-    print(f"Testing mutation pipeline on {len(sample_designs)} sample designs...")
-    print("=" * 80)
-    
-    design_entry = DesignEntry(sample_designs[0]["content"])
+    output_path = output_path or (GPT5_OUTPUT_PATH if profile_name == "gpt5" else config.output_path)
 
-    # Create all generators
-    qg, ag, vqg, mg, mutg = create_generators(
-        design_entry=design_entry,
-        client=client,
-        config=config
-    )
-    
-    # Generate bug categories
-    print("  Generating bug categories...")
-    bug_categories = await mg.generate_bug_categories(model="deepseek", model_id="", temperature=0.7)
-    print(f"  Generated {len(bug_categories)} bug categories")
-    
-    # Generate mutants
-    print("  Generating mutants...")
-    mutants = await mutg.generate_mutants(bug_categories, model="deepseek", model_id="", temperature=0.8)
-    print(f"  Generated {len(mutants)} mutants")
-    
-    # Generate questions for each mutant in parallel
-    print("  Generating questions for each mutant...")
-    q_tasks = [qg.generate(model="deepseek", model_id="", temperature=0.6) for _ in range(2)]
-    questions = await asyncio.gather(*q_tasks, return_exceptions=True)
+    designs = read_jsonl(config.original_designs_path)
+    if only_missing:
+        covered = {q.get("original_design_hash") for q in read_jsonl(config.output_path) if q.get("question_valid")}
+        designs = [d for d in designs if DesignEntry(d["content"]).hash not in covered]
+        print(f"{len(designs)} designs have no valid questions yet")
+    if limit:
+        designs = designs[:limit]
+    if not designs:
+        print("Nothing to process.")
+        return []
 
+    print(f"Processing {len(designs)} designs with profile '{profile_name}'")
+    results = await asyncio.gather(*[process_single_design(d["content"], client, config, profile_name) for d in designs])
 
+    questions = [q for r in results if "error" not in r for q in r["questions"]]
+    write_jsonl(output_path, questions)
+    write_jsonl(str(Path(output_path).with_name(Path(output_path).stem + "_designs.jsonl")),
+                [{k: v for k, v in r.items() if k != "questions"} for r in results])
 
-    for question in questions:
-        print(question)
-
-    # Validate questions
-    v_tasks = [vqg.validate() for _ in range(2)]
-    v_results = await asyncio.gather(*v_tasks, return_exceptions=True)
-    for v_result in v_results:
-        print(v_result)
-        print("-" * 50)
-
+    valid = [q for q in questions if q["question_valid"]]
+    tasks = {(q["original_design_hash"], q["mutant_hash"]) for q in valid}
+    failed = sum("error" in r for r in results)
+    print("\nSummary:")
+    print(f"  designs: {len(results)} ({failed} failed)")
+    print(f"  mutants kept: {sum(r.get('total_mutants', 0) for r in results)}")
+    print(f"  questions: {len(questions)} ({len(valid)} valid)")
+    print(f"  distinct valid tasks (design, mutant): {len(tasks)}")
+    print(f"  proven vs bounded: {sum(q['proof_strength'] == 'proven' for q in valid)} / "
+          f"{sum(q['proof_strength'] == 'bounded' for q in valid)}")
+    print(f"  written to {output_path}")
     return questions
 
-async def combine_questions():
-    """Combine existing questions with new GPT-5 questions."""
-    config = Config("config.yaml")
-    
-    # Load existing questions
-    all_existing_questions = []
-    try:
-        with open(config.output_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    all_existing_questions.append(json.loads(line))
-        print(f"Loaded {len(all_existing_questions)} existing questions")
-    except FileNotFoundError:
-        print(f"No existing questions file found at {config.output_path}")
-        all_existing_questions = []
-    
-    # Load new GPT-5 questions
-    new_questions = []
-    try:
-        with open("./results/questions_gpt5.jsonl", "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    new_questions.append(json.loads(line))
-        print(f"Loaded {len(new_questions)} new GPT-5 questions")
-    except FileNotFoundError:
-        print("No new GPT-5 questions file found")
-        new_questions = []
-    
-    if not new_questions:
-        print("No new questions to combine.")
-        return
-    
-    # Combine all questions
-    combined_questions = all_existing_questions + new_questions
-    
-    # Save combined questions
-    combined_output_path = "./results/questions_combined.jsonl"
-    with open(combined_output_path, "w") as f:
-        for question in combined_questions:
-            f.write(json.dumps(question, ensure_ascii=False) + "\n")
-    
-    print(f"Combined {len(all_existing_questions)} existing questions with {len(new_questions)} new questions")
-    print(f"Total questions: {len(combined_questions)}")
-    print(f"Combined output saved to: {combined_output_path}")
-    
-    # Show statistics
-    valid_questions = [q for q in combined_questions if q.get('question_valid', False)]
-    gpt5_questions = [q for q in combined_questions if q.get('model_used') == 'gpt-5']
-    other_model_questions = [q for q in combined_questions if q.get('model_used') != 'gpt-5']
-    
-    print(f"\nStatistics:")
-    print(f"  Total questions: {len(combined_questions)}")
-    print(f"  Valid questions: {len(valid_questions)}")
-    print(f"  GPT-5 questions: {len(gpt5_questions)}")
-    print(f"  Other model questions: {len(other_model_questions)}")
 
-async def test_bug_generation():
-    """Test function that only generates 5 bug types for the first instance in the loaded designs."""
+def combine_questions() -> None:
+    """Merge the main output with the GPT-5 output into results/questions_combined.jsonl."""
     config = Config("config.yaml")
-    client = LLMClient(config)
-    
-    # Load original designs
-    with open(config.original_designs_path, "r") as f:
-        original_designs = [json.loads(line) for line in f]
-    
-    if not original_designs:
-        print("No designs found to test with.")
+    existing = read_jsonl(config.output_path)
+    new = read_jsonl(GPT5_OUTPUT_PATH)
+    if not new:
+        print("No GPT-5 questions to combine.")
         return
-    
-    # Get the first design
-    first_design = original_designs[0]
-    design_entry = DesignEntry(first_design["content"])
-    
-    print(f"Testing bug generation on first design:")
-    print(f"  Hash: {design_entry.hash}")
-    print(f"  Content preview: {first_design['content'][:100]}...")
-    print("-" * 60)
-    
-    try:
-        # Create mutation generator
-        qg, ag, vqg, mg, mutg = create_generators(
-            design_entry=design_entry,
-            client=client,
-            config=config
-        )
-        
-        # Temporarily override the number of bug categories to generate only 5
-        original_n = mg.n
-        mg.n = 5
-        
-        print(f"Generating exactly 5 bug categories for this design...")
-        bug_categories = await mg.generate_bug_categories(model="gpt", model_id="gpt-4o-mini", temperature=0.7)
-        
-        print(f"\nGenerated {len(bug_categories)} bug categories:")
-        print("=" * 60)
-        
-        for i, bug in enumerate(bug_categories, 1):
-            print(f"{i}. Bug Type: {bug['bug_type']}")
-            print(f"   Description: {bug['description']}")
-            print(f"   Applicability: {bug['applicability']}")
-            print()
-        
-        # Restore original n value
-        mg.n = original_n
-        
-        print(f"✓ Successfully generated {len(bug_categories)} bug categories")
-        return bug_categories
-        
-    except Exception as e:
-        print(f"✗ Error testing bug generation: {e}")
-        print(traceback.format_exc())
-        return []
+    combined = existing + new
+    out = "./results/questions_combined.jsonl"
+    write_jsonl(out, combined)
+    valid = sum(q.get("question_valid", False) for q in combined)
+    print(f"Combined {len(existing)} + {len(new)} = {len(combined)} questions ({valid} valid) -> {out}")
 
-async def test_mutant_generation():
-    """Test function that only generates 2 mutants for the first instance in the loaded designs."""
-    config = Config("config.yaml")
-    client = LLMClient(config)
-    
-    # Load original designs
-    with open(config.original_designs_path, "r") as f:
-        original_designs = [json.loads(line) for line in f]
-    
-    if not original_designs:
-        print("No designs found to test with.")
-        return
-    
-    # Get the first design
-    first_design = original_designs[0]
-    design_entry = DesignEntry(first_design["content"])
-    
-    print(f"Testing mutant generation on first design:")
-    print(f"  Hash: {design_entry.hash}")
-    print(f"  Content preview: {first_design['content'][:100]}...")
-    print("-" * 60)
-    
-    # Create mutation generator
-    qg, ag, vqg, mg, mutg = create_generators(
-        design_entry=design_entry,
-        client=client,
-        config=config,
-    )
-    
-    # Temporarily override the number of mutants to generate only 2
-    original_n = mutg.n
-    mutg.n = 2
-    
-    bug_categories = await test_bug_generation()
-    mutants = await mutg.generate_mutants(bug_categories, model="deepseek", model_id="", temperature=0.8)
-    print(f"  Generated {len(mutants)} mutants")
-    print(mutants)
 
-        
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    sub = parser.add_subparsers(dest="cmd", required=True)
+    r = sub.add_parser("run", help="run the mutation + question pipeline")
+    r.add_argument("--profile", choices=sorted(PROFILES), default="deepseek")
+    r.add_argument("--only-missing", action="store_true", help="skip designs that already have a valid question")
+    r.add_argument("--limit", type=int, default=0, help="process only the first N designs")
+    r.add_argument("--output", default="", help="output JSONL path")
+    sub.add_parser("combine", help="merge main and GPT-5 outputs")
+    args = parser.parse_args()
+
+    start = time.time()
+    if args.cmd == "run":
+        asyncio.run(run(args.profile, args.only_missing, args.limit, args.output))
+    else:
+        combine_questions()
+    print(f"Done in {time.time() - start:.1f}s")
 
 
 if __name__ == "__main__":
-    
-    import time
-    import sys
-
-    # Check command line arguments to determine which pipeline to run
-    
-    start_time = time.time()
-    
-    # if pipeline_type == "original":
-    #     print("Running original pipeline with DeepSeek models...")
-    #     asyncio.run(run())
-    # elif pipeline_type == "gpt5":
-    #     print("Running GPT-5 pipeline for designs without valid questions...")
-    # Uncomment the pipeline you want to run:
-    
-    # Run the GPT-5 pipeline for designs without valid questions
-    asyncio.run(run_gpt5_pipeline())
-
-    # asyncio.run(test_mutant_generation())
-    
-    # Or run the bug generation test (uncomment the line below)
-    # asyncio.run(test_bug_generation())
-    
-    # Or run the original pipeline (uncomment the line below)
-    # asyncio.run(run())
-    
-    # Or run the test pipeline (uncomment the line below)
-    # asyncio.run(test_mutation_pipeline())
-    
-    # Or combine questions (uncomment the line below)
-    # asyncio.run(combine_questions())
-    # elif pipeline_type == "test":
-    #     print("Running test pipeline on sample designs...")
-    #     asyncio.run(test_mutation_pipeline())
-    # elif pipeline_type == "combine":
-    #     print("Combining existing questions with new GPT-5 questions...")
-    #     asyncio.run(combine_questions())
-    # else:
-    #     print(f"Unknown pipeline type: {pipeline_type}")
-    #     print("Run 'python main.py help' for available options")
-    #     sys.exit(1)
-    
-    end_time = time.time()
-    print(f"Total runtime duration: {end_time - start_time:.2f} seconds")
+    main()

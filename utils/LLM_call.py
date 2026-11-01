@@ -34,13 +34,20 @@ class LLMClient:
         config - Config object containing API keys and other configuration
         """
         self.limiter = Limiter(config.calls_per_min/60)
-        self.deepseek_client = OpenAI(api_key=config.deepseek_api_key, base_url="https://api.deepseek.com")
-        self.claude_client = anthropic.Anthropic(api_key=config.claude_api_key)
-        self.claude_models = [model_id.id for model_id in self.claude_client.models.list(limit=20)]
-        genai.configure(api_key=config.gemini_api_key)
+        # Unset keys get a placeholder so every client can be constructed; calls to a
+        # provider you haven't configured still fail with an auth error when made.
+        key = lambda name: getattr(config, name, None) or "not-set"
+        self.deepseek_client = OpenAI(api_key=key("deepseek_api_key"), base_url="https://api.deepseek.com")
+        self.claude_client = anthropic.Anthropic(api_key=key("claude_api_key"))
+        try:
+            self.claude_models = [model_id.id for model_id in self.claude_client.models.list(limit=20)]
+        except Exception:
+            # Don't require a working Anthropic key for profiles that never call Claude.
+            self.claude_models = []
+        genai.configure(api_key=key("gemini_api_key"))
         self.gemini_client = genai
         self.gemini_models = ["gemini-2.5-flash", "gemini-2.5-pro", "gemini-2.0-flash", "gemini-2.5-flash-lite"]
-        self.gpt_client = OpenAI(api_key=config.gpt_api_key, base_url="https://api.openai.com/v1")
+        self.gpt_client = OpenAI(api_key=key("gpt_api_key"), base_url="https://api.openai.com/v1")
         self.gpt_models = ["gpt-5", "gpt-4o-mini", "gpt-4", "gpt-4o", "gpt-3.5-turbo"]
 
     async def call(self, msg: str | List[Dict[str, str]], model: str="deepseek", model_id: str="", temperature: float=0.8, gpt_json_schema: Optional[BaseModel] = None) -> None:
