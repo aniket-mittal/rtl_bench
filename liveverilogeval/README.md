@@ -26,7 +26,7 @@ python run_benchmark.py results/questions.jsonl --model deepseek --k 5
 python -W ignore test_pipeline_offline.py # offline end-to-end test (fake LLM, real Yosys)
 ```
 
-Output goes to `results/questions.jsonl`. The JSONL files already in `results/` predate the current equivalence checker, so regenerate before trusting their `question_valid` labels.
+Output goes to `results/questions.jsonl` (not tracked in git; regenerate locally).
 
 ## Credits
 

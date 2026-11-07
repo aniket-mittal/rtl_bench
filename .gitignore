@@ -1,3 +1,22 @@
+# Python
 __pycache__/
 *.pyc
+.venv/
+venv/
+*.egg-info/
+
+# OS / editor
 .DS_Store
+.nvim/
+.vscode/
+.idea/
+
+# Secrets
+config.yaml
+.env
+
+# Simulation / EDA output
+*.vcd
+*.fst
+*.log
+obj_dir/
