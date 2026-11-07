@@ -1,0 +1,291 @@
+[2025-08-13 21:44:37] [INFO] ==================================================
+[2025-08-13 21:44:37] [INFO] LLM API CALL
+[2025-08-13 21:44:37] [INFO] Messages: [{'role': 'system', 'content': "You are an expert hardware verification engineer specializing in RTL design analysis.\nYour task is to analyze Verilog code and identify realistic bug categories that could\nbe introduced into the design. Focus on practical, implementable bugs that would\nactually break the design's functionality."}, {'role': 'user', 'content': "Analyze the following Verilog module and generate 5 realistic bug types\nthat could be introduced into this specific design. Each bug category should include:\n\n1. A general bug type (e.g., 'bit width mismatch', 'reset logic error')\n2. A specific implementation detail relevant to this design\nFocus on bugs that are:\n- Technically feasible to implement\n- Would change the design's functionality while still being valid Verilog\n- Relevant to the specific characteristics of this design\n- Common in real RTL development\n\nReturn ONLY the bug categories between the exact markers below.\nEach category should be on its own line with the format:\nBUG_TYPE: DESCRIPTION\n\nBUG CATEGORIES BEGIN\n<write the bug categories here>\nBUG CATEGORIES END\n\nTarget Verilog module to analyze:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:44:37] [INFO] Response: BUG CATEGORIES BEGIN
+BIT WIDTH MISMATCH: Incorrect output width declaration where 'sum' is declared as 8-bit but the addition could produce a 9-bit result including carry
+RESET LOGIC ERROR: Missing reset condition for 'cout' output which could lead to X-propagation in simulation
+OPERATOR PRECEDENCE ERROR: Incorrect grouping of addition operations (a + b + cin) which might be interpreted differently by synthesis tools
+SIGNED/UNSIGNED MISMATCH: Implicit unsigned addition when inputs might need to be treated as signed numbers
+CONTROL SIGNAL OVERSIGHT: Missing enable signal for the adder which could cause unnecessary power consumption during idle states
+BUG CATEGORIES END
+[2025-08-13 21:44:37] [INFO] Metadata: {'messages': [{'role': 'system', 'content': "You are an expert hardware verification engineer specializing in RTL design analysis.\nYour task is to analyze Verilog code and identify realistic bug categories that could\nbe introduced into the design. Focus on practical, implementable bugs that would\nactually break the design's functionality."}, {'role': 'user', 'content': "Analyze the following Verilog module and generate 5 realistic bug types\nthat could be introduced into this specific design. Each bug category should include:\n\n1. A general bug type (e.g., 'bit width mismatch', 'reset logic error')\n2. A specific implementation detail relevant to this design\nFocus on bugs that are:\n- Technically feasible to implement\n- Would change the design's functionality while still being valid Verilog\n- Relevant to the specific characteristics of this design\n- Common in real RTL development\n\nReturn ONLY the bug categories between the exact markers below.\nEach category should be on its own line with the format:\nBUG_TYPE: DESCRIPTION\n\nBUG CATEGORIES BEGIN\n<write the bug categories here>\nBUG CATEGORIES END\n\nTarget Verilog module to analyze:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146667.637399, 'execution_time': 10.334019184112549, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 152, 'prompt_tokens': 289, 'total_tokens': 441}}
+[2025-08-13 21:44:37] [INFO] ==================================================
+[2025-08-13 21:44:37] [INFO] Generated bug categories text: BIT WIDTH MISMATCH: Incorrect output width declaration where 'sum' is declared as 8-bit but the addition could produce a 9-bit result including carry
+RESET LOGIC ERROR: Missing reset condition for 'co...
+[2025-08-13 21:44:37] [INFO] Parsed 5 bug categories from LLM response
+[2025-08-13 21:44:37] [INFO] Selected 3 bug categories for mutation generation
+[2025-08-13 21:44:37] [INFO] Generating mutant 1 for bug: CONTROL SIGNAL OVERSIGHT: Missing enable signal for the adder which could cause unnecessary power consumption during idle states
+[2025-08-13 21:44:49] [INFO] ==================================================
+[2025-08-13 21:44:49] [INFO] LLM API CALL
+[2025-08-13 21:44:49] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: CONTROL SIGNAL OVERSIGHT: Missing enable signal for the adder which could cause unnecessary power consumption during idle states\nBUG DESCRIPTION: Introduce control signal oversight: missing enable signal for the adder which could cause unnecessary power consumption during idle states in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:44:49] [INFO] Response: Here's the mutant version with the control signal oversight bug:
+
+MUTANT VERILOG BEGIN
+module adder_8bit(
+    input [7:0] a,
+    input [7:0] b,
+    input cin,
+    input enable,  // Added enable signal but not used
+    output [7:0] sum,
+    output cout
+);
+    assign {cout, sum} = a + b + cin;  // Missing enable condition - adder always active
+endmodule
+MUTANT VERILOG END
+
+The mutant:
+1. Adds an enable input signal (realistic control signal that should be there)
+2. Fails to use it to gate the adder operation (the bug)
+3. Maintains the same core functionality but now wastes power when enable=0
+4. Keeps the same interface except for the added enable signal (which is realistic)
+5. The code remains valid and compilable Verilog
+[2025-08-13 21:44:49] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: CONTROL SIGNAL OVERSIGHT: Missing enable signal for the adder which could cause unnecessary power consumption during idle states\nBUG DESCRIPTION: Introduce control signal oversight: missing enable signal for the adder which could cause unnecessary power consumption during idle states in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146677.974016, 'execution_time': 11.532377243041992, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 193, 'prompt_tokens': 302, 'total_tokens': 495}}
+[2025-08-13 21:44:49] [INFO] ==================================================
+[2025-08-13 21:44:49] [INFO] Successfully standardized mutant code for CONTROL SIGNAL OVERSIGHT: Missing enable signal for the adder which could cause unnecessary power consumption during idle states
+[2025-08-13 21:44:49] [INFO] Successfully generated mutant 1
+[2025-08-13 21:44:49] [INFO] Generating mutant 2 for bug: OPERATOR PRECEDENCE ERROR: Incorrect grouping of addition operations (a + b + cin) which might be interpreted differently by synthesis tools
+[2025-08-13 21:44:56] [INFO] ==================================================
+[2025-08-13 21:44:56] [INFO] LLM API CALL
+[2025-08-13 21:44:56] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: OPERATOR PRECEDENCE ERROR: Incorrect grouping of addition operations (a + b + cin) which might be interpreted differently by synthesis tools\nBUG DESCRIPTION: Introduce operator precedence error: incorrect grouping of addition operations (a + b + cin) which might be interpreted differently by synthesis tools in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:44:56] [INFO] Response: MUTANT VERILOG BEGIN
+module adder_8bit(
+    input [7:0] a,
+    input [7:0] b,
+    input cin,
+    output [7:0] sum,
+    output cout
+);
+    assign {cout, sum} = a + (b + cin);
+endmodule
+MUTANT VERILOG END
+[2025-08-13 21:44:56] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: OPERATOR PRECEDENCE ERROR: Incorrect grouping of addition operations (a + b + cin) which might be interpreted differently by synthesis tools\nBUG DESCRIPTION: Introduce operator precedence error: incorrect grouping of addition operations (a + b + cin) which might be interpreted differently by synthesis tools in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146689.917613, 'execution_time': 6.2921600341796875, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 75, 'prompt_tokens': 313, 'total_tokens': 388}}
+[2025-08-13 21:44:56] [INFO] ==================================================
+[2025-08-13 21:44:56] [INFO] Successfully standardized mutant code for OPERATOR PRECEDENCE ERROR: Incorrect grouping of addition operations (a + b + cin) which might be interpreted differently by synthesis tools
+[2025-08-13 21:44:56] [INFO] Successfully generated mutant 2
+[2025-08-13 21:44:56] [INFO] Generating mutant 3 for bug: SIGNED/UNSIGNED MISMATCH: Implicit unsigned addition when inputs might need to be treated as signed numbers
+[2025-08-13 21:45:09] [INFO] ==================================================
+[2025-08-13 21:45:09] [INFO] LLM API CALL
+[2025-08-13 21:45:09] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: SIGNED/UNSIGNED MISMATCH: Implicit unsigned addition when inputs might need to be treated as signed numbers\nBUG DESCRIPTION: Introduce signed/unsigned mismatch: implicit unsigned addition when inputs might need to be treated as signed numbers in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:45:09] [INFO] Response: Here's the mutant version with a signed/unsigned mismatch bug introduced:
+
+MUTANT VERILOG BEGIN
+module adder_8bit(
+    input [7:0] a,
+    input [7:0] b,
+    input cin,
+    output [7:0] sum,
+    output cout
+);
+    wire signed [7:0] a_signed = a;
+    wire signed [7:0] b_signed = b;
+    assign {cout, sum} = a_signed + b_signed + cin;  // Signed inputs but unsigned addition
+endmodule
+MUTANT VERILOG END
+
+The bug is introduced by:
+1. Converting the inputs to signed wires
+2. Performing unsigned addition on potentially signed values (the addition operation remains unsigned by default)
+3. This creates a mismatch where the inputs could be interpreted as signed numbers but the addition is performed as unsigned, which would give incorrect results for negative numbers
+[2025-08-13 21:45:09] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: SIGNED/UNSIGNED MISMATCH: Implicit unsigned addition when inputs might need to be treated as signed numbers\nBUG DESCRIPTION: Introduce signed/unsigned mismatch: implicit unsigned addition when inputs might need to be treated as signed numbers in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule adder_8bit(\n    input [7:0] a,\n    input [7:0] b,\n    input cin,\n    output [7:0] sum,\n    output cout\n);\n    assign {cout, sum} = a + b + cin;\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146696.6385741, 'execution_time': 12.727391004562378, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 193, 'prompt_tokens': 303, 'total_tokens': 496}}
+[2025-08-13 21:45:09] [INFO] ==================================================
+[2025-08-13 21:45:09] [INFO] Successfully standardized mutant code for SIGNED/UNSIGNED MISMATCH: Implicit unsigned addition when inputs might need to be treated as signed numbers
+[2025-08-13 21:45:09] [INFO] Successfully generated mutant 3
+[2025-08-13 21:45:09] [INFO] Generated 3 successful mutants out of 3 attempts
+[2025-08-13 21:45:18] [INFO] ==================================================
+[2025-08-13 21:45:18] [INFO] LLM API CALL
+[2025-08-13 21:45:18] [INFO] Messages: [{'role': 'system', 'content': "You are an expert hardware verification engineer specializing in RTL design analysis.\nYour task is to analyze Verilog code and identify realistic bug categories that could\nbe introduced into the design. Focus on practical, implementable bugs that would\nactually break the design's functionality."}, {'role': 'user', 'content': "Analyze the following Verilog module and generate 5 realistic bug types\nthat could be introduced into this specific design. Each bug category should include:\n\n1. A general bug type (e.g., 'bit width mismatch', 'reset logic error')\n2. A specific implementation detail relevant to this design\nFocus on bugs that are:\n- Technically feasible to implement\n- Would change the design's functionality while still being valid Verilog\n- Relevant to the specific characteristics of this design\n- Common in real RTL development\n\nReturn ONLY the bug categories between the exact markers below.\nEach category should be on its own line with the format:\nBUG_TYPE: DESCRIPTION\n\nBUG CATEGORIES BEGIN\n<write the bug categories here>\nBUG CATEGORIES END\n\nTarget Verilog module to analyze:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:45:18] [INFO] Response: BUG CATEGORIES BEGIN
+RESET LOGIC ERROR: Missing else clause could cause latch inference when neither reset nor enable is active
+BIT WIDTH MISMATCH: Adding 1'b1 to 4-bit count without explicit width casting could cause simulation/synthesis mismatch
+ASYNCHRONOUS RESET ISSUE: Using posedge reset without proper synchronization could cause metastability
+ENABLE SIGNAL RACE: Enable signal not synchronized to clock domain could cause counting glitches
+COUNT OVERFLOW: No overflow protection could cause unexpected wrap-around behavior
+BUG CATEGORIES END
+[2025-08-13 21:45:18] [INFO] Metadata: {'messages': [{'role': 'system', 'content': "You are an expert hardware verification engineer specializing in RTL design analysis.\nYour task is to analyze Verilog code and identify realistic bug categories that could\nbe introduced into the design. Focus on practical, implementable bugs that would\nactually break the design's functionality."}, {'role': 'user', 'content': "Analyze the following Verilog module and generate 5 realistic bug types\nthat could be introduced into this specific design. Each bug category should include:\n\n1. A general bug type (e.g., 'bit width mismatch', 'reset logic error')\n2. A specific implementation detail relevant to this design\nFocus on bugs that are:\n- Technically feasible to implement\n- Would change the design's functionality while still being valid Verilog\n- Relevant to the specific characteristics of this design\n- Common in real RTL development\n\nReturn ONLY the bug categories between the exact markers below.\nEach category should be on its own line with the format:\nBUG_TYPE: DESCRIPTION\n\nBUG CATEGORIES BEGIN\n<write the bug categories here>\nBUG CATEGORIES END\n\nTarget Verilog module to analyze:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146709.8003788, 'execution_time': 8.532669305801392, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 117, 'prompt_tokens': 311, 'total_tokens': 428}}
+[2025-08-13 21:45:18] [INFO] ==================================================
+[2025-08-13 21:45:18] [INFO] Generated bug categories text: RESET LOGIC ERROR: Missing else clause could cause latch inference when neither reset nor enable is active
+BIT WIDTH MISMATCH: Adding 1'b1 to 4-bit count without explicit width casting could cause sim...
+[2025-08-13 21:45:18] [INFO] Parsed 5 bug categories from LLM response
+[2025-08-13 21:45:18] [INFO] Selected 3 bug categories for mutation generation
+[2025-08-13 21:45:18] [INFO] Generating mutant 1 for bug: COUNT OVERFLOW: No overflow protection could cause unexpected wrap-around behavior
+[2025-08-13 21:45:30] [INFO] ==================================================
+[2025-08-13 21:45:30] [INFO] LLM API CALL
+[2025-08-13 21:45:30] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: COUNT OVERFLOW: No overflow protection could cause unexpected wrap-around behavior\nBUG DESCRIPTION: Introduce count overflow: no overflow protection could cause unexpected wrap-around behavior in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:45:30] [INFO] Response: Here's the mutant version with the count overflow bug introduced:
+
+MUTANT VERILOG BEGIN
+module counter_4bit(
+    input clk,
+    input reset,
+    input enable,
+    output reg [3:0] count
+);
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            count <= 4'b0000;
+        else if (enable)
+            count <= count + 1'b1; // No overflow check - will wrap around from 1111 to 0000
+    end
+endmodule
+MUTANT VERILOG END
+
+The mutant removes any overflow protection that might have been intended (though not present in the original code either). The counter will now wrap around from 15 (4'b1111) to 0 (4'b0000) when incremented, which could cause unexpected behavior in systems that rely on the counter maintaining its maximum value. This is a realistic bug as many designs require counters to saturate at their maximum value rather than wrap around.
+[2025-08-13 21:45:30] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: COUNT OVERFLOW: No overflow protection could cause unexpected wrap-around behavior\nBUG DESCRIPTION: Introduce count overflow: no overflow protection could cause unexpected wrap-around behavior in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146718.334636, 'execution_time': 12.049576044082642, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 214, 'prompt_tokens': 308, 'total_tokens': 522}}
+[2025-08-13 21:45:30] [INFO] ==================================================
+[2025-08-13 21:45:30] [INFO] Successfully standardized mutant code for COUNT OVERFLOW: No overflow protection could cause unexpected wrap-around behavior
+[2025-08-13 21:45:30] [INFO] Successfully generated mutant 1
+[2025-08-13 21:45:30] [INFO] Generating mutant 2 for bug: RESET LOGIC ERROR: Missing else clause could cause latch inference when neither reset nor enable is active
+[2025-08-13 21:45:43] [INFO] ==================================================
+[2025-08-13 21:45:43] [INFO] LLM API CALL
+[2025-08-13 21:45:43] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: RESET LOGIC ERROR: Missing else clause could cause latch inference when neither reset nor enable is active\nBUG DESCRIPTION: Introduce reset logic error: missing else clause could cause latch inference when neither reset nor enable is active in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:45:43] [INFO] Response: Here's the mutant version with the reset logic error introduced:
+
+MUTANT VERILOG BEGIN
+module counter_4bit(
+    input clk,
+    input reset,
+    input enable,
+    output reg [3:0] count
+);
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            count <= 4'b0000;
+        if (enable)  // Changed from else if to just if - now missing else clause
+            count <= count + 1'b1;
+    end
+endmodule
+MUTANT VERILOG END
+
+The bug was introduced by:
+1. Changing "else if (enable)" to just "if (enable)"
+2. This creates a situation where when neither reset nor enable is active, the count register will infer a latch because its value isn't explicitly set in all possible branches
+3. The code remains syntactically valid and compilable, but now has different behavior where the counter might not hold its value properly when enable is low and reset is not active
+[2025-08-13 21:45:43] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: RESET LOGIC ERROR: Missing else clause could cause latch inference when neither reset nor enable is active\nBUG DESCRIPTION: Introduce reset logic error: missing else clause could cause latch inference when neither reset nor enable is active in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146730.806946, 'execution_time': 12.867576837539673, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 216, 'prompt_tokens': 320, 'total_tokens': 536}}
+[2025-08-13 21:45:43] [INFO] ==================================================
+[2025-08-13 21:45:44] [INFO] Successfully standardized mutant code for RESET LOGIC ERROR: Missing else clause could cause latch inference when neither reset nor enable is active
+[2025-08-13 21:45:44] [INFO] Successfully generated mutant 2
+[2025-08-13 21:45:44] [INFO] Generating mutant 3 for bug: BIT WIDTH MISMATCH: Adding 1'b1 to 4-bit count without explicit width casting could cause simulation/synthesis mismatch
+[2025-08-13 21:45:51] [INFO] ==================================================
+[2025-08-13 21:45:51] [INFO] LLM API CALL
+[2025-08-13 21:45:51] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: BIT WIDTH MISMATCH: Adding 1'b1 to 4-bit count without explicit width casting could cause simulation/synthesis mismatch\nBUG DESCRIPTION: Introduce bit width mismatch: adding 1'b1 to 4-bit count without explicit width casting could cause simulation/synthesis mismatch in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:45:51] [INFO] Response: MUTANT VERILOG BEGIN
+module counter_4bit(
+    input clk,
+    input reset,
+    input enable,
+    output reg [3:0] count
+);
+    always @(posedge clk or posedge reset) begin
+        if (reset)
+            count <= 4'b0000;
+        else if (enable)
+            count <= count + 1;  // Changed from 1'b1 to 1, creating potential width mismatch
+    end
+endmodule
+MUTANT VERILOG END
+[2025-08-13 21:45:51] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: BIT WIDTH MISMATCH: Adding 1'b1 to 4-bit count without explicit width casting could cause simulation/synthesis mismatch\nBUG DESCRIPTION: Introduce bit width mismatch: adding 1'b1 to 4-bit count without explicit width casting could cause simulation/synthesis mismatch in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule counter_4bit(\n    input clk,\n    input reset,\n    input enable,\n    output reg [3:0] count\n);\n    always @(posedge clk or posedge reset) begin\n        if (reset)\n            count <= 4'b0000;\n        else if (enable)\n            count <= count + 1'b1;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146744.0970361, 'execution_time': 7.82514500617981, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 111, 'prompt_tokens': 333, 'total_tokens': 444}}
+[2025-08-13 21:45:51] [INFO] ==================================================
+[2025-08-13 21:45:52] [INFO] Successfully standardized mutant code for BIT WIDTH MISMATCH: Adding 1'b1 to 4-bit count without explicit width casting could cause simulation/synthesis mismatch
+[2025-08-13 21:45:52] [INFO] Successfully generated mutant 3
+[2025-08-13 21:45:52] [INFO] Generated 3 successful mutants out of 3 attempts
+[2025-08-13 21:46:01] [INFO] ==================================================
+[2025-08-13 21:46:01] [INFO] LLM API CALL
+[2025-08-13 21:46:01] [INFO] Messages: [{'role': 'system', 'content': "You are an expert hardware verification engineer specializing in RTL design analysis.\nYour task is to analyze Verilog code and identify realistic bug categories that could\nbe introduced into the design. Focus on practical, implementable bugs that would\nactually break the design's functionality."}, {'role': 'user', 'content': "Analyze the following Verilog module and generate 5 realistic bug types\nthat could be introduced into this specific design. Each bug category should include:\n\n1. A general bug type (e.g., 'bit width mismatch', 'reset logic error')\n2. A specific implementation detail relevant to this design\nFocus on bugs that are:\n- Technically feasible to implement\n- Would change the design's functionality while still being valid Verilog\n- Relevant to the specific characteristics of this design\n- Common in real RTL development\n\nReturn ONLY the bug categories between the exact markers below.\nEach category should be on its own line with the format:\nBUG_TYPE: DESCRIPTION\n\nBUG CATEGORIES BEGIN\n<write the bug categories here>\nBUG CATEGORIES END\n\nTarget Verilog module to analyze:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:46:01] [INFO] Response: BUG CATEGORIES BEGIN
+bit width mismatch: Output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching
+incomplete sensitivity list: Missing 'sel' in the sensitivity list could cause simulation vs synthesis mismatch
+default case missing: No default assignment to 'out' could lead to latch inference in some tool interpretations
+polarity error: Inverted 'sel' condition (if (!sel)) would swap the selection logic
+blocking/non-blocking misuse: Using blocking assignment (=) instead of non-blocking (<=) in sequential logic could cause race conditions
+BUG CATEGORIES END
+[2025-08-13 21:46:01] [INFO] Metadata: {'messages': [{'role': 'system', 'content': "You are an expert hardware verification engineer specializing in RTL design analysis.\nYour task is to analyze Verilog code and identify realistic bug categories that could\nbe introduced into the design. Focus on practical, implementable bugs that would\nactually break the design's functionality."}, {'role': 'user', 'content': "Analyze the following Verilog module and generate 5 realistic bug types\nthat could be introduced into this specific design. Each bug category should include:\n\n1. A general bug type (e.g., 'bit width mismatch', 'reset logic error')\n2. A specific implementation detail relevant to this design\nFocus on bugs that are:\n- Technically feasible to implement\n- Would change the design's functionality while still being valid Verilog\n- Relevant to the specific characteristics of this design\n- Common in real RTL development\n\nReturn ONLY the bug categories between the exact markers below.\nEach category should be on its own line with the format:\nBUG_TYPE: DESCRIPTION\n\nBUG CATEGORIES BEGIN\n<write the bug categories here>\nBUG CATEGORIES END\n\nTarget Verilog module to analyze:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146752.353911, 'execution_time': 9.34136414527893, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 130, 'prompt_tokens': 301, 'total_tokens': 431}}
+[2025-08-13 21:46:01] [INFO] ==================================================
+[2025-08-13 21:46:01] [INFO] Generated bug categories text: bit width mismatch: Output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching
+incomplete sensitivity list: Missing 'sel' in the sensitivity list could cause simulati...
+[2025-08-13 21:46:01] [INFO] Parsed 5 bug categories from LLM response
+[2025-08-13 21:46:01] [INFO] Selected 3 bug categories for mutation generation
+[2025-08-13 21:46:01] [INFO] Generating mutant 1 for bug: incomplete sensitivity list: Missing 'sel' in the sensitivity list could cause simulation vs synthesis mismatch
+[2025-08-13 21:46:12] [INFO] ==================================================
+[2025-08-13 21:46:12] [INFO] LLM API CALL
+[2025-08-13 21:46:12] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: incomplete sensitivity list: Missing 'sel' in the sensitivity list could cause simulation vs synthesis mismatch\nBUG DESCRIPTION: Introduce incomplete sensitivity list: missing 'sel' in the sensitivity list could cause simulation vs synthesis mismatch in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:46:12] [INFO] Response: Here's the mutant version with the incomplete sensitivity list bug:
+
+MUTANT VERILOG BEGIN
+module mux_2to1(
+    input [3:0] a,
+    input [3:0] b,
+    input sel,
+    output reg [3:0] out
+);
+    always @(a or b) begin
+        if (sel)
+            out = b;
+        else
+            out = a;
+    end
+endmodule
+MUTANT VERILOG END
+
+The bug introduced is:
+1. Changed the sensitivity list from `@(*)` to `@(a or b)`
+2. Removed `sel` from the sensitivity list
+3. This creates a simulation mismatch where changes in `sel` won't trigger the always block in simulation, while synthesis tools would still infer the correct combinational logic
+4. The code remains valid and compilable Verilog
+[2025-08-13 21:46:12] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: incomplete sensitivity list: Missing 'sel' in the sensitivity list could cause simulation vs synthesis mismatch\nBUG DESCRIPTION: Introduce incomplete sensitivity list: missing 'sel' in the sensitivity list could cause simulation vs synthesis mismatch in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146761.697048, 'execution_time': 11.27316403388977, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 186, 'prompt_tokens': 308, 'total_tokens': 494}}
+[2025-08-13 21:46:12] [INFO] ==================================================
+[2025-08-13 21:46:13] [INFO] Successfully standardized mutant code for incomplete sensitivity list: Missing 'sel' in the sensitivity list could cause simulation vs synthesis mismatch
+[2025-08-13 21:46:13] [INFO] Successfully generated mutant 1
+[2025-08-13 21:46:13] [INFO] Generating mutant 2 for bug: polarity error: Inverted 'sel' condition (if (!sel)) would swap the selection logic
+[2025-08-13 21:46:23] [INFO] ==================================================
+[2025-08-13 21:46:23] [INFO] LLM API CALL
+[2025-08-13 21:46:23] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: polarity error: Inverted 'sel' condition (if (!sel)) would swap the selection logic\nBUG DESCRIPTION: Introduce polarity error: inverted 'sel' condition (if (!sel)) would swap the selection logic in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:46:23] [INFO] Response: Here's the mutant version with the polarity error in the sel condition:
+
+MUTANT VERILOG BEGIN
+module mux_2to1(
+    input [3:0] a,
+    input [3:0] b,
+    input sel,
+    output reg [3:0] out
+);
+    always @(*) begin
+        if (!sel)
+            out = b;
+        else
+            out = a;
+    end
+endmodule
+MUTANT VERILOG END
+
+The mutant inverts the selection logic by checking for `!sel` instead of `sel`. This minimal change swaps the functionality so that:
+- When sel=0, it selects b (instead of a)
+- When sel=1, it selects a (instead of b)
+The code remains valid and compilable while introducing the specified polarity error.
+[2025-08-13 21:46:23] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: polarity error: Inverted 'sel' condition (if (!sel)) would swap the selection logic\nBUG DESCRIPTION: Introduce polarity error: inverted 'sel' condition (if (!sel)) would swap the selection logic in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146773.389579, 'execution_time': 10.179354906082153, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 172, 'prompt_tokens': 309, 'total_tokens': 481}}
+[2025-08-13 21:46:23] [INFO] ==================================================
+[2025-08-13 21:46:23] [INFO] Successfully standardized mutant code for polarity error: Inverted 'sel' condition (if (!sel)) would swap the selection logic
+[2025-08-13 21:46:23] [INFO] Successfully generated mutant 2
+[2025-08-13 21:46:23] [INFO] Generating mutant 3 for bug: bit width mismatch: Output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching
+[2025-08-13 21:46:31] [INFO] ==================================================
+[2025-08-13 21:46:31] [INFO] LLM API CALL
+[2025-08-13 21:46:31] [INFO] Messages: [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: bit width mismatch: Output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching\nBUG DESCRIPTION: Introduce bit width mismatch: output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}]
+[2025-08-13 21:46:31] [INFO] Response: MUTANT VERILOG BEGIN
+module mux_2to1(
+    input [3:0] a,
+    input [3:0] b,
+    input sel,
+    output reg [3:0] out
+);
+    always @(*) begin
+        if (sel)
+            out = b;
+        else
+            out = sel;  // Bug introduced: assigning 1-bit 'sel' to 4-bit 'out' without width matching
+    end
+endmodule
+MUTANT VERILOG END
+[2025-08-13 21:46:31] [INFO] Metadata: {'messages': [{'role': 'system', 'content': 'You are an expert hardware engineer specializing in RTL design and debugging.\nYour task is to create a mutant version of a Verilog module by introducing\na specific bug while keeping the code syntactically valid and compilable.'}, {'role': 'user', 'content': "Create a mutant version of the following Verilog module by introducing this bug:\n\nBUG TYPE: bit width mismatch: Output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching\nBUG DESCRIPTION: Introduce bit width mismatch: output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching in the design\n\nRequirements:\n- The mutant must be valid, compilable Verilog\n- Apply the bug in a realistic way that would actually change the design's behavior\n- Keep the same module interface (ports, parameters)\n- Make minimal changes to introduce the bug\n- Ensure the code still compiles and is syntactically correct\n\nReturn ONLY the mutant Verilog code between the exact markers below.\n\nMUTANT VERILOG BEGIN\n<write the mutant Verilog code here>\nMUTANT VERILOG END\n\nOriginal Verilog module to mutate:\n----- BEGIN VERILOG -----\nmodule mux_2to1(\n    input [3:0] a,\n    input [3:0] b,\n    input sel,\n    output reg [3:0] out\n);\n    always @(*) begin\n        if (sel)\n            out = b;\n        else\n            out = a;\n    end\nendmodule\n----- END VERILOG -----\n"}], 'call_time': 1755146783.973721, 'execution_time': 7.718951940536499, 'system_fingerprint': 'fp_8802369eaa_prod0623_fp8_kvcache', 'model': 'deepseek-chat', 'usage': {'completion_tokens': 109, 'prompt_tokens': 326, 'total_tokens': 435}}
+[2025-08-13 21:46:31] [INFO] ==================================================
+[2025-08-13 21:46:32] [INFO] Successfully standardized mutant code for bit width mismatch: Output 'out' declared as 4-bit but assigned from a 1-bit 'sel' without proper width matching
+[2025-08-13 21:46:32] [INFO] Successfully generated mutant 3
+[2025-08-13 21:46:32] [INFO] Generated 3 successful mutants out of 3 attempts

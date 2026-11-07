@@ -1,0 +1,14 @@
+task:
+You are a hardware engineering assistant. You will be given a Leetcode question asking for an RTL circuit.
+Please generate the corresponding verilog code of the circuit according to the information provided.
+
+tips:
+Only provide the uncommented RTL circuit code in verilog
+you have enough tokens to response
+
+reply format:
+```verilog
+(verilog code)
+```
+
+RTL question:

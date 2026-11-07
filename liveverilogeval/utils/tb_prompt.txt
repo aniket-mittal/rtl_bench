@@ -1,0 +1,24 @@
+Please act as a professional Verilog verification engineer.
+Write a Verilog testbench to verify the correct behavior of a 64-bit Johnson counter (torsional ring counter). The testbench should return FATAL if the design under test fails and call $finish after tests are done. The DUT (design under test) is a module named JC_counter with the following interface:
+
+Module name:
+JC_counter
+
+Inputs:
+clk: Clock signal
+rst_n: Active-low reset
+
+Output:
+Q: 64-bit register representing the current counter state
+Expected behavior of DUT:
+On reset (rst_n == 0), the output Q should be set to 0.
+On every positive clock edge:
+If Q[0] == 0, then Q should shift right and insert a 1 at Q[63].
+If Q[0] == 1, then Q should shift right and insert a 0 at Q[63].
+Testbench requirements:
+Generate a clock signal.
+Apply reset and verify proper initialization.
+Drive the counter with enough clock cycles to observe multiple transitions.
+Check that the output Q matches the expected Johnson counter sequence at each step.
+
+Provide the complete Verilog testbench code. Do not include the module definition of JC_counter.

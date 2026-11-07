@@ -1,0 +1,1 @@
+Given an LLM prompt, rewrite it so that is used to generate Verilog testbenches instead of modules. the new prompt should request that tests print "FAULT" on error and $finish should be called at the end of the tests. 

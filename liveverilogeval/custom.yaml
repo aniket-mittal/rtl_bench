@@ -1,0 +1,31 @@
+# Copy to config.yaml and fill in. Only the providers used by your chosen
+# profile need real keys (deepseek profile: deepseek + gpt; gpt5 profile: gpt + deepseek).
+deepseek_api_key: ""
+gpt_api_key: ""
+claude_api_key: ""
+gemini_api_key: ""
+calls_per_min: 300                    # adjust to your rate limits
+
+# Paths
+batch_dir_path: ./yosys_files/        # scratch dir for yosys scripts
+starting_verilog_dir: ./rtllm_modules_pyverilog   # input for process_designs.py
+original_designs_path: ./data/designs.jsonl
+output_path: ./results/questions.jsonl
+
+# Pipeline sizes
+bug_categories_n: 8                   # bug categories proposed per design
+mutants_n: 4                          # mutants attempted per design (before filtering)
+questions_n: 3                        # questions written per kept mutant
+question_validation_n: 5              # unassisted answers sampled per question
+
+# Equivalence checking (see utils/equivalence_check.py)
+yosys_bin: yosys
+max_concurrent_yosys: 4
+equiv_max_steps: 60                   # SAT steps for induction/BMC (~2 steps per clock cycle)
+equiv_timeout_s: 120                  # a timeout is never counted as equivalent
+equiv_accept_bounded: true            # accept "no counterexample within equiv_max_steps" as passing
+                                      # when induction can't close; set false for proof-only labels
+
+# Debug logging
+debug_enabled: false
+debug_log_file: ./logs/generator_debug.log

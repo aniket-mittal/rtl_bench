@@ -1,0 +1,6 @@
+{
+"prompt": "Please act as a professional Verilog designer.\n{{instruction}}\n\n{{header}}\n\n{{implementation}}\n\nGive me the complete code.",
+"instruction": "Implement a module of a 3-bit comparator for comparing binary numbers.",
+"header": "Module name:  \n    comparator_3bit               \nInput ports:\n    A [2:0]: First 3-bit input operand (the first binary number to compare).\n    B [2:0]: Second 3-bit input operand (the second binary number to compare).\nOutput ports:\n    A_greater: 1-bit output indicating if A is greater than B.\n    A_equal: 1-bit output indicating if A is equal to B.\n    A_less: 1-bit output indicating if A is less than B.",
+"implementation": "Implementation:\nComparison Logic: The module compares the two 3-bit binary numbers A and B using combinational logic.\n- The outputs A_greater, A_equal, and A_less are determined based on the comparison of A and B.\n- A_greater is set to 1 if A > B, A_equal is set to 1 if A == B, and A_less is set to 1 if A < B.\n\nOutput Encoding: The outputs are mutually exclusive, meaning only one of the three outputs will be high (1) at any given time, based on the comparison results."
+}

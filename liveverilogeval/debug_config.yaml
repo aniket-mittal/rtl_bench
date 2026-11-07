@@ -1,0 +1,35 @@
+# Debug Configuration for Generators
+# Set debug_enabled to true to enable comprehensive logging
+
+debug:
+  enabled: true
+  log_directory: "./logs"
+  
+  # Individual generator debug settings
+  generators:
+    question_generator: true
+    answer_generator: true
+    valid_question_generator: true
+    equivalence_check: true
+  
+  # Log file settings
+  log_files:
+    generator_debug: "generator_debug.log"
+    process_designs: "process_designs_debug.log"
+    equivalence_check: "equivalence_check_debug.log"
+    llm_calls: "llm_calls_debug.log"
+  
+  # Log levels: DEBUG, INFO, WARNING, ERROR
+  log_level: "DEBUG"
+  
+  # Maximum log file size in MB (0 = no limit)
+  max_log_size_mb: 10
+  
+  # Whether to rotate logs
+  rotate_logs: true
+  
+  # Console output settings
+  console:
+    enabled: true
+    show_timestamps: true
+    show_log_levels: true

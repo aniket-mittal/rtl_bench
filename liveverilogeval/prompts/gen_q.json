@@ -1,0 +1,3 @@
+{
+    "prompt": "Write a question Leetcode-style whose answer is the following Verilog code. Do not make the question so detailed that someone can effectively copy the code straight from the question. The question needs to leave room for the person reading it to need to think about the answer. Make sure to state the interface in your question. You should specify the inputs and outputs and make sure they have the same names as in the original code. In addition, include the exact name of the module. Please do the same for all modules present in the Verilog code I give you. The beginning of your final question should start with QUESTION BEGIN and the end of your question should end with QUESTION END.\n"
+}
