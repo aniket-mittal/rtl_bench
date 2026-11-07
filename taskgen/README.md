@@ -1,4 +1,4 @@
-# liveverilogeval
+# taskgen
 
 Turns existing verified Verilog designs into new RTL tasks. For each design it:
 
@@ -30,4 +30,4 @@ Output goes to `results/questions.jsonl` (not tracked in git; regenerate locally
 
 ## Credits
 
-Adapted from [agctute/liveverilogeval](https://github.com/agctute/liveverilogeval). Seed designs in `rtllm_modules/` are from [RTLLM](https://github.com/hkust-zhiyao/RTLLM).
+Adapted from [agctute/liveverilogeval](https://github.com/agctute/liveverilogeval). Seed designs in `../sources/rtllm/` are from [RTLLM](https://github.com/hkust-zhiyao/RTLLM).

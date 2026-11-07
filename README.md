@@ -1,14 +1,29 @@
 # rtl_bench
 
-Three folders:
+Task generation for TrainRTL: turns open-source RTL into repair and optimization tasks. The grader and RL environment live elsewhere.
 
-- `liveverilogeval/` — pipeline that takes existing verified Verilog designs, mutates them into new designs, writes a spec for each mutant, and formally checks (Yosys) that the spec matches the mutant. Use this to generate fresh RTL tasks from existing designs.
-- `RTL-BenchLS/` — the RTL-BenchLS benchmark: 10,028 formally verified Verilog designs and three evaluation tasks. Use this to evaluate models.
-- `open_source_designs/` — open-source Verilog designs (verilog-eval, basic_verilog, UART, I2C, SHA-256, AES, SERV, PicoRV32) collected as seed material. Separate from the benchmark. See its README for sources and licenses.
+```
+rtl_bench/
+  taskgen/    task generator (adapted from liveverilogeval)
+  sources/    seed designs and reference benchmarks, each with its license
+  tasks/      generated tasks (format still being defined)
+```
 
-Each folder has its own README with setup and run instructions.
+- `taskgen/` takes verified Verilog designs, injects bugs with an LLM, and uses Yosys to check that each bug really changes behavior. See `taskgen/README.md`.
+- `sources/` holds the designs tasks are built from: RTLLM, verilog-eval, basic_verilog, UART, I2C, SHA-256, AES, SERV, PicoRV32, and the RTL-BenchLS benchmark. See `sources/README.md`.
+
+## Setup
+
+```bash
+brew install yosys icarus-verilog verilator
+python3 -m venv .venv
+.venv/bin/pip install -r taskgen/requirements.txt
+cd taskgen && ../.venv/bin/python -W ignore test_pipeline_offline.py   # offline smoke test
+```
 
 ## Credits
 
-- `liveverilogeval/` is adapted from [agctute/liveverilogeval](https://github.com/agctute/liveverilogeval). Its seed designs come from [RTLLM](https://github.com/hkust-zhiyao/RTLLM).
-- `RTL-BenchLS/` is from [hkust-zhiyao/RTL-BenchLS](https://github.com/hkust-zhiyao/RTL-BenchLS), included unchanged under its original license (see `RTL-BenchLS/LICENSE`).
+- `taskgen/` is adapted from [agctute/liveverilogeval](https://github.com/agctute/liveverilogeval).
+- `sources/rtllm/` is from [RTLLM](https://github.com/hkust-zhiyao/RTLLM).
+- `sources/rtl-benchls/` is from [hkust-zhiyao/RTL-BenchLS](https://github.com/hkust-zhiyao/RTL-BenchLS), included unchanged under its original license (see `sources/rtl-benchls/LICENSE`).
+- Other `sources/` folders are listed with their licenses in `sources/README.md`.

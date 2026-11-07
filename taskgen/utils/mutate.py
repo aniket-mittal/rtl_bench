@@ -683,7 +683,7 @@ def standardize(verilog_code: str | Path) -> str:
     return output
 
 def test_ast_to_verilog():
-    rtllm_dir = Path("./rtllm_modules").absolute()
+    rtllm_dir = Path("../sources/rtllm").absolute()
     output_dir = Path("./rtllm_modules_pyverilog").absolute()
     error_count = 0
     for design_dir in rtllm_dir.iterdir():
@@ -703,7 +703,7 @@ def test_ast_to_verilog():
             
 
 def test_get_pyverilog_ast():
-    rtllm_dir = Path("./rtllm_modules").absolute()
+    rtllm_dir = Path("../sources/rtllm").absolute()
     error_count = 0
     for design_dir in rtllm_dir.iterdir():
         if design_dir.is_dir():
@@ -797,16 +797,16 @@ endmodule
 
 def compare_generated_and_original_hashes():
     """
-    Compares all newly generated files in ./rtllm_modules_pyverilog with their originals in ./rtllm_modules
+    Compares all newly generated files in ./rtllm_modules_pyverilog with their originals in ../sources/rtllm
     by comparing their SHA256 hashes. Prints the result for each file.
     """
-    rtllm_dir = Path("./rtllm_modules").absolute()
+    rtllm_dir = Path("../sources/rtllm").absolute()
     pyverilog_dir = Path("./rtllm_modules_pyverilog").absolute()
     mismatch_count = 0
     total_count = 0
 
     for pyverilog_file in pyverilog_dir.glob("*.v"):
-        # The original file is expected to be ./rtllm_modules/<design>/verified_<design>.v
+        # The original file is expected to be ../sources/rtllm/<design>/verified_<design>.v
         design_name = pyverilog_file.stem
         original_dir = rtllm_dir / design_name
         original_file = original_dir / f"verified_{design_name}.v"

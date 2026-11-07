@@ -278,7 +278,7 @@ async def test_check_equivalence(config_path: str = "config.yaml"):
     """
     config = Config(config_path)
     settings = equiv_settings(config)
-    rtllm_dir = Path("./rtllm_modules").absolute()
+    rtllm_dir = Path("../sources/rtllm").absolute()
     total, counts = 0, {}
     for design_dir in sorted(rtllm_dir.iterdir()):
         verified_file = design_dir / f"verified_{design_dir.name}.v"
