@@ -1,0 +1,36 @@
+# Local Claude Code workspace (skills, staging, scratch)
+.claude/
+
+# Cloned upstream GitHub repos for Task 3 (populated by scripts/clone_repos.py)
+repo_cache/
+
+# Live SSH config (may contain secrets). Only ssh_config.yaml.example is tracked.
+config/ssh_config.yaml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Logs
+*.log
+logs/
