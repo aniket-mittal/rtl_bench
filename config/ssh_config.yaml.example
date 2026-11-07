@@ -1,0 +1,46 @@
+# RTL-BenchLS — SSH configuration for the remote-EDA verifier (Mode B).
+#
+# Copy this file to `config/ssh_config.yaml` (which is gitignored) and fill
+# in your values. The verifier PREFERS `key_file` over `password`; a password
+# field is supported only as a fallback for environments where SSH keys
+# aren't available.
+#
+# Why key-file is preferred (and the recommended standard):
+#   - Keys can be revoked independently of other secrets (no shared password
+#     rotation needed).
+#   - Keys don't appear in process listings, environment variables, or shell
+#     history.
+#   - Works with `ssh-agent` for unattended runs without storing secrets.
+#   - Composes with hardware tokens (YubiKey, etc.) and MFA.
+#   - Easier to scope to a single project: use a dedicated key per benchmark.
+#
+# One-time key setup (see docs/formal_verification.md for details):
+#   ssh-keygen -t ed25519 -f ~/.ssh/rtlbenchls_key -C "rtlbenchls@$(hostname)"
+#   ssh-copy-id -i ~/.ssh/rtlbenchls_key.pub  your_user@eda-server.example.com
+
+active_profile: default
+
+profiles:
+  default:
+    host: eda-server.example.com
+    user: your_user
+
+    # Preferred: path to your private key. ~ is expanded.
+    key_file: ~/.ssh/rtlbenchls_key
+
+    # Fallback only — uncomment if your environment doesn't support keys.
+    # Prefer to set via env: `export SSH_PASSWORD=...` rather than writing
+    # the password into this file.
+    # password: ""
+
+    remote_work_dir: /scratch/your_user/rtlbenchls
+
+  # Add as many profiles as you have servers (load-balancing, license routing,
+  # etc.). Select one by editing `active_profile` above or by setting the env
+  # var `SSH_PROFILE=acf3030` at run time.
+  #
+  # acf3030:
+  #   host: acf3030.example.edu
+  #   user: your_user
+  #   key_file: ~/.ssh/rtlbenchls_key
+  #   remote_work_dir: /scratch/your_user/rtlbenchls
