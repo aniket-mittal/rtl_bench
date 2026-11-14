@@ -1,0 +1,105 @@
+{
+  "task_id": "spec2rtl__verilog-eval__Prob122_kmap4__mutant2",
+  "suite": "open_source",
+  "kind": "spec_to_rtl",
+  "difficulty": "easy",
+  "top_module": "dut",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "a",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "width": 1
+      },
+      {
+        "name": "c",
+        "width": 1
+      },
+      {
+        "name": "d",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "out",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "dut.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1546147500
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob122_kmap4/mutant_2/spec_to_rtl",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob122_kmap4_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Swapped case labels",
+    "solve_rate": 0.75,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 2,
+    "mutant_index": 2,
+    "mutant_hash": "b6d1283b87def369de8ab16995601f14b2ef837d57b3bb2a6619d2c90e19f043",
+    "original_design_hash": "caf65d8c2ac7c6aa3f6d0f61b9d58c0647477a02dccdf5fcba1d24c17d3840ec",
+    "other_valid_specs": 1
+  }
+}

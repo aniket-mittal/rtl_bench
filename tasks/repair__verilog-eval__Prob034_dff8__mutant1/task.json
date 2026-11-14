@@ -1,0 +1,93 @@
+{
+  "task_id": "repair__verilog-eval__Prob034_dff8__mutant1",
+  "suite": "open_source",
+  "kind": "repair",
+  "difficulty": "hard",
+  "top_module": "dut",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "d",
+        "width": 8
+      }
+    ],
+    "outputs": [
+      {
+        "name": "q",
+        "width": 8
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "dut.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1987235068
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob034_dff8/mutant_1/repair",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob034_dff8_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Data corruption via inverted/modified data",
+    "solve_rate": 0.25,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 1,
+    "mutant_index": 1,
+    "mutant_hash": "d9898427109b153ffc5935afce68a9518b85686f847e1ae9f4eb7f220a92c422",
+    "original_design_hash": "29b49200aef19c6705fc7be5c958cd9d1623f82052146153da6b39622aab9f6b",
+    "other_valid_specs": 1
+  }
+}

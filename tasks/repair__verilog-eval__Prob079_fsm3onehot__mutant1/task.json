@@ -1,0 +1,101 @@
+{
+  "task_id": "repair__verilog-eval__Prob079_fsm3onehot__mutant1",
+  "suite": "open_source",
+  "kind": "repair",
+  "difficulty": "easy",
+  "top_module": "dut",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "in",
+        "width": 1
+      },
+      {
+        "name": "state",
+        "width": 4
+      }
+    ],
+    "outputs": [
+      {
+        "name": "next_state",
+        "width": 4
+      },
+      {
+        "name": "out",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "dut.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2557707667
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob079_fsm3onehot/mutant_1/repair",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob079_fsm3onehot_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Incorrect state source in transition",
+    "solve_rate": 1.0,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 2,
+    "mutant_index": 1,
+    "mutant_hash": "fe3793d70aa74964cbf3e4b5c61f8525ed859f388cac7da8f8527900d3c7213e",
+    "original_design_hash": "f762c810bf4e59041fd87849eb56adf605f1ca7f7875e3fa0ec0d19cb28528b0",
+    "other_valid_specs": 0
+  }
+}

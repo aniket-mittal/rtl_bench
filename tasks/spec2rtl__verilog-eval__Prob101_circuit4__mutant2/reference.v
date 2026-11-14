@@ -1,0 +1,12 @@
+module dut
+(
+  input a,
+  input b,
+  input c,
+  input d,
+  output q
+);
+
+  assign q = c | b | a & d;
+
+endmodule

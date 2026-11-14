@@ -1,0 +1,101 @@
+{
+  "task_id": "spec2rtl__verilog-eval__Prob091_2012_q2b__mutant3",
+  "suite": "open_source",
+  "kind": "spec_to_rtl",
+  "difficulty": "easy",
+  "top_module": "dut",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "y",
+        "width": 6
+      },
+      {
+        "name": "w",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Y1",
+        "width": 1
+      },
+      {
+        "name": "Y3",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "dut.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 495764618
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob091_2012_q2b/mutant_3/spec_to_rtl",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob091_2012_q2b_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Output cross-wiring / swapped logic",
+    "solve_rate": 1.0,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 1,
+    "mutant_index": 3,
+    "mutant_hash": "34134b8338501a5d874841c60f50893c6c0c6120a3139fb0f25e4b0ba2c81045",
+    "original_design_hash": "c32e0ea63dd46263d8df5196e3eb06cd86f1e3e1bc118ff1ad1532073018b901",
+    "other_valid_specs": 1
+  }
+}
