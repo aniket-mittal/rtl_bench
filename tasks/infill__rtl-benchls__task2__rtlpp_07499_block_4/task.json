@@ -1,0 +1,148 @@
+{
+  "task_id": "infill__rtl-benchls__task2__rtlpp_07499_block_4",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "rtlpp_07499",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "txbyte",
+        "width": 8
+      },
+      {
+        "name": "senddata",
+        "width": 1
+      },
+      {
+        "name": "reset",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "txdone",
+        "width": 1
+      },
+      {
+        "name": "tx",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "rtlpp_07499.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "rtlpp_07499.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "rtlpp_07499.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1802534630
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/rtlpp_07499_block_4",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "rtlpp_07499_block_4",
+    "parent_design": "rtlpp_07499",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 60,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 4,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "rtlpp_07499",
+      "region_tokens": 162,
+      "region_chars": 1157,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "a3f587542308798697bd1fe861a4e83452daaec316f96babe63e23164cb43f23",
+    "upstream_golden_rtl_key": "rtlpp_07499.v",
+    "upstream_masked_rtl_key": "rtlpp_07499_masked.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_rtlpp_07499.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "undefined_modules": [],
+    "dropped_files": [
+      "rtlpp_07499_combined.v",
+      "sec_rtlpp_07499.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "rtlpp_07499",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_07499.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

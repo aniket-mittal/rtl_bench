@@ -1,0 +1,199 @@
+// Public tests: 64 cycles with the expected outputs written in. Generated; do not edit.
+// Run: iverilog -g2012 -s tb -o sim public_tb.v <your .v files> && vvp sim
+// Prints PASS N/N cycles, or MISMATCH lines (inputs/expected/got, packed in interface order) and FAIL.
+// One stimulus word per cycle (inputs packed MSB-first, interface order); one expected word per cycle
+// (outputs packed MSB-first). 'x' digits in expected.hex are don't care.
+`timescale 1ns/1ps
+module tb;
+  localparam N = 64;
+  localparam IW = 7;
+  localparam OW = 6;
+  reg [IW-1:0] stim [0:N-1];
+  reg [OW-1:0] expv [0:N-1];
+  reg [OW-1:0] act [0:N-1];
+  reg [IW-1:0] in_vec;
+  wire [OW-1:0] out_vec;
+  reg clk;
+  reg [8*1024-1:0] stim_file, exp_file, act_file;
+  integer c, b, fd, mismatches, shown, bad;
+
+  LIFObuffer dut (
+    .Clk(clk),
+    .dataIn(in_vec[6:3]),
+    .RW(in_vec[2:2]),
+    .EN(in_vec[1:1]),
+    .Rst(in_vec[0:0]),
+    .EMPTY(out_vec[5:5]),
+    .FULL(out_vec[4:4]),
+    .dataOut(out_vec[3:0])
+  );
+
+  task sample;
+    begin
+      act[c] = out_vec;
+    end
+  endtask
+
+  initial begin
+    clk = 1'b0;
+    in_vec = {IW{1'b0}};
+    stim[0] = 7'h33;
+    stim[1] = 7'h65;
+    stim[2] = 7'h4e;
+    stim[3] = 7'h4a;
+    stim[4] = 7'h24;
+    stim[5] = 7'h20;
+    stim[6] = 7'h3e;
+    stim[7] = 7'h52;
+    stim[8] = 7'h1c;
+    stim[9] = 7'h16;
+    stim[10] = 7'h76;
+    stim[11] = 7'h6a;
+    stim[12] = 7'h2a;
+    stim[13] = 7'h36;
+    stim[14] = 7'h3c;
+    stim[15] = 7'h34;
+    stim[16] = 7'h5c;
+    stim[17] = 7'h22;
+    stim[18] = 7'h4a;
+    stim[19] = 7'h02;
+    stim[20] = 7'h3c;
+    stim[21] = 7'h1b;
+    stim[22] = 7'h0c;
+    stim[23] = 7'h74;
+    stim[24] = 7'h5a;
+    stim[25] = 7'h22;
+    stim[26] = 7'h50;
+    stim[27] = 7'h72;
+    stim[28] = 7'h48;
+    stim[29] = 7'h48;
+    stim[30] = 7'h6e;
+    stim[31] = 7'h4a;
+    stim[32] = 7'h7a;
+    stim[33] = 7'h5e;
+    stim[34] = 7'h5a;
+    stim[35] = 7'h72;
+    stim[36] = 7'h64;
+    stim[37] = 7'h4a;
+    stim[38] = 7'h3a;
+    stim[39] = 7'h48;
+    stim[40] = 7'h20;
+    stim[41] = 7'h06;
+    stim[42] = 7'h7c;
+    stim[43] = 7'h64;
+    stim[44] = 7'h6a;
+    stim[45] = 7'h26;
+    stim[46] = 7'h42;
+    stim[47] = 7'h17;
+    stim[48] = 7'h60;
+    stim[49] = 7'h3a;
+    stim[50] = 7'h3c;
+    stim[51] = 7'h78;
+    stim[52] = 7'h08;
+    stim[53] = 7'h5c;
+    stim[54] = 7'h14;
+    stim[55] = 7'h70;
+    stim[56] = 7'h46;
+    stim[57] = 7'h26;
+    stim[58] = 7'h14;
+    stim[59] = 7'h5e;
+    stim[60] = 7'h34;
+    stim[61] = 7'h6a;
+    stim[62] = 7'h20;
+    stim[63] = 7'h30;
+    for (c = 0; c < N; c = c + 1) begin
+      #1 in_vec = stim[c];
+      #3 sample;
+      #1 clk = 1'b1;
+      #5 clk = 1'b0;
+    end
+    if ($value$plusargs("actual=%s", act_file)) begin
+      fd = $fopen(act_file, "w");
+      for (c = 0; c < N; c = c + 1) $fdisplay(fd, "%h", act[c]);
+      $fclose(fd);
+    end
+    if (!$test$plusargs("nocheck")) begin
+      expv[0] = 6'hxx;
+      expv[1] = 6'hx0;
+      expv[2] = 6'hx0;
+      expv[3] = 6'h2x;
+      expv[4] = 6'h0x;
+      expv[5] = 6'h0x;
+      expv[6] = 6'h0x;
+      expv[7] = 6'h29;
+      expv[8] = 6'h0x;
+      expv[9] = 6'h0x;
+      expv[10] = 6'h2a;
+      expv[11] = 6'h2x;
+      expv[12] = 6'h0x;
+      expv[13] = 6'h0x;
+      expv[14] = 6'h05;
+      expv[15] = 6'h05;
+      expv[16] = 6'h05;
+      expv[17] = 6'h05;
+      expv[18] = 6'h0x;
+      expv[19] = 6'h0x;
+      expv[20] = 6'h1x;
+      expv[21] = 6'h1x;
+      expv[22] = 6'h30;
+      expv[23] = 6'h30;
+      expv[24] = 6'h30;
+      expv[25] = 6'h0x;
+      expv[26] = 6'h0x;
+      expv[27] = 6'h0x;
+      expv[28] = 6'h0x;
+      expv[29] = 6'h0x;
+      expv[30] = 6'h0x;
+      expv[31] = 6'h0e;
+      expv[32] = 6'h0x;
+      expv[33] = 6'h1x;
+      expv[34] = 6'h0f;
+      expv[35] = 6'h1x;
+      expv[36] = 6'h1x;
+      expv[37] = 6'h1x;
+      expv[38] = 6'h1x;
+      expv[39] = 6'h1x;
+      expv[40] = 6'h1x;
+      expv[41] = 6'h1x;
+      expv[42] = 6'h0b;
+      expv[43] = 6'h0b;
+      expv[44] = 6'h0b;
+      expv[45] = 6'h1x;
+      expv[46] = 6'h0d;
+      expv[47] = 6'h1x;
+      expv[48] = 6'h30;
+      expv[49] = 6'h30;
+      expv[50] = 6'h0x;
+      expv[51] = 6'h0x;
+      expv[52] = 6'h0x;
+      expv[53] = 6'h0x;
+      expv[54] = 6'h0x;
+      expv[55] = 6'h0x;
+      expv[56] = 6'h0x;
+      expv[57] = 6'h27;
+      expv[58] = 6'h2x;
+      expv[59] = 6'h2x;
+      expv[60] = 6'h2x;
+      expv[61] = 6'h2x;
+      expv[62] = 6'h0x;
+      expv[63] = 6'h0x;
+      mismatches = 0;
+      shown = 0;
+      for (c = 0; c < N; c = c + 1) begin
+        bad = 0;
+        for (b = 0; b < OW; b = b + 1)
+          if (expv[c][b] !== 1'bx && act[c][b] !== expv[c][b]) bad = 1;
+        if (bad) begin
+          mismatches = mismatches + 1;
+          if (shown < 10) begin
+            $display("MISMATCH cycle %0d: inputs=%h expected=%h got=%h", c, stim[c], expv[c], act[c]);
+            shown = shown + 1;
+          end
+        end
+      end
+      if (mismatches == 0) $display("PASS %0d/%0d cycles", N, N);
+      else $display("FAIL %0d/%0d cycles mismatched", mismatches, N);
+    end
+    $finish;
+  end
+endmodule

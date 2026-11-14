@@ -8,10 +8,12 @@ Only editable files are taken from it; read-only files, testbenches and the refe
 Prints one JSON object:
 
   {"task_id", "compiled", "public": {"passed", "total"}, "hidden": {"passed", "total"},
-   "formal": "equivalent|bounded|different|unknown|error|skipped", "correct", "reward", "synth": {"cells"}}
+   "formal": "equivalent|bounded|different|unknown|error|skipped|sim_only", "correct", "reward", "synth": {"cells"}}
 
 reward is 1.0 only if the design compiles, public_tb.v and hidden_tb.v both print PASS, and the Yosys formal check
 against the reference is ok (equivalent, or bounded when accept_bounded). Formal runs only when both testbenches pass.
+Tasks with grading.verification == "sim_only" (formal times out even on the reference) are graded on the two
+testbenches alone.
 hidden_tb.v instantiates the reference as <module>__ref, so the reference's modules are renamed before compiling.
 """
 import argparse
@@ -113,14 +115,16 @@ def grade(task_dir, submission_dir, synth=True):
                 "hidden": {"reference_files": {"rtl/" + e: (task_dir / r).read_text() for e, r in ref_map.items()},
                            "formal": meta["grading"]["formal"]},
                 "limits": meta.get("limits", {})}
-        if vectors_ok:
+        if meta["grading"].get("verification") == "sim_only":
+            res["formal"] = "sim_only"
+        elif vectors_ok:
             status, detail = rt.formal_check(task, rtl_tree)
             res["formal"] = status
             if detail:
                 res["formal_detail"] = detail
         if synth:
             res["synth"]["cells"] = rt.synth_cells(rtl_tree, top, timeout)
-        res["correct"] = bool(vectors_ok and rt.formal_ok(task, res["formal"]))
+        res["correct"] = bool(vectors_ok and (res["formal"] == "sim_only" or rt.formal_ok(task, res["formal"])))
         res["reward"] = 1.0 if res["correct"] else 0.0
     return res
 

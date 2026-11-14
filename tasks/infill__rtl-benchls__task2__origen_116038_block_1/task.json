@@ -132,6 +132,7 @@
     "tool_timeout_s": 120
   },
   "grading": {
+    "verification": "formal",
     "public_tb": {
       "file": "public_tb.v",
       "cycles": 64

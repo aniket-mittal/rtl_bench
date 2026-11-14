@@ -1,0 +1,240 @@
+{
+  "task_id": "infill__rtl-benchls__task2__origen_136184_block_2",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_136184",
+  "interface": {
+    "clock": "ACLK",
+    "reset": {
+      "name": "ARESETN",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "ARESETN",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_AWADDR",
+        "width": 32
+      },
+      {
+        "name": "S_AXI_AWCACHE",
+        "width": 4
+      },
+      {
+        "name": "S_AXI_AWPROT",
+        "width": 3
+      },
+      {
+        "name": "S_AXI_AWVALID",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_WDATA",
+        "width": 32
+      },
+      {
+        "name": "S_AXI_WSTRB",
+        "width": 4
+      },
+      {
+        "name": "S_AXI_WVALID",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_BREADY",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_ARADDR",
+        "width": 32
+      },
+      {
+        "name": "S_AXI_ARCACHE",
+        "width": 4
+      },
+      {
+        "name": "S_AXI_ARPROT",
+        "width": 3
+      },
+      {
+        "name": "S_AXI_ARVALID",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_RREADY",
+        "width": 1
+      },
+      {
+        "name": "LOCAL_CLK",
+        "width": 1
+      },
+      {
+        "name": "LOCAL_ACK",
+        "width": 1
+      },
+      {
+        "name": "LOCAL_RDATA",
+        "width": 32
+      }
+    ],
+    "outputs": [
+      {
+        "name": "S_AXI_AWREADY",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_WREADY",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_BVALID",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_BRESP",
+        "width": 2
+      },
+      {
+        "name": "S_AXI_ARREADY",
+        "width": 1
+      },
+      {
+        "name": "S_AXI_RDATA",
+        "width": 32
+      },
+      {
+        "name": "S_AXI_RRESP",
+        "width": 2
+      },
+      {
+        "name": "S_AXI_RVALID",
+        "width": 1
+      },
+      {
+        "name": "LOCAL_CS",
+        "width": 1
+      },
+      {
+        "name": "LOCAL_RNW",
+        "width": 1
+      },
+      {
+        "name": "LOCAL_ADDR",
+        "width": 32
+      },
+      {
+        "name": "LOCAL_BE",
+        "width": 4
+      },
+      {
+        "name": "LOCAL_WDATA",
+        "width": 32
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_136184.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_136184.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_136184.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 156502585
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/origen_136184_block_2",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "origen_136184_block_2",
+    "parent_design": "origen_136184",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 110,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 2,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_136184",
+      "region_tokens": 245,
+      "region_chars": 2528,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "dc0499ddb2b350019bde55286a5347f24d3ab658a0ef5afbfff4c322e4239eda",
+    "upstream_golden_rtl_key": "origen_136184.v",
+    "upstream_masked_rtl_key": "origen_136184_masked.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_origen_136184.tcl"
+    },
+    "lib_v": "absent",
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_origen_136184.tcl"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

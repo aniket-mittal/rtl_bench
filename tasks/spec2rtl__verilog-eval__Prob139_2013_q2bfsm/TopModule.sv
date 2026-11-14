@@ -1,0 +1,11 @@
+// Starter skeleton: implement TopModule as described in spec.md.
+module TopModule (
+  input clk,
+  input resetn,
+  input x,
+  input y,
+  output f,
+  output g
+);
+
+endmodule

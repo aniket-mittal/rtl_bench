@@ -246,6 +246,7 @@ def build(task_path, out_root):
         "tools": t.get("tools", rt.DEFAULT_TOOLS),
         "limits": t.get("limits", rt.DEFAULT_LIMITS),
         "grading": {
+            "verification": "formal",
             "public_tb": {"file": "public_tb.v", "cycles": len(pub_stim)},
             "hidden_tb": {"file": "hidden_tb.v", "cycles": HIDDEN_CYCLES, "seed": seed},
             "formal": rt.formal_settings(t),
@@ -264,6 +265,14 @@ def build(task_path, out_root):
             (Path(td) / e).parent.mkdir(parents=True, exist_ok=True)
             (Path(td) / e).write_text(ref_files[e])
         g = gr.grade(d, td, synth=False)
+        if g["formal"] == "unknown" and g["compiled"] and all(
+                g[k]["total"] and g[k]["passed"] == g[k]["total"] for k in ("public", "hidden")):
+            # Formal cannot finish even on the reference against itself: keep the task, graded by simulation only.
+            meta["grading"]["verification"] = "sim_only"
+            meta["grading"]["reward"] = ("1 if it compiles and public_tb and hidden_tb print PASS; else 0 "
+                                         "(sim_only: the formal check times out on this design)")
+            (d / "task.json").write_text(json.dumps(meta, indent=2) + "\n")
+            g = gr.grade(d, td, synth=False)
     if not g["correct"]:
         reasons.append("reference fails its own grading: " + json.dumps(g)[:400])
     if t["kind"] == "repair" and not reasons:
@@ -294,6 +303,7 @@ def write_index(out):
         m = json.loads(tj.read_text())
         rows.append({"task": m["task_id"], "suite": m["suite"], "kind": m["kind"], "difficulty": m["difficulty"],
                      "top_module": m["top_module"], "sequential": bool(m["interface"].get("clock")),
+                     "verification": m["grading"].get("verification", "formal"),
                      "source": m["provenance"].get("source") or m["source_task_id"]})
     (Path(out) / "index.jsonl").write_text("".join(json.dumps(r) + "\n" for r in rows))
     return rows
