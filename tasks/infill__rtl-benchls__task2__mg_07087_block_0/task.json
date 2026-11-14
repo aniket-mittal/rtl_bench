@@ -1,0 +1,148 @@
+{
+  "task_id": "infill__rtl-benchls__task2__mg_07087_block_0",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "mg_07087",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "ER_CDE",
+        "width": 8
+      }
+    ],
+    "outputs": [
+      {
+        "name": "HEX0",
+        "width": 7
+      },
+      {
+        "name": "HEX1",
+        "width": 7
+      },
+      {
+        "name": "HEX2",
+        "width": 7
+      },
+      {
+        "name": "HEX3",
+        "width": 7
+      },
+      {
+        "name": "HEX1DP",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "mg_07087.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "mg_07087.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "mg_07087.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3261812511
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/mg_07087_block_0",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "mg_07087_block_0",
+    "parent_design": "mg_07087",
+    "origin": "RTL-Dataset-MG-Verilog",
+    "origin_bucket": "S5",
+    "loc": 52,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 0,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": true,
+      "block_kind": "always",
+      "in_module": "mg_07087",
+      "region_tokens": 186,
+      "region_chars": 946,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "b102dbc0081cfd506874fed30281169b25457010d1083df78b629b56de7f55c9",
+    "upstream_golden_rtl_key": "mg_07087.v",
+    "upstream_masked_rtl_key": "mg_07087_masked.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_mg_07087.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "undefined_modules": [],
+    "dropped_files": [
+      "mg_07087_combined.v",
+      "sec_mg_07087.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "mg_07087",
+        "file": "<upstream-pool>/RTL_Datasets/MG-Verilog_sec_input/designs/mg_07087.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

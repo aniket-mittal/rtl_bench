@@ -1,0 +1,214 @@
+// Public tests: 64 cycles with the expected outputs written in. Generated; do not edit.
+// Run: iverilog -g2012 -s tb -o sim public_tb.v <your .v files> && vvp sim
+// Prints PASS N/N cycles, or MISMATCH lines (inputs/expected/got, packed in interface order) and FAIL.
+// One stimulus word per cycle (inputs packed MSB-first, interface order); one expected word per cycle
+// (outputs packed MSB-first). 'x' digits in expected.hex are don't care.
+`timescale 1ns/1ps
+module tb;
+  localparam N = 64;
+  localparam IW = 376;
+  localparam OW = 247;
+  reg [IW-1:0] stim [0:N-1];
+  reg [OW-1:0] expv [0:N-1];
+  reg [OW-1:0] act [0:N-1];
+  reg [IW-1:0] in_vec;
+  wire [OW-1:0] out_vec;
+  reg clk;
+  reg [8*1024-1:0] stim_file, exp_file, act_file;
+  integer c, b, fd, mismatches, shown, bad;
+
+  autovcoder_025528 dut (
+    .clk_i(clk),
+    .rst_n_i(in_vec[375:375]),
+    .la_data_in_i(in_vec[374:247]),
+    .la_oenb_i(in_vec[246:119]),
+    .ctl_pipeline_en_i(in_vec[118:118]),
+    .mic_pdm_data_i(in_vec[117:117]),
+    .dfe_data_i(in_vec[116:109]),
+    .dfe_valid_i(in_vec[108:108]),
+    .aco_data_i(in_vec[107:4]),
+    .aco_valid_i(in_vec[3:3]),
+    .aco_last_i(in_vec[2:2]),
+    .wrd_wake_i(in_vec[1:1]),
+    .wrd_wake_valid_i(in_vec[0:0]),
+    .la_data_out_o(out_vec[246:119]),
+    .ctl_pipeline_en_o(out_vec[118:118]),
+    .mic_pdm_data_o(out_vec[117:117]),
+    .dfe_data_o(out_vec[116:109]),
+    .dfe_valid_o(out_vec[108:108]),
+    .aco_data_o(out_vec[107:4]),
+    .aco_valid_o(out_vec[3:3]),
+    .aco_last_o(out_vec[2:2]),
+    .wrd_wake_o(out_vec[1:1]),
+    .wrd_wake_valid_o(out_vec[0:0])
+  );
+
+  task sample;
+    begin
+      act[c] = out_vec;
+    end
+  endtask
+
+  initial begin
+    clk = 1'b0;
+    in_vec = {IW{1'b0}};
+    stim[0] = 376'he1205dc212ab2af75a4c2037ec41afcf3f1f9c2b92b3aa6c4cc1bbeec89cd2330437d9107ec20ed832eaf7123a403e;
+    stim[1] = 376'hea77fcf7c71cc5648c5d5056dc0859eda92a659d65f60047002334758e6aa524237e37808468fbd8a3e22252abff71;
+    stim[2] = 376'h0a85f8247243ad6eb34bd847a6ebab2d760b1bffba442a14a02184833176fb86cf13732aca009e76aa2327aaa7ea74;
+    stim[3] = 376'h1bb3fe89b55949bb4870a9365ba5c1baefbee0e8f80732dc6dfa882249c1a3720203c22960ebb5beb1cee24c22ef02;
+    stim[4] = 376'h56ee94c539315ff2a75bcd6f274ae774b00070f5851244614f62d27611e3035a435c0dbb1c0ac027b185957778bef7;
+    stim[5] = 376'h5f656335e871ae574babc75195ef5777bcd80742f18e82000a5113729a4beb58e1d0b1132107696bd27182b5610ad4;
+    stim[6] = 376'h4559e2de0501f18406b1b417c8e44d14b39d2648d400e03fbc3867fa95c0f4a07d7d8770fbcb50616bc0e859889a17;
+    stim[7] = 376'h30ecc787a92a895b79736d85ff5703cb0d708d20d91b8504a9e23ac99385ba75af0d9d3f596a089420c9183bef24a8;
+    stim[8] = 376'h5787a01cec1592448584370314e794bfa8ad890bee15ddb9e2ec2f07719f3faba050392b695a05bfcfd94e63300e4e;
+    stim[9] = 376'h397b4fc62c15a2ac31155537bc9b6a3f21f1e99cb4904f328efb091f680692a5edcf3ba851d0e22659da83a37c4c5e;
+    stim[10] = 376'h293c5762006151b8918d37f139d3c5e5c515478701ca9977775732afb57a8d1616e3c31248db003134d07f38ba04cb;
+    stim[11] = 376'h50a3ffd1351c4061abea7e649fe3fce3071b03f1c13db7677eaa1bd31fb893e516661712c67024de0391bbe1bf98a4;
+    stim[12] = 376'h2135b1ee0a0ee16244f927a2d49996590f0039c9ef79c56f85f65421ca3a67492cd9ba478d39b87bc7e8fe55483e42;
+    stim[13] = 376'h13124abc681b5ae1a154562e027847ffdf878a19723e38d0ff7ff525bac1003f3f9b5403ce7f304da141f8431023a7;
+    stim[14] = 376'h0f6ac9c6673024247caa58f90753b5450372e8a054a2fd92eff3fb21a33bd2d7595259842a52d8ee971dd5a613ee54;
+    stim[15] = 376'h2e9c239ad16dfaeddab9810c8991a3a50c88b9d8fcff2f0a452ea8ed72801aa08977761cad7083d748f463af6c1ddd;
+    stim[16] = 376'h1443efd3355e1c2c21dbc52bbfe3fa4e0a95da50051b0c66cd80c9afeef7eb4a65c4e908c3165e68d152bf86c8a42a;
+    stim[17] = 376'h4cc7f50d345c2676c4ceb1dbe9cce1f39ec97677632faac98f86f877ab0574feed330134e124d5417431bdbe1057da;
+    stim[18] = 376'h746b9579dade1fb42816b806525669d4e3e9b5fd9948ceb0d60f8e95b7bc44705e7e5d2200aa422120a6dc76b73b58;
+    stim[19] = 376'h2f37e15a75187d6371e42bc7f37a77695a3280d53b606686abc41fcec89c7afad28180f170587ac1b4a1777fdea8b8;
+    stim[20] = 376'h3715f1b48ea81047247fab6db4e90d18fcb15697cdd6fc3e0e77267d64741cdd2035a33430bcc4ef4db054bd37f66b;
+    stim[21] = 376'h1c96ccc51698f40f658038ddc4993cb61c117e2332556fe90c036f29e7f9d1caeac58dbf8bdface339907569a3de19;
+    stim[22] = 376'h00e79bf75aca1b495c39d815b8f2e4bc972a13b86aabc8f4306676054e0435092794ee74ac33b5a94a696327178c7a;
+    stim[23] = 376'h4992c5ee3907d8d55279a0cbdc45f6a9515e1520da60f476100bf090e759debb7611cb06f1572cbbe4a0ff2bcdb7e7;
+    stim[24] = 376'h4376c9769c94fa4f9f9f9e88e0113a58f4e82066d8e637c17bd5d02822f53584dff17a787086f214e1bcaf4b88b23a;
+    stim[25] = 376'h600ba2f621e54e6cbe81897fd088dec5ed4c358a3f963906b43bfb245182f7b0570e7e281df932feecd47b157419f9;
+    stim[26] = 376'h02ee7763a12ccb3e40a667ed4ec121d7ac228493b1fd76a2143d923555cad589c1583b6457750dd58305f6a2779206;
+    stim[27] = 376'h141bb6a71091830e84ff23fc0e9129b790abc3ecd0279e711ab8a2aaa23c116723dd7ff622cdcd13cb8ce2c7e0d462;
+    stim[28] = 376'h769880ca79744a15fbbe3433dd2d8e758569eaef340ff90bf58ea076507b181f2888beca784b83f2d561aba1018226;
+    stim[29] = 376'h6896970da59469b22667441a342f3f531e160b0135a8b73578e9251a9f87941962c60281c00a30223f44f38daf9fd7;
+    stim[30] = 376'h601c6be560b83752494ec5e9851fe854d4fc70b60011ea627d30fe7bcb891887ebb75d29f9d2dd7a3af3a0d088188c;
+    stim[31] = 376'h4049bc227fd83bb14794671064beea70cdaa51b37b3f666e3cc9d4925bd3c4f88607c257ad4de07cc725f8747b3d6e;
+    stim[32] = 376'h42de4bcdf07d6affd79b4d98ae2085a72985d596d3874d159ad29f5b3df41118cce268091fdbd5d3fc617159b45b1d;
+    stim[33] = 376'h17c529deb3ffbeb6492762cce43405ef47abb1f05024dfbc3d65fa27df3f754a37912874c3309efbba4d81fe7ae7bf;
+    stim[34] = 376'h26822a1849bd1a35b6e3d2dfff8d58ca5013e90a4a8e7dbdbabd57271612b02cef23c1b17f65a71a397664c1c6b405;
+    stim[35] = 376'h382b1d19bd88cae8d3932724bdf15e920be8d0b2f8d61bde07ab6c723f7c4ee0c1210d9cef9fd81192a8b585a473bc;
+    stim[36] = 376'h03de9db216c9ff6359e14956c4a6cf1704b9b1ae37217d6c438f877ea536b772ae3236e70b7ca43591f10a8816fe87;
+    stim[37] = 376'h48f289f9797583df7f7f7afa7ff215f07aaf9054ca959a64a632c84e1055e7846c01d86a1cacd6d79b1b0005a327ed;
+    stim[38] = 376'h1bb134119e812f398a11396bb54afe1a11305cfa28776389e48fc051109e535aca5be745dfdbf591292d894e54d681;
+    stim[39] = 376'h6f9d36910aea4543778ced8cbd62ba813c28563f596a7337a0b9872c7dc92c25088bd35f60fc3a3faef6887164f3de;
+    stim[40] = 376'h2e50bfeece7687c5bcc2fb2fe43b09bd3ce653f181df7a0715a5b63868f9a02f1fe77042b0198203faffbca165cff8;
+    stim[41] = 376'h12a74c6ad04ca3c4dac05fa960669efd8123d8c771bd00279a54a12704bd09de86f070ae293faadb006b97f613f62e;
+    stim[42] = 376'h1764ecca96350425bd1342302a8ece9a30e86c3da777ae20685ea6ba9fa662a97b19774f283a6a20efb986e92a4265;
+    stim[43] = 376'h0032d15326a4ac55189ff06163bcb5a0afc71d17d9f7a13837aebd1f8f5aa83f7ccf4a5e28ef71c7698821fec25e07;
+    stim[44] = 376'h273a8ac5a24f28e5d5c612732753dda8eee6f04f48226ade8c2d2feb281ca09537df4a7f5a6dc64120f51c5bf1d70f;
+    stim[45] = 376'h584d4fb8a7a9558ef2b58cdf01188139c84ce4b9a0c35967671df64c693e107dacef65a4f760e678d747ffee9561d5;
+    stim[46] = 376'h379a0bd018f116c03a3f479d21b338fcebacea35714199bb2df07ae161d904b68f1c216ce3d3d49036aaa1f99baca0;
+    stim[47] = 376'h012e676ab57dc2eb307dd84882e15d1a327b8fa9b450591bd0f66cce966ef3cb530d0670b9ea507c9a02665f6b2074;
+    stim[48] = 376'h6902a2c7c5fb3e660a81a447a8d38d168376eb240671ae80abcd8c7659b75a6e773ef60249d1e65f0f5967ddad833f;
+    stim[49] = 376'h0c4605f0587f18a5096255d97d99242f9aaceb1e494ec3df1c72aa56c2fe90fccf5c873b0c621359a4d892f19b8226;
+    stim[50] = 376'h5a5a22f56ffda5a9f80a49b06af0b510d495ba721ec5d9cac16b49223d1ad44229950a8cd9c911f07f977d309043c9;
+    stim[51] = 376'h4b6e36bed97ee637175d772d5cc2f607911e5c7f8bb05a2f2edfd55e52ffb909185c3b1ff70dec21f9ff8a0860f9e0;
+    stim[52] = 376'h4f49c34142e640a02bd0aefb58f553d4b85c5d20e8b6428324e2c3c9c10affa6940ae0b06f3d293a2c3e25bb6cdea5;
+    stim[53] = 376'h5902daf8eaf0cee7138486617cf7a1cb5658754a4d6f152e291a353ad4169f710808553ac7b7e6a1a336e63566f1e5;
+    stim[54] = 376'h4db5e24dd5d1118911cd1761338e6486e0cfdd9c6e80f70bd561082233c8fb550197083a0351e1c75e0ecdbe8e500b;
+    stim[55] = 376'h54325c28f004aa277848a5ad06bce1bb317f666d2ed43308024b25e45ca001c66d754df36a917e69ad8782e1e859c7;
+    stim[56] = 376'h6456bbc6bb7bc0c3f0aafa3694e38284e5eb7bd5a8fbe7b6549ba5c7250e188ea9b09c55fb697f0a512beb1245aa64;
+    stim[57] = 376'h6a102fcd0c7e8cae8f8b8c5e4d708c89c8633a12036d216947fff012b0e2736ff3d521ffb6d54866d1e5b9b8ddc65f;
+    stim[58] = 376'h212aba3e4818febe0051083d6325b465e3a0ef83c8c941732e757666f84790622dc447367ea233dec5f6d61c2cd8df;
+    stim[59] = 376'h76dfc021a3afd467a26e0f8ff198ba2060e0cc1e273d06ab92ebf87bbf94da2e2f629e32038f2884a896a6684c8955;
+    stim[60] = 376'h4bbebf4ebe987e947f48fcbbdff484f4d1c3760b876801c6f958377b252b5aceebadd0cfa0eeee60371ca2c6175c6f;
+    stim[61] = 376'h19866ba2631e503b9a28e6d5669c547d610ea5215a72881d914b54a00f1b8c996b6a5a012152e02bbf754b645787cc;
+    stim[62] = 376'h2c228e1141ba6e3c8c3f6fbc20e746d05e8f113a19ff677d06fc1cb7ad3f79ddbf6e13d0c7162744a1b18334b51f11;
+    stim[63] = 376'h0911cabe3181401682f19f168fb3871711c5a8f0fb552e12244b7acc1f688ac53df7813c3c609a0f0a1b589a688000;
+    for (c = 0; c < N; c = c + 1) begin
+      #1 in_vec = stim[c];
+      #3 sample;
+      #1 clk = 1'b1;
+      #5 clk = 1'b0;
+    end
+    if ($value$plusargs("actual=%s", act_file)) begin
+      fd = $fopen(act_file, "w");
+      for (c = 0; c < N; c = c + 1) $fdisplay(fd, "%h", act[c]);
+      $fclose(fd);
+    end
+    if (!$test$plusargs("nocheck")) begin
+      expv[0] = 247'h001df6441fb083b60cbabdc48e900e421cf757004ae20adc7a32e756b344bf;
+      expv[1] = 247'h00238de0211a3ef628f88894aaffde376ece778a8c6b159a31f1005b69ab7b;
+      expv[2] = 247'h0008dccab280279daa88c9eaa9fa9ef0ea93e32bc80e9dfacd2b631a9fee6c;
+      expv[3] = 247'h0010f08a583aed6fac73b89308bbc0204a87fa257569a5bcb1caa4586a9702;
+      expv[4] = 247'h003b036ec702b009ec61655dde2fbe34c35a1192f48c6e4fb1e53574d8af9d;
+      expv[5] = 247'h00082c44c841da5af49c60ad5842b61de3f591d721c6b95d06eb1084779add;
+      expv[6] = 247'h003b61dc3ef2d4185af03a16622687d7d9478378540746606ac6c85d209236;
+      expv[7] = 247'h0007674fd65a82250832460efbc928f13fa11e1fc0ea217d60cd1c33ff4cac;
+      expv[8] = 247'h001c0e4ada56816ff3f65398cc0392052158a07b28520db79f904c01118e4c;
+      expv[9] = 247'h001fceea147438899676a0e8df1314dde9ef3b287056a232ddd950a3726de6;
+      expv[10] = 247'h0034f0c49236c00c4d341fce2e81316e7e614390008f023316705f78b2050f;
+      expv[11] = 247'h000985c4b19c093780e46ef86fe629661667f702d471049e0781bbd23f8db5;
+      expv[12] = 247'h00126e91e34e6e1ef1fa3f95520f92cd2596a29f8d39903b07ecde0d5a2e4b;
+      expv[13] = 247'h003ad500f39fcc1368507e10c408ebf97f9b0291e87d28c5a141d82a00e112;
+      expv[14] = 247'h000896610a94b63ba5c7756984fb9794995205988e42d0dad72dc7e611eed4;
+      expv[15] = 247'h002ddd872b5c20f5d23d18ebdb07769638526e08a573c3976af427a76c46ce;
+      expv[16] = 247'h00153a4230c5979a3454afe1b229085d84ccff0cc1145028916e3686cc846a;
+      expv[17] = 247'h0014c04d384935505d0c6f6f8415f6d3fd2b0534d16491d93531a7bf0337d8;
+      expv[18] = 247'h00079748802a90884829b71dadced7e6de4e55230a7a4611a066d85f9739b0;
+      expv[19] = 247'h0004603c5c161eb06d285ddff7aa2d28f285847970607f85e480f73fcfa8b8;
+      expv[20] = 247'h003568cd0c2f313bd36c152f4dfd9a037007869438b8c1ec89b234b753f46b;
+      expv[21] = 247'h0025636fe2f7eb38ce641d5a68f784adcbcf8b9c9b77ecb9b600777183c6b8;
+      expv[22] = 247'h00153b9d2b0ced6a529a58c9c5e31e796bc66f7ce9236da5706f6047d3cb58;
+      expv[23] = 247'h003872c1bc55cb2ef9283fcaf36dfb61a213433ae51f229d49e0c32fed37e6;
+      expv[24] = 247'h00145e9e1c21bc85386f2bd2e22c8ffedddb245870c3f23ef13c3a0388903a;
+      expv[25] = 247'h00279f8a077e4cbfbb351ec55d067d70f74e5ff81ddd39baeac4697f4429f8;
+      expv[26] = 247'h001a0ed915dd437560c17da89de48214c569dfc447772cf1020dd7a07f068c;
+      expv[27] = 247'h00135ffd88b37344f2e338b1f8351a3d6b4ddfbe02cc4d3a5b9c87d2b2d4e2;
+      expv[28] = 247'h001a2fb29e12e0fcb5586ae8406088896690aa8975cb8872fce0d187359236;
+      expv[29] = 247'h003980a070028c088fd13ce36be7f42db4b25032c05332083b1d9008aebef2;
+      expv[30] = 247'h000dd74a7e74b75e8ebce834220622bbed216d0d82e2dd4831fba6c0185b8c;
+      expv[31] = 247'h001df095eb53781f31c97e1d1ecf58600617f245bf4de67dcf75dc40fbbda4;
+      expv[32] = 247'h002c9a0247f6f574ff185c566d16c4ceeaea692d8ff99ffb7c65734abc521e;
+      expv[33] = 247'h003c4a1d30cc27beee93607f9eb9ef793ec0207acf7c9ef9b00d83bef8e59d;
+      expv[34] = 247'h0028f06c5fd969c68e5d993071ad00f3ce2388612ee5ae12397e47e3e63520;
+      expv[35] = 247'h000c43673be7f60464aa2d61691cec12c12d34acf73b489352e8bd92a67574;
+      expv[36] = 247'h00388db9c2df290d647c42a205bfa2e3267a36e00b26ac3d61b1288916dbaf;
+      expv[37] = 247'h002c761a872b35b5e6c6c00168c9f8c18f0066e6cd8446fffd3fcac1bf8fcf;
+      expv[38] = 247'h0022f9d177f6fd644a4b62539535a2a4c015e346dbd9b4c1286de5eed552b1;
+      expv[39] = 247'h001ef4d7d83f0e8febbda21c593cf4880815d25d6aa8191fdef7aa3364aade;
+      expv[40] = 247'h0005dc10ac066080febfef285973fdfe1be3f07b389b9702f39fbcbf31ceaa;
+      expv[41] = 247'h001c1c2b8a4feab6c01ae5fd84fd8a6e26f070ae01368f9b0243feb593fe78;
+      expv[42] = 247'h002a5dd3ca0e9a883bee61ba4a909bb1ab33334e481a2816f53d82e8aa223d;
+      expv[43] = 247'h003bd2978a3bdc71da62087fb09781cdf8cf415eb8ce31d468cd21ff82da53;
+      expv[44] = 247'h003fd29fd69b7190483d4716fc75c37d73cb6a3f893d82c567bc5c48bd5f7f;
+      expv[45] = 247'h002bd9693dd8399e35d1fffba55874cf34c72ca49fa0763ad6c7fb6c846244;
+      expv[46] = 247'h0003085b38f4f5240daaa87e66eb2af00f882744e3c25d807ebcb5f183ace2;
+      expv[47] = 247'h000b419c2e7a941f26809997dac81d30910d872895f64bec8226621a4b247c;
+      expv[48] = 247'h003fbd8092747997c3d659f76b60cf73d73aa70f0fe8e39a0f10a1dfa5833b;
+      expv[49] = 247'h001b21cec31884d6693624bc66e08af4ef6897b944e663d824c9d675ff8694;
+      expv[50] = 247'h002542a33672447c1fe5df4c2410f299510c0a9ddde191a4e58526419bc3cc;
+      expv[51] = 247'h00030ec7fdc37b087e7fe282183e7b845078bb1f673bf860fd7f888c70f9f1;
+      expv[52] = 247'h002ab82c1bcf4a4e8b0f896edb37a940150669842b1908882c4ab5eb67dea4;
+      expv[53] = 247'h002a154eb1edf9a868cdb98d59bc788008aa7fea8ff76fa4ea32cd25e3d4e4;
+      expv[54] = 247'h0035c20e80d47871d783b36fa3940218493789364745c20756345d8c8e181b;
+      expv[55] = 247'h0039537cdaa45f9a6b61e0b87a1672d7afe569b36a126cbde90682a5687387;
+      expv[56] = 247'h000827157eda5fc2944afac4916a9a9b08b28c5cef691f0ed0abebd247ae6e;
+      expv[57] = 247'h003d487fedb55219b4796e6e3771973dfad4377c34de323e31e5b139f5c273;
+      expv[58] = 247'h003d11cd9fa88cf7b17db5870b3634dd644846f62262fbfc81d4f07c2c98d5;
+      expv[59] = 247'h0028a78c80e3ca212a25a99a132254f7026e10b6028f49948896be794c21cf;
+      expv[60] = 247'h003f7433e83bbb980dc728b185d718bbcbaff51ee2e1fe403d03a2c77f5e7f;
+      expv[61] = 247'h000e96804854b80aefdd52d915e1f0b7af4b3a09a57360aa2da7cb5596174c;
+      expv[62] = 247'h002384f431c589d1286c60cd2d47c5f73d5e38c54714254621bd8e34b71d11;
+      expv[63] = 247'h0001e04f0f182683c286d6269a2003df3d7789382e41981a0acb5c5a6acc12;
+      mismatches = 0;
+      shown = 0;
+      for (c = 0; c < N; c = c + 1) begin
+        bad = 0;
+        for (b = 0; b < OW; b = b + 1)
+          if (expv[c][b] !== 1'bx && act[c][b] !== expv[c][b]) bad = 1;
+        if (bad) begin
+          mismatches = mismatches + 1;
+          if (shown < 10) begin
+            $display("MISMATCH cycle %0d: inputs=%h expected=%h got=%h", c, stim[c], expv[c], act[c]);
+            shown = shown + 1;
+          end
+        end
+      end
+      if (mismatches == 0) $display("PASS %0d/%0d cycles", N, N);
+      else $display("FAIL %0d/%0d cycles mismatched", mismatches, N);
+    end
+    $finish;
+  end
+endmodule

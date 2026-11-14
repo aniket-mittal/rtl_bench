@@ -1,0 +1,252 @@
+{
+  "task_id": "infill__rtl-benchls__task2__mg_08794_block_16",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "mg_08794",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "instructionin",
+        "width": 32
+      },
+      {
+        "name": "datahazard",
+        "width": 1
+      },
+      {
+        "name": "DatabusAin",
+        "width": 32
+      },
+      {
+        "name": "DatabusBin",
+        "width": 32
+      },
+      {
+        "name": "immin",
+        "width": 32
+      },
+      {
+        "name": "PCplusin",
+        "width": 32
+      },
+      {
+        "name": "RegDstin",
+        "width": 2
+      },
+      {
+        "name": "RegWrin",
+        "width": 1
+      },
+      {
+        "name": "ALUSrc1in",
+        "width": 1
+      },
+      {
+        "name": "ALUSrc2in",
+        "width": 1
+      },
+      {
+        "name": "ALUFunin",
+        "width": 6
+      },
+      {
+        "name": "Signin",
+        "width": 1
+      },
+      {
+        "name": "MemWrin",
+        "width": 1
+      },
+      {
+        "name": "MemRdin",
+        "width": 1
+      },
+      {
+        "name": "MemtoRegin",
+        "width": 2
+      }
+    ],
+    "outputs": [
+      {
+        "name": "RegDstout",
+        "width": 2
+      },
+      {
+        "name": "RegWrout",
+        "width": 1
+      },
+      {
+        "name": "ALUSrc1out",
+        "width": 1
+      },
+      {
+        "name": "ALUSrc2out",
+        "width": 1
+      },
+      {
+        "name": "ALUFunout",
+        "width": 6
+      },
+      {
+        "name": "Signout",
+        "width": 1
+      },
+      {
+        "name": "MemWrout",
+        "width": 1
+      },
+      {
+        "name": "MemRdout",
+        "width": 1
+      },
+      {
+        "name": "MemtoRegout",
+        "width": 2
+      },
+      {
+        "name": "shamt",
+        "width": 5
+      },
+      {
+        "name": "Rsout",
+        "width": 5
+      },
+      {
+        "name": "Rtout",
+        "width": 5
+      },
+      {
+        "name": "Rdout",
+        "width": 5
+      },
+      {
+        "name": "DatabusAout",
+        "width": 32
+      },
+      {
+        "name": "DatabusBout",
+        "width": 32
+      },
+      {
+        "name": "immout",
+        "width": 32
+      },
+      {
+        "name": "PCplusout",
+        "width": 32
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "mg_08794.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "mg_08794.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "mg_08794.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2332569781
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/mg_08794_block_16",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "mg_08794_block_16",
+    "parent_design": "mg_08794",
+    "origin": "RTL-Dataset-MG-Verilog",
+    "origin_bucket": "S5",
+    "loc": 79,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 16,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "mg_08794",
+      "region_tokens": 143,
+      "region_chars": 705,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "6eac8e26303e91db468c1ce73aed9f96a99c49d9c819d8d73a4d29fbc5757859",
+    "upstream_golden_rtl_key": "mg_08794.v",
+    "upstream_masked_rtl_key": "mg_08794_masked.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_mg_08794.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "undefined_modules": [],
+    "dropped_files": [
+      "mg_08794_combined.v",
+      "sec_mg_08794.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "mg_08794",
+        "file": "<upstream-pool>/RTL_Datasets/MG-Verilog_sec_input/designs/mg_08794.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}
