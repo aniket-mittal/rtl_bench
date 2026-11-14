@@ -20,3 +20,7 @@ config.yaml
 *.fst
 *.log
 obj_dir/
+
+# Harness intermediate task JSONs and scratch
+taskgen/build/
+taskgen/harness/excluded*.jsonl

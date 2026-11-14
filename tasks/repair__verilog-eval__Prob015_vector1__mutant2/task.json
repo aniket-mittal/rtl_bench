@@ -1,0 +1,91 @@
+{
+  "task_id": "repair__verilog-eval__Prob015_vector1__mutant2",
+  "suite": "open_source",
+  "kind": "repair",
+  "difficulty": "easy",
+  "top_module": "dut",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "in",
+        "width": 16
+      }
+    ],
+    "outputs": [
+      {
+        "name": "out_hi",
+        "width": 8
+      },
+      {
+        "name": "out_lo",
+        "width": 8
+      }
+    ]
+  },
+  "files": {
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3482649053
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob015_vector1/mutant_2/repair",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob015_vector1_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Unintended logic operation on data path",
+    "solve_rate": 1.0,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 1,
+    "mutant_index": 2,
+    "mutant_hash": "5e6a304fe476be6cdc79cc0f87cd69618eb29ced6b96ed6429dfb101d41f6902",
+    "original_design_hash": "92681045117b67b695dd5756386873bccc8e0d46b16a46268361e20fb9037be1",
+    "other_valid_specs": 1
+  }
+}

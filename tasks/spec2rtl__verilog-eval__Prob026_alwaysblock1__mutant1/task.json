@@ -1,0 +1,95 @@
+{
+  "task_id": "spec2rtl__verilog-eval__Prob026_alwaysblock1__mutant1",
+  "suite": "open_source",
+  "kind": "spec_to_rtl",
+  "difficulty": "easy",
+  "top_module": "dut",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "a",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "out_assign",
+        "width": 1
+      },
+      {
+        "name": "out_alwaysblock",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 958936220
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob026_alwaysblock1/mutant_1/spec_to_rtl",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob026_alwaysblock1_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Input inversion / missing negation on one operand",
+    "solve_rate": 1.0,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 1,
+    "mutant_index": 1,
+    "mutant_hash": "892190cfb54ba5140565b282b2f216d791d83b34eb0b66d87837f45de5b8f7bb",
+    "original_design_hash": "99942316002bcec7e4593182c68851e1e4c20f550a1ab0c316d4c9d2dabd5cbc",
+    "other_valid_specs": 1
+  }
+}

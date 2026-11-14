@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "task_id": "examples/alu8/repair",
+  "suite": "examples",
+  "kind": "repair",
+  "difficulty": "easy",
+  "spec": "`alu8` is a purely combinational 8-bit ALU.\n\nInputs `a[7:0]`, `b[7:0]`, `op[1:0]`; output `y[7:0]` and `zero`.\n\n| op | y |\n|---|---|\n| 0 | a + b (mod 256) |\n| 1 | a - b (mod 256) |\n| 2 | a & b |\n| 3 | a ^ b |\n\n`zero` is 1 exactly when `y` is 0.\n",
+  "top_module": "alu8",
+  "files": {
+    "rtl/alu8.v": "module alu8(input [7:0] a, input [7:0] b, input [1:0] op, output reg [7:0] y, output zero);\n  always @(*) begin\n    case (op)\n      2'd0: y = a + b;\n      2'd1: y = a - b;\n      2'd2: y = a & b;\n      default: y = a | b;\n    endcase\n  end\n  assign zero = (y == 8'd0);\nendmodule\n"
+  },
+  "editable": [
+    "rtl/alu8.v"
+  ],
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 30,
+    "wall_time_s": 600,
+    "tool_timeout_s": 60
+  },
+  "public_tests": {
+    "kind": "vectors",
+    "cycles": 64,
+    "stimulus": [
+      "11b9e",
+      "0887b",
+      "0b340",
+      "28dbe",
+      "1a621",
+      "21453",
+      "04662",
+      "15e21",
+      "07403",
+      "179f0",
+      "07118",
+      "1cff9",
+      "17e84",
+      "26dfa",
+      "0a4b2",
+      "1c435",
+      "25270",
+      "16880",
+      "36c5f",
+      "3b487",
+      "2bf4d",
+      "13887",
+      "3a298",
+      "377b2",
+      "0d0cf",
+      "25c67",
+      "1e9f2",
+      "3046f",
+      "38f2b",
+      "11cb2",
+      "1f81b",
+      "3a773",
+      "0f00a",
+      "03549",
+      "3dcbd",
+      "27187",
+      "1b642",
+      "24a01",
+      "11238",
+      "3f91c",
+      "028e9",
+      "1fbf3",
+      "238aa",
+      "3606c",
+      "018b3",
+      "2c5b2",
+      "1074a",
+      "08642",
+      "0cc1d",
+      "16f5d",
+      "16331",
+      "271ce",
+      "0ecd8",
+      "12d65",
+      "3216f",
+      "09ea0",
+      "2f527",
+      "3e7ed",
+      "3d7d3",
+      "0e3cb",
+      "2940b",
+      "2e6e8",
+      "1449c",
+      "091c4"
+    ],
+    "expected": [
+      "08c",
+      "078",
+      "1f8",
+      "046",
+      "1c2",
+      "122",
+      "020",
+      "19e",
+      "03a",
+      "1b4",
+      "0c4",
+      "0ea",
+      "001",
+      "034",
+      "050",
+      "0c8",
+      "060",
+      "0f4",
+      "198",
+      "198",
+      "1b8",
+      "0de",
+      "11c",
+      "198",
+      "00e",
+      "11c",
+      "0f0",
+      "1b4",
+      "052",
+      "008",
+      "0f0",
+      "06a",
+      "001",
+      "176",
+      "190",
+      "1fa",
+      "001",
+      "024",
+      "1a4",
+      "08a",
+      "1a0",
+      "104",
+      "014",
+      "1e6",
+      "054",
+      "040",
+      "080",
+      "001",
+      "058",
+      "108",
+      "118",
+      "020",
+      "0e2",
+      "1e4",
+      "126",
+      "19e",
+      "1e8",
+      "1fc",
+      "002",
+      "194",
+      "14e",
+      "0e6",
+      "0f0",
+      "12a"
+    ]
+  },
+  "hidden": {
+    "reference_files": {
+      "rtl/alu8.v": "module alu8(input [7:0] a, input [7:0] b, input [1:0] op, output reg [7:0] y, output zero);\n  always @(*) begin\n    case (op)\n      2'd0: y = a + b;\n      2'd1: y = a - b;\n      2'd2: y = a & b;\n      default: y = a ^ b;\n    endcase\n  end\n  assign zero = (y == 8'd0);\nendmodule\n"
+    },
+    "reference_top": "alu8",
+    "hidden_vectors": {
+      "cycles": 500,
+      "seed": 11
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 20,
+      "timeout_s": 60,
+      "accept_bounded": true
+    }
+  },
+  "provenance": {
+    "generator": "hand-written harness example",
+    "bug_type": "wrong_operator"
+  },
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "a",
+        "width": 8
+      },
+      {
+        "name": "b",
+        "width": 8
+      },
+      {
+        "name": "op",
+        "width": 2
+      }
+    ],
+    "outputs": [
+      {
+        "name": "y",
+        "width": 8
+      },
+      {
+        "name": "zero",
+        "width": 1
+      }
+    ]
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "task_id": "examples/rca4/infill",
+  "suite": "examples",
+  "kind": "infill",
+  "difficulty": "easy",
+  "spec": "`rca4` is a 4-bit ripple-carry adder built from the `full_adder` cells in `rtl/lib.v`: `{cout, s} = a + b + cin`.",
+  "top_module": "rca4",
+  "files": {
+    "rtl/rca4.v": "module rca4(input [3:0] a, input [3:0] b, input cin, output [3:0] s, output cout);\n  wire [4:0] c;\n  assign c[0] = cin;\n  genvar i;\n  generate for (i = 0; i < 4; i = i + 1) begin : g\n    [MASKED]\n  end endgenerate\n  assign cout = c[4];\nendmodule\n",
+    "rtl/lib.v": "module full_adder(input a, input b, input cin, output s, output cout);\n  assign s = a ^ b ^ cin;\n  assign cout = (a & b) | (cin & (a ^ b));\nendmodule\n"
+  },
+  "editable": [
+    "rtl/rca4.v"
+  ],
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 30,
+    "wall_time_s": 600,
+    "tool_timeout_s": 60
+  },
+  "public_tests": {
+    "kind": "vectors",
+    "cycles": 64,
+    "stimulus": [
+      "186",
+      "009",
+      "05f",
+      "02e",
+      "07c",
+      "041",
+      "144",
+      "147",
+      "1bf",
+      "1d6",
+      "178",
+      "1e1",
+      "1b0",
+      "157",
+      "145",
+      "0c0",
+      "16b",
+      "1a3",
+      "1c0",
+      "075",
+      "050",
+      "149",
+      "12c",
+      "06b",
+      "151",
+      "0fe",
+      "02d",
+      "1e6",
+      "185",
+      "176",
+      "03e",
+      "1c8",
+      "1de",
+      "11a",
+      "18a",
+      "1d9",
+      "068",
+      "193",
+      "0b7",
+      "016",
+      "0eb",
+      "0cc",
+      "1b5",
+      "058",
+      "0b6",
+      "1c8",
+      "138",
+      "05a",
+      "17b",
+      "0d2",
+      "039",
+      "034",
+      "008",
+      "0e1",
+      "1dd",
+      "018",
+      "11c",
+      "05c",
+      "0a3",
+      "182",
+      "054",
+      "1dc",
+      "0c1",
+      "0e8"
+    ],
+    "expected": [
+      "1e",
+      "0a",
+      "05",
+      "10",
+      "03",
+      "06",
+      "18",
+      "1c",
+      "1b",
+      "13",
+      "0f",
+      "01",
+      "0b",
+      "0d",
+      "1a",
+      "0c",
+      "03",
+      "1e",
+      "1c",
+      "1c",
+      "14",
+      "1e",
+      "1e",
+      "12",
+      "07",
+      "0d",
+      "10",
+      "05",
+      "1e",
+      "0d",
+      "01",
+      "05",
+      "1b",
+      "0b",
+      "03",
+      "17",
+      "0e",
+      "0d",
+      "03",
+      "16",
+      "1a",
+      "18",
+      "11",
+      "1c",
+      "01",
+      "05",
+      "0b",
+      "1e",
+      "13",
+      "1e",
+      "1c",
+      "16",
+      "08",
+      "10",
+      "1b",
+      "18",
+      "0d",
+      "01",
+      "0e",
+      "1a",
+      "18",
+      "19",
+      "0e",
+      "16"
+    ]
+  },
+  "hidden": {
+    "reference_files": {
+      "rtl/rca4.v": "module rca4(input [3:0] a, input [3:0] b, input cin, output [3:0] s, output cout);\n  wire [4:0] c;\n  assign c[0] = cin;\n  genvar i;\n  generate for (i = 0; i < 4; i = i + 1) begin : g\n    full_adder fa(.a(a[i]), .b(b[i]), .cin(c[i]), .s(s[i]), .cout(c[i+1]));\n  end endgenerate\n  assign cout = c[4];\nendmodule\n"
+    },
+    "reference_top": "rca4",
+    "hidden_vectors": {
+      "cycles": 300,
+      "seed": 3
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 20,
+      "timeout_s": 60,
+      "accept_bounded": true
+    }
+  },
+  "provenance": {
+    "generator": "hand-written harness example"
+  },
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "a",
+        "width": 4
+      },
+      {
+        "name": "b",
+        "width": 4
+      },
+      {
+        "name": "cin",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "s",
+        "width": 4
+      },
+      {
+        "name": "cout",
+        "width": 1
+      }
+    ]
+  }
+}
