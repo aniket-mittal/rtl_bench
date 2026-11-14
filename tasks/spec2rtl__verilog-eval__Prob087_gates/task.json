@@ -1,0 +1,130 @@
+{
+  "task_id": "spec2rtl__verilog-eval__Prob087_gates",
+  "suite": "verilog-eval",
+  "kind": "spec_to_rtl",
+  "difficulty": "unknown",
+  "top_module": "TopModule",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "a",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "out_and",
+        "width": 1
+      },
+      {
+        "name": "out_or",
+        "width": 1
+      },
+      {
+        "name": "out_xor",
+        "width": 1
+      },
+      {
+        "name": "out_nand",
+        "width": 1
+      },
+      {
+        "name": "out_nor",
+        "width": 1
+      },
+      {
+        "name": "out_xnor",
+        "width": 1
+      },
+      {
+        "name": "out_anotb",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "TopModule.sv",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "TopModule.sv"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "TopModule.sv": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1883670765
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob087_gates/spec_to_rtl",
+  "provenance": {
+    "source": "verilog-eval",
+    "problem": "Prob087_gates",
+    "prompt_file": "sources/verilog-eval/Prob087_gates_prompt.txt",
+    "reference_file": "sources/verilog-eval/Prob087_gates_ref.sv",
+    "reference_module_renamed": {
+      "from": "RefModule",
+      "to": "TopModule"
+    },
+    "reference_ports": [
+      "a",
+      "b",
+      "out_and",
+      "out_or",
+      "out_xor",
+      "out_nand",
+      "out_nor",
+      "out_xnor",
+      "out_anotb"
+    ],
+    "license": {
+      "license": "MIT",
+      "upstream": "https://github.com/NVlabs/verilog-eval",
+      "upstream_commit": "c498220"
+    },
+    "converter": "harness/convert_specs.py"
+  }
+}

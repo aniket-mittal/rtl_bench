@@ -1,0 +1,107 @@
+{
+  "task_id": "spec2rtl__rtllm__comparator_3bit",
+  "suite": "rtllm",
+  "kind": "spec_to_rtl",
+  "difficulty": "unknown",
+  "top_module": "comparator_3bit",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "A",
+        "width": 3
+      },
+      {
+        "name": "B",
+        "width": 3
+      }
+    ],
+    "outputs": [
+      {
+        "name": "A_greater",
+        "width": 1
+      },
+      {
+        "name": "A_equal",
+        "width": 1
+      },
+      {
+        "name": "A_less",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "comparator_3bit.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "comparator_3bit.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "comparator_3bit.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 4021084984
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtllm/comparator_3bit/spec_to_rtl",
+  "provenance": {
+    "source": "rtllm",
+    "design": "comparator_3bit",
+    "description_file": "sources/rtllm/comparator_3bit/design_description.txt",
+    "reference_file": "sources/rtllm/comparator_3bit/verified_comparator_3bit.v",
+    "reference_module_renamed": null,
+    "reference_ports": [
+      "A",
+      "B",
+      "A_greater",
+      "A_equal",
+      "A_less"
+    ],
+    "license": {
+      "license": "see upstream",
+      "upstream": "https://github.com/hkust-zhiyao/RTLLM",
+      "note": "Per sources/README.md: RTLLM LICENSE was not copied; see upstream."
+    },
+    "converter": "harness/convert_specs.py"
+  }
+}

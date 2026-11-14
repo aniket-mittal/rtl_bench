@@ -1,0 +1,14 @@
+// Starter skeleton: implement alu as described in spec.md.
+module alu (
+  input [31:0] a,
+  input [31:0] b,
+  input [5:0] aluc,
+  output [31:0] r,
+  output zero,
+  output carry,
+  output negative,
+  output overflow,
+  output flag
+);
+
+endmodule

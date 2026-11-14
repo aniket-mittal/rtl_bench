@@ -1,0 +1,167 @@
+{
+  "task_id": "infill__rtl-benchls__task2__rtlpp_09585_block_0",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "rtlpp_09585",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "reset",
+        "width": 1
+      },
+      {
+        "name": "enable",
+        "width": 1
+      },
+      {
+        "name": "address",
+        "width": 32
+      },
+      {
+        "name": "start",
+        "width": 1
+      },
+      {
+        "name": "waitrequest",
+        "width": 1
+      },
+      {
+        "name": "stall",
+        "width": 1
+      },
+      {
+        "name": "fifo_data",
+        "width": 32
+      },
+      {
+        "name": "fifo_empty",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "write_data",
+        "width": 32
+      },
+      {
+        "name": "fifo_readack",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "rtlpp_09585.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "rtlpp_09585.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "rtlpp_09585.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 984868014
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/rtlpp_09585_block_0",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "rtlpp_09585_block_0",
+    "parent_design": "rtlpp_09585",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 93,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 0,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 5,
+      "index_in_range": true,
+      "block_kind": "always",
+      "in_module": "rtlpp_09585",
+      "region_tokens": 32,
+      "region_chars": 251,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "e6f7f9feae40713eefaa4ce047b742d6b81b953e4fab49b4ac0cb8388f6a5210",
+    "upstream_golden_rtl_key": "rtlpp_09585.v",
+    "upstream_masked_rtl_key": "rtlpp_09585_masked.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_rtlpp_09585.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "undefined_modules": [],
+    "dropped_files": [
+      "rtlpp_09585_combined.v",
+      "sec_rtlpp_09585.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "rtlpp_09585",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_09585.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

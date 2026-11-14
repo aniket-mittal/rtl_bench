@@ -1,0 +1,136 @@
+{
+  "task_id": "infill__rtl-benchls__task2__sync3d_module_0",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "sync3d",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "d",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "q",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "sync3d.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "sync3d.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "sync3d.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2333623366
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/sync3d_module_0",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "sync3d_module_0",
+    "parent_design": "sync3d",
+    "origin": "SEC-Flow-Star-repos-3.nvdia-hw",
+    "origin_bucket": "S1",
+    "loc": 23,
+    "design_type": "sequential",
+    "mask_type": "module",
+    "mask_index": 0,
+    "mask_target_module": "p_SSYNC3DO",
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "module_body",
+      "target_module": "p_SSYNC3DO",
+      "region_chars": 223,
+      "region_tokens": 45,
+      "target_is_top": false
+    },
+    "upstream_ref_rtl_sha256": "331d4063e195cda8ae0b740e93727b623dbd915e72a66db4c84bd48d72e001f8",
+    "upstream_golden_rtl_key": "sync3d_combined.v",
+    "upstream_masked_rtl_key": "sync3d_masked.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_sync3d.tcl"
+    },
+    "lib_v": "redundant (all modules already in design file)",
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_sync3d.tcl",
+      "sync3d.v"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "sync3d",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/3.nvdia-hw/vmod/vlibs/sync3d.v"
+      },
+      "deps": [
+        {
+          "module": "first_stage_of_sync",
+          "file": "<upstream-pool>/Infructructure-Agents/Star-repos/3.nvdia-hw/vmod/vlibs/p_SSYNC3DO.v"
+        },
+        {
+          "module": "p_SSYNC3DO",
+          "file": "<upstream-pool>/Infructructure-Agents/Star-repos/3.nvdia-hw/vmod/vlibs/p_SSYNC3DO.v"
+        }
+      ],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

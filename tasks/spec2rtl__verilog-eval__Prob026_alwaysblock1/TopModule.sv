@@ -1,0 +1,9 @@
+// Starter skeleton: implement TopModule as described in spec.md.
+module TopModule (
+  input a,
+  input b,
+  output out_assign,
+  output out_alwaysblock
+);
+
+endmodule

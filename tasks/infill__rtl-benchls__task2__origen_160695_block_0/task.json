@@ -1,0 +1,152 @@
+{
+  "task_id": "infill__rtl-benchls__task2__origen_160695_block_0",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_160695",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "alu_op",
+        "width": 2
+      },
+      {
+        "name": "funct",
+        "width": 6
+      }
+    ],
+    "outputs": [
+      {
+        "name": "alu_ctrl",
+        "width": 3
+      },
+      {
+        "name": "pc_jr_sel",
+        "width": 1
+      },
+      {
+        "name": "rf_mult_shift_wd_sel",
+        "width": 1
+      },
+      {
+        "name": "mult_we",
+        "width": 1
+      },
+      {
+        "name": "mult_hilo_sel",
+        "width": 1
+      },
+      {
+        "name": "mult_shift_sel",
+        "width": 1
+      },
+      {
+        "name": "sl_or_sr",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_160695.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_160695.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_160695.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 10026774
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/origen_160695_block_0",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "origen_160695_block_0",
+    "parent_design": "origen_160695",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 97,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 0,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": true,
+      "block_kind": "always",
+      "in_module": "origen_160695",
+      "region_tokens": 304,
+      "region_chars": 2860,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "d4c3c2f286348e520de80a2519ede03a7e0dfb35501694946a3300e774f09ace",
+    "upstream_golden_rtl_key": "origen_160695.v",
+    "upstream_masked_rtl_key": "origen_160695_masked.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_origen_160695.do"
+    },
+    "lib_v": "absent",
+    "undefined_modules": [],
+    "dropped_files": [
+      "conformal_rtl_origen_160695.do"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

@@ -540,8 +540,38 @@ def _load_design_script(root, top, newname):
             "rename %s %s\n" % (_yosys_read_cmds(root, files), _q(top), _q(top), _q(top), newname))
 
 
+STRUCTURAL_TIMEOUT_S = 60
+
+
+def _load_pair_script(gold_root, gold_top, gate_root, gate_top):
+    return (
+        _load_design_script(gold_root, gold_top, "rtltask_gold")
+        + "design -stash gold\ndesign -reset-vlog\n"
+        + _load_design_script(gate_root, gate_top, "rtltask_gate")
+        + "design -stash gate\ndesign -reset-vlog\n"
+        + "design -copy-from gold -as rtltask_gold rtltask_gold\n"
+        + "design -copy-from gate -as rtltask_gate rtltask_gate\n"
+    )
+
+
+def structural_equiv(td, gold_root, gold_top, gate_root, gate_top, timeout):
+    """Fast first pass: Yosys equiv_make/equiv_simple/equiv_induct. Matches signals by name, so it proves
+    near-identical designs (most correct infill/repair submissions) in seconds. True only if every $equiv cell
+    is proven; anything else (unproven, error, timeout) returns False and the caller falls back to the SAT miter."""
+    script = (_load_pair_script(gold_root, gold_top, gate_root, gate_top)
+              + "async2sync\n"
+              + "equiv_make rtltask_gold rtltask_gate rtltask_equiv\n"
+              + "hierarchy -top rtltask_equiv\n"
+              + "equiv_simple -seq 5\nequiv_induct -seq 5\nequiv_status -assert\n")
+    sp = Path(td) / "structural.ys"
+    sp.write_text(script)
+    rc, out = run([YOSYS, "-q", "-s", str(sp)], cwd=td, timeout=timeout)
+    return rc == 0
+
+
 def formal_check(task, sub_tree, sub_top=None):
-    """Yosys miter + sat -tempinduct of submission vs reference. Returns (status, detail)."""
+    """Submission vs reference: structural equivalence first, then Yosys miter + sat -tempinduct.
+    Returns (status, detail)."""
     fs = formal_settings(task)
     sub_top = sub_top or task["top_module"]
     with tempfile.TemporaryDirectory(prefix="rtltask_formal_") as td:
@@ -553,13 +583,11 @@ def formal_check(task, sub_tree, sub_top=None):
             return "error", "reference has no HDL files"
         if not hdl_files(gate_root):
             return "error", "submission has no HDL files"
+        if structural_equiv(td, gold_root, reference_top(task), gate_root, sub_top,
+                            min(STRUCTURAL_TIMEOUT_S, float(fs.get("timeout_s", 120)))):
+            return "equivalent", "structural (equiv_induct)"
         script = (
-            _load_design_script(gold_root, reference_top(task), "rtltask_gold")
-            + "design -stash gold\ndesign -reset-vlog\n"
-            + _load_design_script(gate_root, sub_top, "rtltask_gate")
-            + "design -stash gate\ndesign -reset-vlog\n"
-            + "design -copy-from gold -as rtltask_gold rtltask_gold\n"
-            + "design -copy-from gate -as rtltask_gate rtltask_gate\n"
+            _load_pair_script(gold_root, reference_top(task), gate_root, sub_top)
             + "clk2fflogic\n"
             + "miter -equiv -flatten -ignore_gold_x rtltask_gold rtltask_gate rtltask_miter\n"
             + "hierarchy -top rtltask_miter\n"
