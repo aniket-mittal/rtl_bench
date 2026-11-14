@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob026_alwaysblock1/mutant_1",
+  "source": "sources/verilog-eval/Prob026_alwaysblock1_ref.sv",
+  "bug_type": "Input inversion / missing negation on one operand",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "892190cfb54ba5140565b282b2f216d791d83b34eb0b66d87837f45de5b8f7bb",
+  "original_design_hash": "99942316002bcec7e4593182c68851e1e4c20f550a1ab0c316d4c9d2dabd5cbc",
+  "original_code": "\n\nmodule dut\n(\n  input a,\n  input b,\n  output out_assign,\n  output reg out_alwaysblock\n);\n\n  assign out_assign = a & b;\n\n  always @(*) out_alwaysblock = a & b;\n\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Two-Output Logic Gate Module**\n\nDesign a purely combinational Verilog module named `dut` that takes two single-bit inputs and produces two single-bit outputs, each computed from the inputs by a different logic function.\n\n**Ports**\n\n| Name | Direction | Width |\n|---|---|---|\n| `a` | input | 1 bit |\n| `b` | input | 1 bit |\n| `out_assign` | output | 1 bit |\n| `out_alwaysblock` | output | 1 bit (declared as a variable type, i.e., `reg`) |\n\n**Required behavior**\n\n- `out_assign` must be 1 only when both `a` and `b` are 1. For every other input combination it must be 0.\n- `out_alwaysblock` must be 1 only when `a` is 1 and `b` is 0. For every other input combination it must be 0.\n\n**Requirements and constraints**\n\n- The design has no clock and no reset. There is no state: both outputs must respond immediately to any change on either input.\n- Both outputs must be fully defined for all four input combinations (no latches, no don't-care or unknown values).\n- Note that the two outputs are not symmetric: `out_assign` depends on `b` directly, while `out_alwaysblock` depends on the inverse of `b`.\n- The port names, directions, and widths must match the table exactly, since the module will be checked by formal equivalence against a reference design.\n\n**Truth table**\n\n| a | b | out_assign | out_alwaysblock |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n| 0 | 1 | 0 | 0 |\n| 1 | 0 | 0 | 1 |\n| 1 | 1 | 1 | 0 |\n\nImplement the module so that it satisfies this truth table for all inputs."
+    }
+  ]
+}

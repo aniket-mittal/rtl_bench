@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob047_dff8ar/mutant_3",
+  "source": "sources/verilog-eval/Prob047_dff8ar_ref.sv",
+  "bug_type": "Blocking vs non-blocking assignment misuse or data corruption",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "64d94fd0eb124d0a4fb861b643aba8cd85e475255c96f14acbf2f68ffdd6c8a4",
+  "original_design_hash": "c84b91076902e4cba7028a06f1871c403eea04c1811bc53a2897c27645f758ff",
+  "original_code": "\n\nmodule dut\n(\n  input clk,\n  input [7:0] d,\n  input areset,\n  output reg [7:0] q\n);\n\n\n  always @(posedge clk or posedge areset) if(areset) q <= 0; \n  else q <= d;\n\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Registered Byte Filter with Asynchronous Reset**\n\nDesign a Verilog module named `dut` with the following ports:\n\n| Port     | Direction | Width | Description                      |\n|----------|-----------|-------|----------------------------------|\n| `clk`    | input     | 1     | Clock signal                     |\n| `d`      | input     | 8     | Data input                       |\n| `areset` | input     | 1     | Active-high asynchronous reset   |\n| `q`      | output    | 8     | Registered data output           |\n\n**Behavior:**\n\nThe module is an 8-bit register that captures a modified version of the input data on each rising edge of `clk`.\n\n- **Reset:** When `areset` is asserted (high), `q` must immediately be cleared to all zeros, independent of the clock. The reset is asynchronous: it takes effect as soon as `areset` goes high, and it overrides any clocking activity while it is held high.\n- **Normal operation:** When `areset` is low, on every rising edge of `clk`, `q` is updated with the value of `d`, except that the least significant bit (bit 0) is always forced to 0. The remaining seven bits (bits 7 down to 1) are passed through from `d` unchanged.\n- **Timing:** The output `q` changes only on a rising clock edge or when `areset` rises. It holds its value between those events. There is no combinational path from `d` to `q`.\n- **Edge cases:** Bit 0 of `q` is always 0 after any reset or clock update, regardless of the value of `d[0]`. Deasserting `areset` does not by itself change `q`; the next update occurs at the next rising edge of `clk`.\n\nImplement the module so that its input/output behavior matches the description exactly. The module name, port names, directions, and widths must match the table above."
+    }
+  ]
+}

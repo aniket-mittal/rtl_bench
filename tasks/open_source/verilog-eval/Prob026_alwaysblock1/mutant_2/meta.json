@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob026_alwaysblock1/mutant_2",
+  "source": "sources/verilog-eval/Prob026_alwaysblock1_ref.sv",
+  "bug_type": "Wrong logical operator (XOR substitution)",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "b073a6b87e5972ab0d26d860e98c5c7d642a6ad1ee4824db1d4efa68667ed813",
+  "original_design_hash": "99942316002bcec7e4593182c68851e1e4c20f550a1ab0c316d4c9d2dabd5cbc",
+  "original_code": "\n\nmodule dut\n(\n  input a,\n  input b,\n  output out_assign,\n  output reg out_alwaysblock\n);\n\n  assign out_assign = a & b;\n\n  always @(*) out_alwaysblock = a & b;\n\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Two Gates, Two Coding Styles**\n\nDesign a purely combinational Verilog module named `dut` that takes two single-bit inputs and produces two single-bit outputs, each computed from the inputs by a different logic function.\n\n**Ports**\n\n| Name | Direction | Width |\n|---|---|---|\n| `a` | input | 1 |\n| `b` | input | 1 |\n| `out_assign` | output | 1 |\n| `out_alwaysblock` | output (must be declared as a `reg`-type variable) | 1 |\n\n**Required behavior**\n\n- `out_assign` must be high only when both `a` and `b` are high. It should be driven by a continuous assignment.\n- `out_alwaysblock` must be high only when `a` and `b` have different values. It should be driven from a combinational procedural block that is sensitive to all of its inputs.\n\nThere is no clock and no reset. Neither output may hold state: each output must respond immediately to any change on `a` or `b`, and must depend only on the current input values. No latches or sequential elements are allowed.\n\n**Truth table**\n\n| a | b | out_assign | out_alwaysblock |\n|---|---|---|---|\n| 0 | 0 | 0 | 0 |\n| 0 | 1 | 0 | 1 |\n| 1 | 0 | 0 | 1 |\n| 1 | 1 | 1 | 0 |\n\nYour module will be checked for formal equivalence against a reference design, so the module name, port names, directions, and widths must match exactly as specified above."
+    }
+  ]
+}

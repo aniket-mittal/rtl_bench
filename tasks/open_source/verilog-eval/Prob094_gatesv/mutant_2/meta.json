@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob094_gatesv/mutant_2",
+  "source": "sources/verilog-eval/Prob094_gatesv_ref.sv",
+  "bug_type": "Output bit assignment/index mismatch",
+  "difficulty": "medium",
+  "solve_rate": 0.5,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "2c7239a574e320b0297f46df944d141f64ad11f6a2bef56be05683361fce2c80",
+  "original_design_hash": "ba2ab38efdfb09fdf5a7379374b1c80a638fe10e782f944c2671f34d1f1a79c5",
+  "original_code": "\n\nmodule dut\n(\n  input [3:0] in,\n  output [3:0] out_both,\n  output [3:0] out_any,\n  output [3:0] out_different\n);\n\n  assign out_both[2:0] = in[2:0] & in[3:1];\n  assign out_any[3:1] = in[2:0] | in[3:1];\n  assign out_different = in ^ { in[0], in[3:1] };\n  assign out_both[3] = 1'bx;\n  assign out_any[0] = 1'bx;\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Neighbor Comparison (4-bit)**\n\nDesign a purely combinational Verilog module named `dut` with the following ports:\n\n| Port | Direction | Width |\n|---|---|---|\n| `in` | input | 4 bits `[3:0]` |\n| `out_both` | output | 4 bits `[3:0]` |\n| `out_any` | output | 4 bits `[3:0]` |\n| `out_different` | output | 4 bits `[3:0]` |\n\nThe module compares each bit of `in` with a neighboring bit. There is no clock and no reset.\n\n**`out_different`**: Each bit `i` is 1 when `in[i]` differs from `in[i+1]`. The comparison wraps around, so `out_different[3]` compares `in[3]` with `in[0]`.\n\n**`out_both`**: Each bit `i` for `i` = 1 and 2 is 1 only when both `in[i]` and `in[i-1]` are 1. Bit 3 does not follow this pattern. It is driven only with an unknown value (`1'bx`), and no function of `in` may appear on it. Bit 0 is left completely undriven, so it floats to high impedance (`z`).\n\n**`out_any`**: Each bit `i` for `i` = 1, 2 and 3 is 1 when at least one of `in[i]` and `in[i-1]` is 1. Bit 0 is driven only with an unknown value (`1'bx`).\n\n**Examples:**\n- `in = 4'b0110` gives `out_different = 4'b0101`, `out_both[2:1] = 2'b11`, and `out_any[3:1] = 3'b111`.\n- `in = 4'b1001` gives `out_different = 4'b0101`, `out_both[2:1] = 2'b00`, and `out_any[3:1] = 3'b101`.\n\nImplement the module so it matches this behavior exactly, including the unknown and undriven output bits."
+    }
+  ]
+}

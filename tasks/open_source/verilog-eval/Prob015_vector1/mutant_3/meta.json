@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob015_vector1/mutant_3",
+  "source": "sources/verilog-eval/Prob015_vector1_ref.sv",
+  "bug_type": "Unwanted logic inversion",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "efca786a10ebc1d8e08778ce15594e9e9cc5a035e4fb417ca4e8d99a5d9ec994",
+  "original_design_hash": "92681045117b67b695dd5756386873bccc8e0d46b16a46268361e20fb9037be1",
+  "original_code": "\n\nmodule dut\n(\n  input [15:0] in,\n  output [7:0] out_hi,\n  output [7:0] out_lo\n);\n\n  assign { out_hi, out_lo } = in;\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Split Inverted Bus**\n\nDesign a purely combinational Verilog module named `dut` that takes a 16-bit input bus, inverts every bit, and presents the inverted result split across two 8-bit output buses.\n\n**Ports**\n\n| Name     | Direction | Width  |\n|----------|-----------|--------|\n| `in`     | input     | 16 bits (`[15:0]`) |\n| `out_hi` | output    | 8 bits (`[7:0]`)  |\n| `out_lo` | output    | 8 bits (`[7:0]`)  |\n\n**Required behavior**\n\n- Every bit of `in` is logically complemented.\n- The upper half of the complemented value (bits 15 down to 8) appears on `out_hi`, with the most significant bit of the complemented value on `out_hi[7]`.\n- The lower half of the complemented value (bits 7 down to 0) appears on `out_lo`, with the least significant bit of the complemented value on `out_lo[0]`.\n- In other words, treating `{out_hi, out_lo}` as a single 16-bit value, it must always equal the bitwise NOT of `in`.\n\n**Constraints**\n\n- The circuit has no clock and no reset, and it holds no state. Outputs must respond immediately to any change on `in`.\n- There are no special cases: all 65,536 input values follow the same rule.\n- Bit ordering must be preserved. Do not reverse or swap bits within or between the two halves.\n\n**Examples**\n\n| `in`     | `out_hi` | `out_lo` |\n|----------|----------|----------|\n| `16'h0000` | `8'hFF`  | `8'hFF`  |\n| `16'hFFFF` | `8'h00`  | `8'h00`  |\n| `16'h12AB` | `8'hED`  | `8'h54`  |\n| `16'hF00F` | `8'h0F`  | `8'hF0`  |\n\nWrite the module so that it is equivalent to this specification for every input."
+    }
+  ]
+}

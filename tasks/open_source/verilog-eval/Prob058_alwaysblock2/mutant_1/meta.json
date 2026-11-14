@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob058_alwaysblock2/mutant_1",
+  "source": "sources/verilog-eval/Prob058_alwaysblock2_ref.sv",
+  "bug_type": "Input operand mix-up",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "19c736f3549a0c163d4a0a717837783c61c773f3e8735f5daa465e0fa3a49ca1",
+  "original_design_hash": "4cd4daa7ad45a4f87b99ad2498b494f78dd68c8acb0de62742385760a0714a6b",
+  "original_code": "\n\nmodule dut\n(\n  input clk,\n  input a,\n  input b,\n  output out_assign,\n  output reg out_always_comb,\n  output reg out_always_ff\n);\n\n  assign out_assign = a ^ b;\n\n  always @(*) out_always_comb = a ^ b;\n\n\n  always @(posedge clk) out_always_ff <= a ^ b;\n\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Three Flavors of XOR**\n\nDesign a Verilog module named `dut` that produces three outputs from two single-bit inputs, each generated in a different way.\n\n**Ports**\n\n| Name | Direction | Width |\n|---|---|---|\n| `clk` | input | 1 |\n| `a` | input | 1 |\n| `b` | input | 1 |\n| `out_assign` | output | 1 |\n| `out_always_comb` | output | 1 |\n| `out_always_ff` | output | 1 |\n\n**Required behavior**\n\n1. `out_assign` is a purely combinational output. It is 1 exactly when `a` and `b` have different values, and 0 otherwise. It reflects input changes immediately.\n\n2. `out_always_comb` is also purely combinational, but it does not depend on `b`. Its value is determined solely by `a` in a way that makes it the same for every input combination. Whatever the inputs are, this output must always evaluate to the same constant value. Your design must implement this behavior exactly, even though it may look unintended.\n\n3. `out_always_ff` is a registered output. On every rising edge of `clk`, it captures the value that `out_assign` has at that moment (1 if `a` and `b` differ, 0 otherwise). Between clock edges it holds its value. Changes on `a` or `b` do not affect it until the next rising edge.\n\n**Notes**\n\n- There is no reset signal. The initial value of `out_always_ff` before the first clock edge is unspecified and will not be checked.\n- All three outputs must be driven by your module.\n- Only the rising edge of `clk` is used.\n\n**Goal:** Implement `dut` so that its behavior is equivalent to the description above for all input sequences."
+    }
+  ]
+}

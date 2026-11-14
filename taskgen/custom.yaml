@@ -29,3 +29,7 @@ equiv_accept_bounded: true            # accept "no counterexample within equiv_m
 # Debug logging
 debug_enabled: false
 debug_log_file: ./logs/generator_debug.log
+
+# claude profile (no API keys): each LLM call is a headless `claude -p` agent
+claude_cli_bin: claude                # path to a recent Claude Code binary
+claude_cli_concurrency: 8             # parallel agents

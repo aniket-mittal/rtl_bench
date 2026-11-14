@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob015_vector1/mutant_2",
+  "source": "sources/verilog-eval/Prob015_vector1_ref.sv",
+  "bug_type": "Unintended logic operation on data path",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "5e6a304fe476be6cdc79cc0f87cd69618eb29ced6b96ed6429dfb101d41f6902",
+  "original_design_hash": "92681045117b67b695dd5756386873bccc8e0d46b16a46268361e20fb9037be1",
+  "original_code": "\n\nmodule dut\n(\n  input [15:0] in,\n  output [7:0] out_hi,\n  output [7:0] out_lo\n);\n\n  assign { out_hi, out_lo } = in;\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Byte Split and Fold**\n\nDesign a purely combinational Verilog module named `dut` that takes a 16-bit word and produces two 8-bit outputs derived from its upper and lower bytes.\n\n**Ports**\n\n| Name     | Direction | Width  |\n|----------|-----------|--------|\n| `in`     | input     | 16 bits ([15:0]) |\n| `out_hi` | output    | 8 bits ([7:0]) |\n| `out_lo` | output    | 8 bits ([7:0]) |\n\n**Behavior**\n\nTreat `in` as two bytes: the upper byte `in[15:8]` and the lower byte `in[7:0]`.\n\n- `out_hi` must equal the upper byte of the input, unchanged.\n- `out_lo` must equal the bitwise combination of the lower byte and the upper byte such that each bit of `out_lo` is 1 exactly when the corresponding bits of the lower and upper bytes differ (bit 0 of the lower byte is compared with bit 0 of the upper byte, bit 1 with bit 1, and so on).\n\n**Requirements**\n\n- There is no clock and no reset; outputs must respond immediately to any change on `in`.\n- No state may be held. Every one of the 65,536 possible input values must produce outputs according to the rules above, with no special cases.\n\n**Examples**\n\n| `in`     | `out_hi` | `out_lo` |\n|----------|----------|----------|\n| 16'h0000 | 8'h00    | 8'h00    |\n| 16'hFF00 | 8'hFF    | 8'hFF    |\n| 16'hABAB | 8'hAB    | 8'h00    |\n| 16'h12F0 | 8'h12    | 8'hE2    |\n| 16'h0F01 | 8'h0F    | 8'h0E    |\n\nYour module must use the exact module name and port names, directions, and widths given above."
+    }
+  ]
+}

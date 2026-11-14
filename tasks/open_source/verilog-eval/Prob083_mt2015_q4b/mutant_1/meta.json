@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob083_mt2015_q4b/mutant_1",
+  "source": "sources/verilog-eval/Prob083_mt2015_q4b_ref.sv",
+  "bug_type": "Input signal substitution / wrong operand",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "a2bbc32ccf0cc0b60463856d44b0062665977df83fc28f7497cf1008dcf0590d",
+  "original_design_hash": "638408f1876e592ebd5b0a6e97b7b592de18f6a61906e5a48858215a660f1a7b",
+  "original_code": "\n\nmodule dut\n(\n  input x,\n  input y,\n  output z\n);\n\n  assign z = ~(x ^ y);\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Constant-Output Combinational Module**\n\nDesign a purely combinational Verilog module named `dut` with the following ports:\n\n| Port | Direction | Width |\n|------|-----------|-------|\n| `x`  | input     | 1 bit |\n| `y`  | input     | 1 bit |\n| `z`  | output    | 1 bit |\n\n**Behavior**\n\nThe module has two single-bit inputs, `x` and `y`, and one single-bit output, `z`.\n\nThe output `z` must be a fixed logic value that holds for every possible combination of input values. Specifically, `z` must always be logic `1`, regardless of the values of `x` and `y`.\n\n**Requirements**\n\n- The circuit is combinational: there is no clock, no reset, and no state. The output must respond immediately to any input change (which, since it is constant, means it never changes).\n- Input `y` is part of the interface but has no influence on the output. It must still be declared as a port with the exact name and width given above.\n- Input `x` likewise has no effect on the value of `z`.\n- The output must never be `0`, and must not depend on any input.\n- Use exactly the module name and port names listed above, with the listed directions and widths.\n\n**Example**\n\n| x | y | z |\n|---|---|---|\n| 0 | 0 | 1 |\n| 0 | 1 | 1 |\n| 1 | 0 | 1 |\n| 1 | 1 | 1 |\n\nWrite the complete Verilog module that satisfies this specification."
+    }
+  ]
+}

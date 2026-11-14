@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob072_thermostat/mutant_1",
+  "source": "sources/verilog-eval/Prob072_thermostat_ref.sv",
+  "bug_type": "Wrong input signal used",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "386cf6ce04c88cc8a1fd8767de4fd60fdece404402746d2bc4219eefd2d3e483",
+  "original_design_hash": "724269f5e2df826c2c236b62d544f75c68700b96f57d1e53adab144583589abe",
+  "original_code": "\n\nmodule dut\n(\n  input mode,\n  input too_cold,\n  input too_hot,\n  input fan_on,\n  output heater,\n  output aircon,\n  output fan\n);\n\n  assign fan = ((mode)? too_cold : too_hot) | fan_on;\n  assign heater = mode & too_cold;\n  assign aircon = ~mode & too_hot;\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Thermostat Controller**\n\nDesign a purely combinational thermostat controller as a Verilog module named `dut`.\n\n**Ports**\n\n| Name | Direction | Width |\n|------|-----------|-------|\n| `mode` | input | 1 |\n| `too_cold` | input | 1 |\n| `too_hot` | input | 1 |\n| `fan_on` | input | 1 |\n| `heater` | output | 1 |\n| `aircon` | output | 1 |\n| `fan` | output | 1 |\n\nThere is no clock and no reset. All outputs must respond immediately to changes in the inputs.\n\n**Behavior**\n\nThe `mode` input selects the operating mode: `mode = 1` is \"heating\" mode and `mode = 0` is \"cooling\" mode.\n\n- **`heater`**: Asserted only when the controller is in heating mode and the `too_hot` input is asserted. The `too_cold` input has no effect on this output.\n\n- **`aircon`**: Asserted only when the controller is in cooling mode and the `too_hot` input is asserted.\n\n- **`fan`**: Asserted when the manual override `fan_on` is asserted. Otherwise, the fan follows a temperature condition that depends on the mode: in heating mode it reflects `too_cold`, and in cooling mode it reflects `too_hot`.\n\nNote that the behavior is intentionally defined exactly as above, even where it may seem counterintuitive (for example, the heater's dependence on `too_hot` rather than `too_cold`). Implement it exactly as specified; do not \"fix\" it. Every input combination is valid, including `too_cold` and `too_hot` both being asserted simultaneously, and no input combination should be treated as illegal or don't-care.\n\n**Example**\n\n- `mode=1, too_cold=1, too_hot=0, fan_on=0` \u2192 `heater=0, aircon=0, fan=1`\n- `mode=0, too_cold=1, too_hot=1, fan_on=0` \u2192 `heater=0, aircon=1, fan=1`\n- `mode=1, too_cold=0, too_hot=1, fan_on=0` \u2192 `heater=1, aircon=0, fan=0`"
+    }
+  ]
+}

@@ -47,6 +47,13 @@ PROFILES: Dict[str, Dict[str, tuple]] = {
         "questions": ("gpt", "gpt-5"),
         "validation": ("deepseek", ""),
     },
+    # No API keys: every stage is a fresh headless Claude Code agent (`claude -p`).
+    "claude": {
+        "bugs": ("claude_cli", "sonnet"),
+        "mutants": ("claude_cli", "sonnet"),
+        "questions": ("claude_cli", "sonnet"),
+        "validation": ("claude_cli", "haiku"),
+    },
 }
 
 GPT5_OUTPUT_PATH = "./results/questions_gpt5.jsonl"

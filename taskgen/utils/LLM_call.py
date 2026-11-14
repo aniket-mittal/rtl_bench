@@ -1,6 +1,8 @@
 from openai import OpenAI
 from typing import List, Dict, Tuple, Optional
 import asyncio
+import json
+import tempfile
 import time
 import yaml
 from pathlib import Path
@@ -34,6 +36,9 @@ class LLMClient:
         config - Config object containing API keys and other configuration
         """
         self.limiter = Limiter(config.calls_per_min/60)
+        self.cli_sem = asyncio.Semaphore(getattr(config, "claude_cli_concurrency", 8))
+        self.cli_cwd = tempfile.mkdtemp(prefix="taskgen_claude_")
+        self.cli_bin = getattr(config, "claude_cli_bin", "claude")
         # Unset keys get a placeholder so every client can be constructed; calls to a
         # provider you haven't configured still fail with an auth error when made.
         key = lambda name: getattr(config, name, None) or "not-set"
@@ -84,10 +89,49 @@ class LLMClient:
                 combined_msg += "\n" + user_msg['content'] if user_msg else ""
                 messages = [{"role": "user", "content": combined_msg}]
             return await self.call_ollama(msg, model_id)
+        elif model == "claude_cli":
+            return await self.call_claude_cli(msg, model_id, gpt_json_schema)
         elif model == "random":
             return await self.call_random(msg, model_id, temperature)
         else:
             raise ValueError(f"Invalid model: {model}, valid models: deepseek, claude, gemini, gpt")
+
+    async def call_claude_cli(self, msg, model_id: str = "", json_schema: Optional[BaseModel] = None, retries: int = 2):
+        """Run the prompt through a fresh headless Claude Code agent (`claude -p`).
+
+        Each call is a separate session with no tools, no MCP servers, no settings and
+        an empty working directory, so the agent sees only the prompt text (the
+        validator never sees the target design). Uses your Claude Code login; no API
+        key needed. Concurrency is capped by `claude_cli_concurrency` in config.
+        """
+        if isinstance(msg, list):
+            prompt = "\n\n".join(m["content"] for m in msg if m.get("content"))
+        else:
+            prompt = msg
+        if json_schema is not None:
+            prompt += ("\n\nRespond with only a JSON object (no prose, no code fences) matching this JSON schema:\n"
+                       + json.dumps(json_schema.model_json_schema()))
+        cmd = [self.cli_bin, "-p", "--model", model_id or "sonnet", "--tools", "",
+               "--no-session-persistence", "--strict-mcp-config", "--setting-sources", ""]
+        last_err = None
+        for _ in range(retries + 1):
+            async with self.cli_sem:
+                proc = await asyncio.create_subprocess_exec(
+                    *cmd, cwd=self.cli_cwd, stdin=asyncio.subprocess.PIPE,
+                    stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+                out, err = await proc.communicate(prompt.encode())
+            text = out.decode().strip()
+            if proc.returncode != 0 or not text:
+                last_err = f"claude -p exited {proc.returncode}: {err.decode()[-300:] or text[-300:]}"
+                continue
+            if json_schema is None:
+                return text, len(text.split())
+            raw = text[text.find("{"): text.rfind("}") + 1]
+            try:
+                return json_schema.model_validate_json(raw), len(text.split())
+            except Exception as e:
+                last_err = f"bad JSON from claude -p: {e}"
+        raise RuntimeError(last_err)
 
     async def call_ollama(self, msgs: str, model_id: str=""):
         """Generate something w/ Ollama

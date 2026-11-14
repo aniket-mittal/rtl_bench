@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob047_dff8ar/mutant_2",
+  "source": "sources/verilog-eval/Prob047_dff8ar_ref.sv",
+  "bug_type": "Data bit ordering / slice error",
+  "difficulty": "easy",
+  "solve_rate": 1.0,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "442c8a1c31cdd8917ca7494a27e6871117bbda1e5e8443803c5e5d67130f183a",
+  "original_design_hash": "c84b91076902e4cba7028a06f1871c403eea04c1811bc53a2897c27645f758ff",
+  "original_code": "\n\nmodule dut\n(\n  input clk,\n  input [7:0] d,\n  input areset,\n  output reg [7:0] q\n);\n\n\n  always @(posedge clk or posedge areset) if(areset) q <= 0; \n  else q <= d;\n\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Nibble-Swapping Register with Asynchronous Reset**\n\nDesign a Verilog module named `dut` that captures an 8-bit input into a register after swapping its two 4-bit halves, with an asynchronous reset.\n\n**Ports**\n\n| Name     | Direction | Width | Description                          |\n|----------|-----------|-------|--------------------------------------|\n| `clk`    | input     | 1     | Clock signal                         |\n| `d`      | input     | 8     | Data input                           |\n| `areset` | input     | 1     | Active-high asynchronous reset       |\n| `q`      | output    | 8     | Registered output (declared as a register) |\n\n**Behavior**\n\n- On every rising edge of `clk`, `q` is loaded with the value of `d` in which the upper nibble (bits 7:4) and the lower nibble (bits 3:0) have exchanged positions. The bit order within each nibble is unchanged. For example, if `d = 8'hA5`, then `q` becomes `8'h5A` after the clock edge; if `d = 8'b1100_0001`, then `q` becomes `8'b0001_1100`.\n- When `areset` is asserted (logic high), `q` is cleared to all zeros immediately, without waiting for a clock edge. This reset overrides the clock-driven update for as long as `areset` remains high.\n- When `areset` is deasserted, normal clocked operation resumes on the next rising edge of `clk`.\n- The output `q` changes only on a rising edge of `clk` or when `areset` goes high; it does not respond combinationally to changes in `d`.\n- There is no enable signal; the register updates on every rising clock edge when not in reset.\n\n**Requirements**\n\n- The module name and port names/widths must match the table exactly.\n- Reset is asynchronous (not synchronized to `clk`) and active-high.\n- The design must be synthesizable."
+    }
+  ]
+}

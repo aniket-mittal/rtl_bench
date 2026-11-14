@@ -1,0 +1,19 @@
+{
+  "task_id": "verilog-eval/Prob112_always_case2/mutant_1",
+  "source": "sources/verilog-eval/Prob112_always_case2_ref.sv",
+  "bug_type": "Odd-input handling error",
+  "difficulty": "easy",
+  "solve_rate": 0.75,
+  "proof_strength": "proven",
+  "question_model": "sonnet",
+  "validation_model": "haiku",
+  "mutant_hash": "3d9e83300583af787fa6082aa5e5d7e4b6edd9fe39cbfc885ca74c7d93963e9e",
+  "original_design_hash": "7d529d7fde367648c0eb9709a80757d7b2a53a5a506f99d48cb3e8a9b84c9df6",
+  "original_code": "\n\nmodule dut\n(\n  input [3:0] in,\n  output reg [1:0] pos\n);\n\n\n  always @(*) begin\n    case(in)\n      4'h0: pos = 2'h0;\n      4'h1: pos = 2'h0;\n      4'h2: pos = 2'h1;\n      4'h3: pos = 2'h0;\n      4'h4: pos = 2'h2;\n      4'h5: pos = 2'h0;\n      4'h6: pos = 2'h1;\n      4'h7: pos = 2'h0;\n      4'h8: pos = 2'h3;\n      4'h9: pos = 2'h0;\n      4'ha: pos = 2'h1;\n      4'hb: pos = 2'h0;\n      4'hc: pos = 2'h2;\n      4'hd: pos = 2'h0;\n      4'he: pos = 2'h1;\n      4'hf: pos = 2'h0;\n      default: pos = 2'b0;\n    endcase\n  end\n\n\nendmodule\n\n",
+  "other_valid_specs": [
+    {
+      "solve_rate": 1.0,
+      "spec": "**Lowest-Set-Bit Position Encoder with an Exception**\n\nDesign a purely combinational Verilog module named `dut` with the following ports:\n\n- `input [3:0] in`: 4-bit input value\n- `output reg [1:0] pos`: 2-bit output\n\n**Behavior**\n\nFor most inputs, `pos` is the zero-based index of the least-significant bit of `in` that is set to 1. Bit 0 is the least significant bit. For example:\n\n- If bit 0 of `in` is 1, `pos` is 0, regardless of the other bits.\n- If bit 0 is 0 and bit 1 is 1, `pos` is 1.\n- If bits 1:0 are both 0 and bit 2 is 1, `pos` is 2.\n- If only bit 3 is set, `pos` is 3.\n\n**Edge cases and quirks**\n\n- When `in` is all zeros, no bit is set, and `pos` must be 0.\n- The module has one non-standard case. When `in` is exactly `4'b0011` (decimal 3), `pos` must be 1, not 0. Every other input follows the rule above.\n\n**Requirements**\n\n- The circuit has no clock and no reset, and `pos` must respond immediately to any change in `in`.\n- The output must be fully defined for all 16 input values.\n- Use exactly the module name and port names, directions and widths given above."
+    }
+  ]
+}
