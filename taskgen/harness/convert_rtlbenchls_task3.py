@@ -5,7 +5,7 @@ Input : sources/rtl-benchls/data/repo_issue_108_cases.json (108 real GitHub issu
 Output: taskgen/build/rtl-benchls-task3/rtl-benchls__task3__<case>[__<module>].json  (kind = "repair")
 
 Standard library only. Idempotent: the output directory is cleared and rewritten on every run.
-Needs git, yosys and iverilog, and network access to github.com the first time (repositories are
+Needs git, yosys, iverilog and sv2v, and network access to github.com the first time (repositories are
 cloned once, bare, into ~/.cache/rtl_bench_repos/<owner>__<repo>; override with --cache).
 
 What the benchmark does (sources/rtl-benchls/rtlbenchls/runner.py, run_task3): the model gets the
@@ -29,6 +29,13 @@ top module that Yosys and iverilog can elaborate. For every case:
   5. Yosys equivalence of base vs head at that top (60 s): proven equivalent => dropped (the fix does
      not change behavior there, so the task cannot be graded). The result is stored in
      provenance.base_vs_head.
+  6. sv2v fallback: when step 4 fails because Yosys or iverilog cannot read the (System)Verilog
+     (stage yosys_* / iverilog_*), base and head are each converted with `sv2v --top=<top> -w DIR`
+     (all rtl/ files in compile order, one compilation unit, every rtl/ directory on the include
+     path) into Verilog-2005, one file per module: rtl/src/<module>.v. Modules whose converted text
+     differs between base and head are editable (a module only at head is editable and starts
+     absent); the rest are read-only. Steps 4 and 5 then run on the converted files. Tasks that
+     pass natively are never converted. provenance.sv2v = {"version", "applied": true}.
 
 File layout in a task (the harness compiles every .v/.sv under rtl/ in sorted path order, and both
 Yosys and iverilog need a package before its first use):
@@ -743,6 +750,112 @@ def base_vs_head(base_tree, head_tree, top, timeout=BASE_VS_HEAD_TIMEOUT):
     return status, detail
 
 
+# --------------------------------------------------------------------------- sv2v fallback
+
+SV2V = os.environ.get("SV2V", "sv2v")
+SV2V_TIMEOUT = 180
+SV2V_DIR = "rtl/src"
+_SV2V_VERSION = []
+NATIVE_TOOL_STAGES = ("yosys_base", "yosys_head", "iverilog_base", "iverilog_head")
+
+
+def sv2v_version():
+    if not _SV2V_VERSION:
+        try:
+            p = subprocess.run([SV2V, "--numeric-version"], stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               timeout=30)
+            _SV2V_VERSION.append(p.stdout.decode().strip() or None if p.returncode == 0 else None)
+        except (OSError, subprocess.TimeoutExpired):
+            _SV2V_VERSION.append(None)
+    return _SV2V_VERSION[0]
+
+
+def sv2v_convert(tree: dict, top: str):
+    """Convert the rtl/ files of `tree` to Verilog-2005, one file per module reachable from `top`.
+
+    Files are read in the harness's compile order (sorted paths, one compilation unit, so macros
+    defined in rtl/00_defines.v apply to later files); every directory under rtl/ is an include
+    directory. Returns ({module name: text}, None) or (None, error)."""
+    with tempfile.TemporaryDirectory(prefix="t3_sv2v_") as td:
+        src = os.path.join(td, "in")
+        rtltask.write_tree(src, rtltask.rtl_only(tree))
+        files = rtltask.hdl_files(src)
+        dirs = sorted({str(p) for p in Path(src, "rtl").rglob("*") if p.is_dir()} | {os.path.join(src, "rtl")})
+        outd = os.path.join(td, "out")
+        os.mkdir(outd)
+        cmd = [SV2V, "--top=" + top, "-w", outd] + ["-I" + d for d in dirs] + [str(f) for f in files]
+        rc, out = rtltask.run(cmd, cwd=src, timeout=SV2V_TIMEOUT)
+        if rc is None:
+            return None, "sv2v timeout"
+        if rc != 0:
+            msg = (out or "").replace(src + "/", "")
+            return None, squash(msg)[:400] or "sv2v exit %d" % rc
+        mods = {}
+        for f in sorted(Path(outd).glob("*.v")):
+            mods[f.stem] = f.read_text()
+        if top not in mods:
+            return None, "sv2v output has no module %s" % top
+        return mods, None
+
+
+def module_origin(name: str, known: dict):
+    """Repository path of the module sv2v emitted as `name` (sv2v names specializations `<orig>_<hash>`)."""
+    if name in known:
+        return known[name], False
+    best = None
+    for k in known:
+        if name.startswith(k + "_") and (best is None or len(k) > len(best)):
+            best = k
+    return (known[best], True) if best else (None, True)
+
+
+def sv2v_bundle(b):
+    """Bundle `b` with base and head trees replaced by their sv2v conversion. Returns (bundle, None)
+    or (None, {"stage": ..., "error": ...})."""
+    if sv2v_version() is None:
+        return None, {"stage": "sv2v_missing", "error": "sv2v not found"}
+    top = b["top"]
+    mb, err = sv2v_convert(b["base_tree"], top)
+    if mb is None:
+        return None, {"stage": "sv2v_base", "error": err}
+    mh, err = sv2v_convert(b["head_tree"], top)
+    if mh is None:
+        return None, {"stage": "sv2v_head", "error": err}
+    # module name -> repository path, from the (pre-conversion) files of the bundle
+    known = {}
+    inv = {tp: rp for rp, tp in b["layout"].items()}
+    for tree in (b["base_tree"], b["head_tree"]):
+        for tp, txt in sorted(tree.items()):
+            if txt is None or not tp.endswith(SRC_EXT):
+                continue
+            for nm in parse(txt).names(("module", "interface")):
+                known.setdefault(nm, inv.get(tp, tp))
+    layout, origin = {}, {}
+    base_tree, head_tree, editable, readonly = {}, {}, [], []
+    for nm in sorted(set(mb) | set(mh)):
+        key = "sv2v:" + nm
+        tp = "%s/%s.v" % (SV2V_DIR, nm)
+        layout[key] = tp
+        origin[key] = module_origin(nm, known)
+        tb, th = mb.get(nm), mh.get(nm)
+        if tb is not None:
+            base_tree[tp] = tb
+        if th is not None:
+            head_tree[tp] = th
+        if tb == th:
+            readonly.append(key)
+        else:
+            editable.append(key)
+    if not editable:
+        return None, {"stage": "sv2v_identical", "error": "sv2v output identical for base and head"}
+    nb = dict(b)
+    nb.update({"layout": layout, "base_tree": base_tree, "head_tree": head_tree, "editable": editable,
+               "readonly": readonly, "sv2v_origin": origin, "pre_sv2v_notes": b["notes"],
+               "pre_sv2v_layout": b["layout"], "pre_sv2v_editable": b["editable"],
+               "sv2v": {"version": sv2v_version(), "applied": True}})
+    return nb, None
+
+
 # --------------------------------------------------------------------------- spec
 
 HTML_TAGS = r"(?:br|p|div|span|details|summary|b|i|em|strong|sub|sup|table|thead|tbody|tr|td|th|ul|ol|li|code|pre|hr|h[1-6]|font|center|kbd|picture|source|video)"
@@ -772,17 +885,27 @@ def clean_issue_body(body: str) -> str:
     return text or "(The issue has no description beyond its title.)"
 
 
-def write_spec(case, top, layout, editable, readonly, notes):
+def write_spec(case, top, layout, editable, readonly, notes, origin=None, sv2v=None):
     repo = case["repository"]
     title = (case.get("issue_info") or {}).get("title") or "(untitled)"
     body = clean_issue_body((case.get("issue_info") or {}).get("body"))
-    ed_lines = ["| `%s` | `%s` |" % (layout[p], p) for p in editable if p in layout]
+    origin = origin or {}
+
     def repo_col(p):
+        if p in origin:
+            rp, derived = origin[p]
+            if rp is None:
+                return "(generated by sv2v)"
+            if rp.startswith("primgen:"):
+                rp = "stand-in for `%s`, see below" % rp.split(":", 1)[1]
+                return "(%s%s)" % ("specialized from " if derived else "", rp)
+            return ("specialization of a module in `%s`" % rp) if derived else "`%s`" % rp
         if p.startswith("primgen:"):
             return "(stand-in, see below)"
         if p == SYNTH_DEFINE_PATH:
             return "(added: defines SYNTHESIS)"
         return "`%s`" % p
+    ed_lines = ["| `%s` | %s |" % (layout[p], repo_col(p)) for p in editable if p in layout]
     ro_lines = ["| `%s` | %s |" % (layout[p], repo_col(p)) for p in readonly if p in layout]
     lines = [
         f"# Fix GitHub issue #{case['issue_number']} in `{repo}`",
@@ -790,7 +913,9 @@ def write_spec(case, top, layout, editable, readonly, notes):
         f"This task comes from a real bug report against the open-source repository `{repo}`. "
         f"You get the repository's RTL as it was when the bug was reported (commit "
         f"`{case['base_commit'][:12]}`), trimmed to the files needed to elaborate the module "
-        f"`{top}`.",
+        f"`{top}`." + (" The code was mechanically converted from SystemVerilog to plain Verilog-2005 "
+                       "with sv2v, so it reads differently from the upstream sources (see Files)."
+                       if sv2v else ""),
         "",
         "## Bug report",
         "",
@@ -834,7 +959,22 @@ def write_spec(case, top, layout, editable, readonly, notes):
     if any(t.startswith("rtl/pkg/") for t in tpaths):
         where.append("Packages are under `rtl/pkg/` with a numeric prefix so that they compile before "
                      "the files that use them.")
-    if any(t.startswith("rtl/src/") for t in tpaths):
+    if sv2v:
+        where.append(
+            "The upstream SystemVerilog was converted to Verilog-2005 with sv2v %s (one file per module "
+            "under `rtl/src/`, named after the module), because Yosys and iverilog cannot read it "
+            "directly. The conversion is mechanical and keeps behavior, but changes how the code reads: "
+            "packages are gone (their parameters, types and functions are inlined into the modules that "
+            "use them), structs, enums and other typedefs become plain bit vectors with the field "
+            "selects written as bit ranges, `logic` becomes `wire`/`reg`, `always_comb`/`always_ff` "
+            "become `always`, interfaces and modules with type parameters are flattened or specialized "
+            "(a specialized copy is named `<module>_<hash>`), and comments and `include`/`define` "
+            "directives are not kept. Fix the bug in this converted code; port names and widths of "
+            "`%s` are the same as upstream." % (sv2v.get("version") or "", top))
+        if any(p.startswith("primgen:") for p, _ in origin.values() if p):
+            where.append("Modules derived from a `prim_*` stand-in come from OpenTitan's generic "
+                         "implementation (`prim_generic_*`) with the module renamed.")
+    elif any(t.startswith("rtl/src/") for t in tpaths):
         where.append("Module files are under `rtl/src/`.")
     if any(layout.get(p, "").count("/") >= 1 and not layout[p].startswith(("rtl/pkg/", "rtl/src/", "rtl/primgen/"))
            and p != SYNTH_DEFINE_PATH for p in readonly + list(editable)):
@@ -853,7 +993,7 @@ def write_spec(case, top, layout, editable, readonly, notes):
     if "define_synthesis" in notes:
         norm.append("`SYNTHESIS` is defined (in `%s`) so every tool compiles the synthesis view"
                     % SYNTH_DEFINE_PATH)
-    if norm:
+    if norm and not sv2v:
         lines.append("For tool compatibility the files were normalized mechanically, without changing "
                      "behavior: " + "; ".join(norm) + ".")
     lines += [
@@ -1080,6 +1220,24 @@ def build_candidate(git, case, top, top_path, patched, changed, notes_out):
 
 
 def check_candidate(b, formal=True):
+    """Run the tool checks on the native files; when Yosys or iverilog cannot read them, convert base
+    and head with sv2v and run the same checks on the Verilog-2005 output.
+    Returns (ok, info dict, bundle actually checked)."""
+    ok, info = check_tools(b, formal)
+    if ok or info.get("stage") not in NATIVE_TOOL_STAGES:
+        return ok, info, b
+    nb, err = sv2v_bundle(b)
+    if nb is None:
+        return False, dict(err, native_stage=info["stage"], native_error=info.get("error")), b
+    ok2, info2 = check_tools(nb, formal)
+    if not ok2:
+        info2 = {"stage": "sv2v_" + info2["stage"], "error": info2.get("error"),
+                 "native_stage": info["stage"], "native_error": info.get("error")}
+        return False, info2, b
+    return True, info2, nb
+
+
+def check_tools(b, formal=True):
     """Run tool checks. Returns (ok, info dict)."""
     top = b["top"]
     info = {}
@@ -1174,7 +1332,7 @@ def process_case(case, gits, formal=True):
                 ok = False
                 info = {"stage": "closure"}
             else:
-                ok, info = check_candidate(bundle, formal)
+                ok, info, bundle = check_candidate(bundle, formal)
                 if not ok:
                     attempts.append({"top": top, **info})
             if ok:
@@ -1185,9 +1343,10 @@ def process_case(case, gits, formal=True):
                 found = True
                 break
             # escalate to ancestors only when the failure is about this top (ports / elaboration)
-            if not anc_loaded and info.get("stage") in ("ports_differ", "yosys_base", "yosys_head",
+            if not anc_loaded and re.sub(r"^sv2v_", "", info.get("stage") or "") in (
+                                                        "ports_differ", "yosys_base", "yosys_head",
                                                         "iverilog_base", "iverilog_head", "no_outputs",
-                                                        "closure", "inout"):
+                                                        "closure", "inout", "base", "head"):
                 anc_loaded = True
                 for a in ancestors(ib, nm, MAX_ANCESTOR_DEPTH, patched_set)[:4]:
                     if a[0] not in [q[0] for q in queue] and a[0] != top:
@@ -1207,7 +1366,21 @@ def make_task(case, b, n_tasks, lic):
     editable_paths = [layout[p] for p in b["editable"]]
     files = {tp: txt for tp, txt in b["base_tree"].items()}
     reference = {layout[p]: b["head_tree"][layout[p]] for p in b["editable"] if layout[p] in b["head_tree"]}
-    spec = write_spec(case, b["top"], layout, b["editable"], b["readonly"], b["notes"])
+    sv = b.get("sv2v")
+    origin = b.get("sv2v_origin") or {}
+    spec = write_spec(case, b["top"], layout, b["editable"], b["readonly"], b["notes"], origin, sv)
+
+    def repo_of(p):
+        if p in origin:
+            rp, derived = origin[p]
+            if rp is None:
+                return "generated by sv2v"
+            if rp.startswith("primgen:"):
+                rp = "generated from " + rp.split(":", 1)[1]
+            return ("sv2v specialization of a module in " + rp) if derived else rp
+        if p == SYNTH_DEFINE_PATH:
+            return "(added by converter)"
+        return p if not p.startswith("primgen:") else "generated from " + p.split(":", 1)[1]
     issue = case.get("issue_info") or {}
     pr = case.get("pr_info") or {}
     chk = b["check"]
@@ -1232,15 +1405,15 @@ def make_task(case, b, n_tasks, lic):
         "upstream_verilog_files": case.get("verilog_files"),
         "top_from_changed_module": b["for_changed_module"],
         "top_is_ancestor": b["for_changed_module"] != b["top"],
-        "file_map": {layout[p]: (p if not p.startswith("primgen:") else "generated from " + p.split(":", 1)[1])
-                     if p != SYNTH_DEFINE_PATH else "(added by converter)"
-                     for p in sorted(layout, key=lambda x: layout[x])},
-        "editable_repo_paths": b["editable"],
+        "file_map": {layout[p]: repo_of(p) for p in sorted(layout, key=lambda x: layout[x])},
+        "editable_repo_paths": sorted({r for r in (origin[p][0] for p in b["editable"]) if r}
+                                      ) if sv else b["editable"],
         "normalizations": b["notes"],
         "unresolved_references": b["unresolved"],
         "base_vs_head": chk.get("base_vs_head"),
         "base_vs_head_detail": chk.get("base_vs_head_detail"),
         "base_vs_head_timeout_s": BASE_VS_HEAD_TIMEOUT,
+        **({"sv2v": dict(sv), "sv2v_input_editable_repo_paths": b["pre_sv2v_editable"]} if sv else {}),
         "rtl_license": lic,
         "license": dict(METADATA_LICENSE),
         "converter": "harness/convert_rtlbenchls_task3.py",

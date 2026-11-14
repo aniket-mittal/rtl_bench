@@ -5,7 +5,7 @@ tests plus Yosys formal equivalence against a reference.
 
 ```
 rtl_bench/
-  tasks/      the tasks, one folder each (spec.md, starter .v, public_tb.v, hidden_tb.v, reference.v, task.json)
+  tasks/      the tasks, one folder each, grouped by source (spec.md, starter .v, public_tb.v, hidden_tb.v, reference.v, task.json)
   taskgen/    everything that builds tasks: the LLM bug-injection generator (forked from liveverilogeval) and
               harness/, which converts every source into the task format, validates tasks, and grades submissions
   sources/    the open-source designs and benchmarks tasks are built from, each with its upstream license
@@ -19,7 +19,7 @@ rtl_bench/
 
 ```bash
 brew install yosys icarus-verilog
-python3 taskgen/harness/grade.py tasks/<task> <dir with your edited files>
+python3 taskgen/harness/grade.py tasks/<group>/<task> <dir with your edited files>
 ```
 
 The harness is standard-library Python. Only the LLM generator needs `taskgen/requirements.txt`.

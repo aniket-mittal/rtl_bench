@@ -1,0 +1,133 @@
+{
+  "task_id": "generated/repair-7458-bug1",
+  "suite": "open_source",
+  "kind": "repair",
+  "difficulty": "easy",
+  "top_module": "dut",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "p1a",
+        "width": 1
+      },
+      {
+        "name": "p1b",
+        "width": 1
+      },
+      {
+        "name": "p1c",
+        "width": 1
+      },
+      {
+        "name": "p1d",
+        "width": 1
+      },
+      {
+        "name": "p1e",
+        "width": 1
+      },
+      {
+        "name": "p1f",
+        "width": 1
+      },
+      {
+        "name": "p2a",
+        "width": 1
+      },
+      {
+        "name": "p2b",
+        "width": 1
+      },
+      {
+        "name": "p2c",
+        "width": 1
+      },
+      {
+        "name": "p2d",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "p1y",
+        "width": 1
+      },
+      {
+        "name": "p2y",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "dut.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1533752969
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py tasks/<group>/<task> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob081_7458/mutant_1/repair",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob081_7458_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Wrong logical operator (AND to OR in reduction)",
+    "solve_rate": 1.0,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 1,
+    "mutant_index": 1,
+    "mutant_hash": "84085b7bd4b12573f9ec1f7f0c945b43533cdbeca6e8b2b3fa24242f1a18a24c",
+    "original_design_hash": "21a565956ac5a3210c28ce189e0abfbc7a2ff28d3dfed1b50b185ddfb7e17d28",
+    "other_valid_specs": 1
+  }
+}

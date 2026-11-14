@@ -18,9 +18,10 @@ dependencies), else `<design>.v`. The 8 designs with the generic name `rtl` ship
 
 Skipped (reasons are grouped in the printed summary):
   * duplicate task_id across slices (the first one is kept)
-  * no maskable block (no always/assign/instance item with >= 8 tokens reachable from the top), which also
-    covers trivial modules whose whole body is under 8 tokens
-  * cells instantiated under the top but defined nowhere in the record (vendor primitives, missing submodules)
+  * no maskable block (no always/assign/instance item, assign run or module body with >= 8 tokens reachable
+    from the top), i.e. trivial modules whose whole body is under 8 tokens
+  * cells instantiated under the top but defined nowhere in the record (vendor primitives, missing submodules);
+    Nangate / OSU standard cells are not missing: convert() adds models for them in rtl/stdcells.v
   * top module without ports (testbench-like)
   * top module has `inout` ports (the harness does not support them; checked with Yosys)
   * Yosys cannot parse the reference: `read_verilog -sv; hierarchy -check -top <top>` with a 20 s timeout,

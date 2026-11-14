@@ -32,17 +32,33 @@ import grade as gr    # noqa: E402
 HERE = Path(__file__).resolve().parent
 HIDDEN_CYCLES = 5000
 KIND_SHORT = {"spec_to_rtl": "spec2rtl"}
+BENCHLS_GROUPS = {"OriGen": "benchls-origen", "RTLPP": "benchls-rtlpp", "MG-Verilog": "benchls-mgverilog",
+                  "AutoVCoder": "benchls-autovcoder", "SEC-Flow": "benchls-github"}
 
 
-def task_name(task):
-    kind = KIND_SHORT.get(task["kind"], task["kind"])
-    parts = task["task_id"].split("/")
+def task_path(source_task_id, suite, kind, provenance):
+    """(group folder, task folder name) for a task, e.g. ("generated", "repair-thermostat-bug1")."""
+    k = KIND_SHORT.get(kind, kind)
+    parts = source_task_id.split("/")
     if parts[-1] in ("repair", "spec_to_rtl", "infill"):
         parts = parts[:-1]
-    if parts[0] == "open_source":
-        parts = parts[1:]
-    name = "__".join([kind] + [p.replace("mutant_", "mutant") for p in parts])
-    return re.sub(r"[^A-Za-z0-9_.\-]", "_", name)
+    clean = lambda s: re.sub(r"[^A-Za-z0-9_.]+", "_", s).strip("_")
+    if suite == "open_source":                       # <collection>/<design>/mutant_<k>
+        design = re.sub(r"^Prob\d+_", "", parts[-2])
+        return "generated", f"{k}-{clean(design)}-bug{parts[-1].split('_')[-1]}"
+    if suite == "verilog-eval":
+        return "verilog-eval", f"{k}-{clean(re.sub(r'^Prob\d+_', '', parts[1]))}"
+    if suite == "rtllm":
+        return "rtllm", f"{k}-{clean(parts[1])}"
+    if parts[:2] == ["rtl-benchls", "task3"]:        # GitHub issue fixes
+        repo = (provenance.get("repository") or "repo").split("/")[-1]
+        extra = parts[2].split("__", 1)[1] if "__" in parts[2] else ""
+        return "github-issues", f"{k}-{clean(repo)}-pr{provenance.get('pr_number')}" + (f"-{clean(extra)}" if extra else "")
+    origin = provenance.get("origin") or ""
+    group = next((g for key, g in BENCHLS_GROUPS.items() if key in origin), "benchls-other")
+    m = re.match(r"(.*)_(block|module)_(\d+)$", parts[-1])
+    name = f"{clean(m.group(1))}-{m.group(2)}{m.group(3)}" if m else clean(parts[-1])
+    return group, f"{k}-{name}"
 
 
 def flat(path):
@@ -213,8 +229,8 @@ def build(task_path, out_root):
         starter[editable[0]] = skeleton(iface, top)
     ref_name = {e: ("reference.v" if len(editable) == 1 else "reference_" + e.replace("/", "_")) for e in editable}
 
-    name = task_name(t)
-    d = Path(out_root) / name
+    group, name = task_path(t["task_id"], t["suite"], t["kind"], t.get("provenance", {}))
+    d = Path(out_root) / group / name
     if d.exists():
         shutil.rmtree(d)
     d.mkdir(parents=True)
@@ -228,7 +244,7 @@ def build(task_path, out_root):
     for e in editable:
         (d / ref_name[e]).write_text(ref_files[e])
     meta = {
-        "task_id": name,
+        "task_id": f"{group}/{name}",
         "suite": t["suite"],
         "kind": t["kind"],
         "difficulty": t.get("difficulty", "unknown"),
@@ -299,7 +315,7 @@ def safe_build(path, out):
 def write_index(out):
     """index.jsonl: one line per task folder under out."""
     rows = []
-    for tj in sorted(Path(out).glob("*/task.json")):
+    for tj in sorted(Path(out).glob("*/*/task.json")):
         m = json.loads(tj.read_text())
         rows.append({"task": m["task_id"], "suite": m["suite"], "kind": m["kind"], "difficulty": m["difficulty"],
                      "top_module": m["top_module"], "sequential": bool(m["interface"].get("clock")),

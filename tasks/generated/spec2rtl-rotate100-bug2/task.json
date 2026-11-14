@@ -1,0 +1,101 @@
+{
+  "task_id": "generated/spec2rtl-rotate100-bug2",
+  "suite": "open_source",
+  "kind": "spec_to_rtl",
+  "difficulty": "easy",
+  "top_module": "dut",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "load",
+        "width": 1
+      },
+      {
+        "name": "ena",
+        "width": 2
+      },
+      {
+        "name": "data",
+        "width": 100
+      }
+    ],
+    "outputs": [
+      {
+        "name": "q",
+        "width": 100
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "dut.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "dut.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "dut.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1552949975
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py tasks/<group>/<task> <submission dir>"
+  },
+  "source_task_id": "verilog-eval/Prob105_rotate100/mutant_2/spec_to_rtl",
+  "provenance": {
+    "source": "sources/verilog-eval/Prob105_rotate100_ref.sv",
+    "collection": "verilog-eval",
+    "license": "MIT",
+    "upstream": "https://github.com/NVlabs/verilog-eval",
+    "generator": "taskgen claude profile",
+    "bug_type": "Hold behavior corrupted (unintended default assignment)",
+    "solve_rate": 1.0,
+    "proof_strength": "proven",
+    "question_model": "sonnet",
+    "validation_model": "haiku",
+    "question_number": 1,
+    "mutant_index": 2,
+    "mutant_hash": "75c6161720bfa6cdf3420d2567cf0da516c52186205b0e3b95241e21d9281b8d",
+    "original_design_hash": "bea6d2266f875f2aff3db599c88f744dfa8a275e603d59bdc487730afcc1a0c2",
+    "other_valid_specs": 1
+  }
+}

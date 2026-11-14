@@ -1,0 +1,223 @@
+{
+  "task_id": "github-issues/repair-picorv32-pr229",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "picorv32",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "resetn",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "resetn",
+        "width": 1
+      },
+      {
+        "name": "mem_ready",
+        "width": 1
+      },
+      {
+        "name": "mem_rdata",
+        "width": 32
+      },
+      {
+        "name": "pcpi_wr",
+        "width": 1
+      },
+      {
+        "name": "pcpi_rd",
+        "width": 32
+      },
+      {
+        "name": "pcpi_wait",
+        "width": 1
+      },
+      {
+        "name": "pcpi_ready",
+        "width": 1
+      },
+      {
+        "name": "irq",
+        "width": 32
+      }
+    ],
+    "outputs": [
+      {
+        "name": "trap",
+        "width": 1
+      },
+      {
+        "name": "mem_valid",
+        "width": 1
+      },
+      {
+        "name": "mem_instr",
+        "width": 1
+      },
+      {
+        "name": "mem_addr",
+        "width": 32
+      },
+      {
+        "name": "mem_wdata",
+        "width": 32
+      },
+      {
+        "name": "mem_wstrb",
+        "width": 4
+      },
+      {
+        "name": "mem_la_read",
+        "width": 1
+      },
+      {
+        "name": "mem_la_write",
+        "width": 1
+      },
+      {
+        "name": "mem_la_addr",
+        "width": 32
+      },
+      {
+        "name": "mem_la_wdata",
+        "width": 32
+      },
+      {
+        "name": "mem_la_wstrb",
+        "width": 4
+      },
+      {
+        "name": "pcpi_valid",
+        "width": 1
+      },
+      {
+        "name": "pcpi_insn",
+        "width": 32
+      },
+      {
+        "name": "pcpi_rs1",
+        "width": 32
+      },
+      {
+        "name": "pcpi_rs2",
+        "width": 32
+      },
+      {
+        "name": "eoi",
+        "width": 32
+      },
+      {
+        "name": "trace_valid",
+        "width": 1
+      },
+      {
+        "name": "trace_data",
+        "width": 36
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/picorv32.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/picorv32.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "src/picorv32.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2245849492
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py tasks/<group>/<task> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/YosysHQ_picorv32_229_228",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "YosysHQ_picorv32_229_228",
+    "repository": "YosysHQ/picorv32",
+    "pr_number": 229,
+    "issue_number": 228,
+    "pr_url": "https://github.com/YosysHQ/picorv32/pull/229",
+    "issue_url": "https://github.com/YosysHQ/picorv32/issues/228",
+    "pr_title": "Bugfix: decode fence instruction",
+    "issue_title": "Bug report: fence instruction raises instruction trap",
+    "issue_labels": [],
+    "base_commit": "f00a88c36eaab478b64ee27d8162e421049bcc66",
+    "head_commit": "29102c00a82ffd08f1e0b3c9cbac1c95c17f573b",
+    "base_ref": "master",
+    "lec_status": "useful_pass",
+    "additions": 6,
+    "deletions": 2,
+    "upstream_verilog_files": [
+      "picorv32.v"
+    ],
+    "top_from_changed_module": "picorv32",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/picorv32.v": "picorv32.v"
+    },
+    "editable_repo_paths": [
+      "picorv32.v"
+    ],
+    "normalizations": [],
+    "unresolved_references": [],
+    "base_vs_head": "unknown",
+    "base_vs_head_detail": "timeout after 60s",
+    "base_vs_head_timeout_s": 60,
+    "rtl_license": {
+      "files": {
+        "COPYING": "ISC"
+      },
+      "spdx": "ISC"
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}

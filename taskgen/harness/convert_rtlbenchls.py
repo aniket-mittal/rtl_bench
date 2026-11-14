@@ -24,6 +24,21 @@ working from the golden file and the record's `mask_type` / `mask_index` / `mask
             is replaced. The header and `endmodule` stay. The target must be the top or reachable
             from it; testbench-only targets are skipped.
 
+  * fallback: when no single item reaches 8 tokens (tiny designs), the smallest of (a) a run of consecutive
+            `assign` statements totalling >= 8 tokens and (b) the whole body of a reachable module with >= 8
+            tokens is masked (`mask_reconstruction.method` = fallback_assign_group / fallback_module_body).
+
+Source clean-up, applied to the golden file and lib.v before masking, so the starter, the reference and lib
+stay identical outside the mask (each recorded in provenance):
+  * sim_tasks_removed: simulation-only system-task statements ($display, $fwrite, $finish, ...; see
+    SIM_TASKS) outside initial blocks, and $finish/$stop anywhere, become `;`; `fd = $fopen(...);` too.
+    Yosys rejects or executes them, and $finish ends the vector simulation; none drives an output.
+  * testbench_modules_removed: port-less modules unreachable from the top and instantiated by nothing.
+  * stdcells: Nangate 45nm / OSU FreePDK45 standard cells the design instantiates but does not define get
+    behavioural models (from stdcells.v) in a read-only rtl/stdcells.v. Only cells connected by name to
+    ports of the model, without parameters, are used; other undefined cells stay in `undefined_modules`.
+    Verilog gate primitives (and, nand, ...) are never counted as undefined.
+
 Records that cannot be rebuilt are skipped and reported. `--mask-source upstream` emits the
 released masked file unchanged (the whole file masked) for every record.
 
@@ -58,6 +73,25 @@ DEFAULT_TOOLS = ["iverilog", "vvp", "yosys"]
 DEFAULT_LIMITS = {"max_agent_steps": 50, "wall_time_s": 1800, "tool_timeout_s": 120}
 DEFAULT_FORMAL = {"method": "yosys_sat_tempinduct", "max_steps": 60, "timeout_s": 120, "accept_bounded": True}
 HIDDEN_CYCLES = 1000
+STDCELLS_PATH = Path(__file__).resolve().parent / "stdcells.v"
+STDCELLS_FILE = "rtl/stdcells.v"
+# Verilog built-in gate primitives: instantiated like modules but never defined, so never "undefined".
+VERILOG_PRIMITIVES = {
+    "and", "nand", "or", "nor", "xor", "xnor", "buf", "not", "bufif0", "bufif1", "notif0", "notif1",
+    "pullup", "pulldown", "tran", "tranif0", "tranif1", "rtran", "rtranif0", "rtranif1",
+    "nmos", "pmos", "rnmos", "rpmos", "cmos", "rcmos",
+}
+# Simulation-only system tasks. Outside `initial`/`final` blocks they either break Yosys ($finish/$stop
+# outside initial) or stop/clutter the vector simulation; they never drive a design output.
+SIM_TASKS = {
+    "$finish", "$stop", "$exit", "$fatal", "$error", "$warning", "$info",
+    "$display", "$displayb", "$displayh", "$displayo", "$write", "$writeb", "$writeh", "$writeo",
+    "$strobe", "$strobeb", "$strobeh", "$strobeo", "$monitor", "$monitorb", "$monitorh", "$monitoro",
+    "$monitoron", "$monitoroff", "$fdisplay", "$fdisplayb", "$fdisplayh", "$fdisplayo", "$fwrite",
+    "$fwriteb", "$fwriteh", "$fwriteo", "$fstrobe", "$fmonitor", "$fclose", "$fflush",
+    "$dumpfile", "$dumpvars", "$dumpon", "$dumpoff", "$dumpall", "$dumpflush", "$dumplimit",
+    "$timeformat", "$printtimescale", "$showvars", "$showscopes",
+}
 
 
 # --------------------------------------------------------------------------- lexing
@@ -342,6 +376,262 @@ def reachable_modules(toks, mods, top):
     return seen
 
 
+# --------------------------------------------------------------------------- source clean-up
+
+STATEMENT_START = {";", "begin", "end", ")", "else", ":", "endcase", "join", "join_any", "join_none",
+                   "fork", "forever", "default"}
+SIM_FUNCS = {"$fopen", "$fopenr"}  # file-handle functions: the whole `fd = $fopen(...);` statement goes
+STOP_TASKS = {"$finish", "$stop", "$exit", "$fatal"}  # these end the simulation, so they go even inside initial
+
+
+def strip_sim_tasks(text: str):
+    """Replace each simulation-only system-task statement (SIM_TASKS) with an empty statement `;`.
+
+    Statements inside `initial`/`final` blocks are kept, except those that end the simulation (STOP_TASKS).
+    Only whole statements are touched (the task name must start a statement), so system *functions* used in
+    expressions are never edited. Returns (new_text, {task_name: count})."""
+    if "$" not in text:
+        return text, {}
+    toks = tokenize(blank_comments(text))
+    protected = []  # token ranges of initial/final blocks
+    i = 0
+    while i < len(toks):
+        if toks[i][0] in ("initial", "final"):
+            try:
+                j = parse_stmt(toks, i + 1)
+            except ParseError:
+                j = len(toks)
+            protected.append((i, j))
+            i = j
+        else:
+            i += 1
+    edits, removed = [], collections.Counter()
+    i = 0
+    while i < len(toks):
+        t = toks[i][0]
+        if t not in SIM_TASKS:
+            i += 1
+            continue
+        in_initial = any(a <= i < b for a, b in protected)
+        prev = toks[i - 1][0] if i else ";"
+        after_delay = i >= 2 and toks[i - 2][0] == "#"
+        if (in_initial and t not in STOP_TASKS) or not (prev in STATEMENT_START or after_delay):
+            i += 1
+            continue
+        try:
+            j = skip_to_semicolon(toks, i)
+        except ParseError:
+            i += 1
+            continue
+        edits.append((toks[i][1], toks[j - 1][2]))
+        removed[t] += 1
+        i = j
+    # `fd = $fopen(...);` (a file handle only the removed $fwrite/$fdisplay calls use): Yosys cannot resolve $fopen
+    for i in range(1, len(toks) - 3):
+        if (toks[i][0] in SIM_FUNCS and toks[i - 1][0] in ("=", "<=") and IDENT_RE.match(toks[i - 2][0])
+                and i >= 3 and toks[i - 3][0] in STATEMENT_START):
+            try:
+                j = skip_to_semicolon(toks, i)
+            except ParseError:
+                continue
+            if toks[i + 1][0] == "(" and skip_group(toks, i + 1) == j - 1:
+                edits.append((toks[i - 2][1], toks[j - 1][2]))
+                removed[toks[i][0]] += 1
+    edits.sort()
+    out = text
+    for s, e in reversed(edits):
+        out = out[:s] + ";" + out[e:]
+    return out, dict(removed)
+
+
+def header_has_ports(toks, s, h) -> bool:
+    """True if the module header toks[s:h] declares a (non-parameter) port list with an identifier in it."""
+    hdr = toks[s:h]
+    i = 2
+    while i < len(hdr):
+        if hdr[i][0] == "#" and i + 1 < len(hdr) and hdr[i + 1][0] == "(":
+            i = skip_group(hdr, i + 1)
+            continue
+        if hdr[i][0] == "(":
+            j = skip_group(hdr, i)
+            return any(IDENT_RE.match(x[0]) for x in hdr[i + 1:j - 1])
+        i += 1
+    return False
+
+
+def drop_testbenches(text: str, top: str, other_texts=()):
+    """Remove modules without ports that nothing instantiates and that are not reachable from `top`.
+
+    These are testbenches shipped in the design file (delays, `forever`, event controls in `initial`), which
+    Yosys cannot parse; they never affect the top module. Returns (new_text, [dropped module names])."""
+    toks = tokenize(blank_comments(text))
+    mods = find_modules(toks)
+    if len(mods) < 2:
+        return text, []
+    reach = reachable_modules(toks, mods, top)
+    if top not in reach:
+        return text, []
+    names = {m[0] for m in mods}
+    used = set()
+    for name, _, h, e in mods:
+        used |= instantiated(toks, h, e, names - {name})
+    for other in other_texts:
+        if other:
+            ot = tokenize(blank_comments(other))
+            used |= instantiated(ot, 0, len(ot), names)
+    drop = []
+    for name, st, h, e in mods:
+        if name in reach or name in used:
+            continue
+        try:
+            if header_has_ports(toks, st, h):
+                continue
+        except ParseError:
+            continue
+        drop.append((name, toks[st][1], toks[e][2]))
+    out = text
+    for _, a, b in reversed(drop):
+        out = out[:a] + out[b:]
+    return out, [d[0] for d in drop]
+
+
+_STDCELLS = None
+
+
+def stdcell_library():
+    """{cell name: (module text, [port names])} from stdcells.v (cached)."""
+    global _STDCELLS
+    if _STDCELLS is None:
+        text = STDCELLS_PATH.read_text()
+        toks = tokenize(blank_comments(text))
+        lib = {}
+        for name, st, h, e in find_modules(toks):
+            hdr = text[toks[st][1]:toks[h - 1][2]]
+            lib[name] = (text[toks[st][1]:toks[e][2]] + "\n",
+                         re.findall(r"\b(?:input|output)\s+(?:reg\s+)?(\w+)", hdr))
+        _STDCELLS = lib
+    return _STDCELLS
+
+
+def instance_usage(text: str) -> dict:
+    """{instantiated type: {"named": port names, "positional": bool, "params": bool}} over all modules."""
+    toks = tokenize(blank_comments(text))
+    usage = {}
+    for _, _, h, e in find_modules(toks):
+        for kind, i0, i1 in find_blocks(toks, h, e):
+            if kind != "instance":
+                continue
+            u = usage.setdefault(toks[i0][0], {"named": set(), "positional": False, "params": False})
+            k = i0 + 1
+            if k < i1 and toks[k][0] == "#":
+                u["params"] = True
+                k += 1
+                if k < i1 and toks[k][0] == "(":
+                    k = skip_group(toks, k)
+            while k < i1:
+                t = toks[k][0]
+                if t in ("(", "[", "{"):
+                    try:
+                        end = skip_group(toks, k)
+                    except ParseError:
+                        break
+                    if t == "(":
+                        nxt = toks[k + 1][0] if k + 1 < i1 else ")"
+                        if nxt == ".":
+                            for m in range(k + 1, end - 2):
+                                if toks[m][0] == "." and IDENT_RE.match(toks[m + 1][0]) and toks[m + 2][0] == "(":
+                                    u["named"].add(toks[m + 1][0])
+                        elif nxt != ")":
+                            u["positional"] = True
+                    k = end
+                else:
+                    k += 1
+    return usage
+
+
+def resolve_stdcells(texts, defined: set):
+    """Standard cells instantiated in `texts` but defined in none of them.
+
+    Returns ({cell: module text}, {cell: reason not used}). A cell is used only when every instance connects
+    ports by name, all of them ports of our model, and overrides no parameters (so it cannot be a different
+    library's same-named cell)."""
+    lib = stdcell_library()
+    usage = {}
+    for text in texts:
+        for typ, u in instance_usage(text).items():
+            m = usage.setdefault(typ, {"named": set(), "positional": False, "params": False})
+            m["named"] |= u["named"]
+            m["positional"] |= u["positional"]
+            m["params"] |= u["params"]
+    cells, rejected = {}, {}
+    for typ in sorted(usage):
+        if typ in defined or typ not in lib:
+            continue
+        u, ports = usage[typ], lib[typ][1]
+        if u["params"]:
+            rejected[typ] = "instantiated with parameter overrides"
+        elif u["positional"]:
+            rejected[typ] = "positional port connections"
+        elif u["named"] - set(ports):
+            rejected[typ] = "ports not in the model: " + ", ".join(sorted(u["named"] - set(ports)))
+        else:
+            cells[typ] = lib[typ][0]
+    return cells, rejected
+
+
+def stdcells_text(cells: dict) -> str:
+    lib = stdcell_library()
+    head = ("// Behavioural models of the standard cells this design instantiates (Nangate 45nm Open Cell Library /\n"
+            "// OSU FreePDK45 functions). Added by the task converter; the original design ships no cell library.\n\n")
+    return head + "\n".join(lib[c][0] for c in lib if c in cells)
+
+
+# --------------------------------------------------------------------------- masking
+
+def fallback_mask(golden, toks, mods, reach, items):
+    """Mask for designs with no single item of >= RELAXED_MIN_TOKENS tokens.
+
+    Candidates: (a) a run of consecutive `assign` statements (nothing between them) totalling >= the floor,
+    (b) the whole body of a reachable module that contains at least one item and >= the floor tokens.
+    The smallest candidate (fewest masked tokens, so the most context stays visible) wins; on a tie the
+    assign group wins. Returns (masked, info, region) or None."""
+    best = None  # (tokens, order, payload)
+    for name, _, h, e in mods:
+        if name not in reach:
+            continue
+        mod_items = [it for it in items if it[0] == name]
+        for a in range(len(mod_items)):
+            if mod_items[a][1] != "assign":
+                continue
+            for b in range(a, len(mod_items)):
+                if mod_items[b][1] != "assign" or (b > a and mod_items[b][2] != mod_items[b - 1][3]):
+                    break
+                ntok = mod_items[b][3] - mod_items[a][2]
+                if ntok >= RELAXED_MIN_TOKENS:
+                    if b > a and (best is None or (ntok, 0) < best[:2]):
+                        best = (ntok, 0, ("assign_group", name, mod_items[a][2], mod_items[b][3], b - a + 1))
+                    break
+        if mod_items and e - h >= RELAXED_MIN_TOKENS and (best is None or (e - h, 1) < best[:2]):
+            best = (e - h, 1, ("module_body", name, h, e, len(mod_items)))
+    if best is None:
+        return None
+    kind, name, i0, i1, n = best[2]
+    if kind == "assign_group":
+        s, en = toks[i0][1], toks[i1 - 1][2]
+        region = golden[s:en]
+        info = {"method": "fallback_assign_group", "in_module": name, "n_statements": n,
+                "region_tokens": i1 - i0, "region_chars": len(region), "block_kind": "assign_group",
+                "reason": f"no single always/assign/instance item has >= {RELAXED_MIN_TOKENS} tokens; masked the "
+                          "smallest run of consecutive assign statements reaching that size"}
+        return golden[:s] + MARKER + golden[en:], info, region
+    s, en = toks[i0 - 1][2], toks[i1][1]
+    region = golden[s:en]
+    info = {"method": "fallback_module_body", "target_module": name, "n_items": n,
+            "region_tokens": i1 - i0, "region_chars": len(region), "target_is_top": None,
+            "reason": f"no single always/assign/instance item has >= {RELAXED_MIN_TOKENS} tokens; masked the "
+                      "whole body of the smallest module reaching that size"}
+    return golden[:s] + "\n" + MARKER + "\n" + golden[en:], info, region
+
 # --------------------------------------------------------------------------- masking
 
 def rebuild_mask(golden: str, rec: dict):
@@ -386,8 +676,13 @@ def rebuild_mask(golden: str, rec: dict):
         cands = [c for c in items if c[3] - c[2] >= RELAXED_MIN_TOKENS]
         relaxed = True
     if not cands:
-        raise ValueError(f"no always/assign/instance item with >={RELAXED_MIN_TOKENS} tokens "
-                         "in modules reachable from top")
+        fb = fallback_mask(golden, toks, mods, reach, items)
+        if fb is None:
+            raise ValueError(f"no always/assign/instance item with >={RELAXED_MIN_TOKENS} tokens "
+                             "in modules reachable from top (nor an assign group or module body that size)")
+        if fb[1]["method"] == "fallback_module_body":
+            fb[1]["target_is_top"] = fb[1]["target_module"] == top
+        return fb
     idx = rec.get("mask_index") or 0
     pick = idx if idx < len(cands) else idx % len(cands)
     name, kind, i0, i1 = cands[pick]
@@ -433,7 +728,7 @@ def design_path(golden_key: str) -> str:
     return "rtl/" + name
 
 
-def write_spec(rec, dpath, lib_path, info, mode):
+def write_spec(rec, dpath, lib_path, info, mode, cells_path=None):
     top = rec["top_module"]
     lines = [
         f"# Fill in the masked region of `{rec['parent_design']}`",
@@ -458,7 +753,13 @@ def write_spec(rec, dpath, lib_path, info, mode):
             f"`{MARKER}`. Write the whole design, with the top module `{top}` and its ports exactly "
             "as given in the interface section of this task.",
         ]
-    elif rec["mask_type"] == "module":
+    elif info.get("method") == "fallback_assign_group":
+        lines += [
+            f"- Mask type: **block**. The design has no single large statement, so {info['n_statements']} "
+            f"consecutive continuous `assign` statements in module `{info['in_module']}` were replaced "
+            f"together by `{MARKER}`. Write those `assign` statements in its place.",
+        ]
+    elif rec["mask_type"] == "module" or info.get("method") == "fallback_module_body":
         tgt = info["target_module"]
         where = "the top module" if info["target_is_top"] else "a sub-module"
         lines += [
@@ -491,6 +792,9 @@ def write_spec(rec, dpath, lib_path, info, mode):
     ]
     if lib_path:
         lines.append(f"- `{lib_path}` holds the support modules the design instantiates. It is read-only.")
+    if cells_path:
+        lines.append(f"- `{cells_path}` holds behavioural models of the standard cells the design "
+                     "instantiates. It is read-only.")
     lines += [
         "",
         f"## Grading",
@@ -510,7 +814,10 @@ def convert(rec, mode, task_prefix="rtl-benchls/task2"):
     gkey, mkey = rec.get("golden_rtl_key"), rec.get("masked_rtl_key")
     if gkey not in files:
         return None, f"golden_rtl_key {gkey!r} missing from files"
-    golden = files[gkey]
+    sim_removed = {}
+    golden, n = strip_sim_tasks(files[gkey])
+    if n:
+        sim_removed[gkey] = n
     dpath = design_path(gkey)
 
     if mode == "upstream":
@@ -528,6 +835,11 @@ def convert(rec, mode, task_prefix="rtl-benchls/task2"):
 
     # lib.v: only when it defines modules the design file does not already define.
     lib = files.get("lib.v")
+    golden, tb_dropped = drop_testbenches(golden, rec["top_module"], [lib])
+    if lib is not None:
+        lib, n = strip_sim_tasks(lib)
+        if n:
+            sim_removed["lib.v"] = n
     lib_path = None
     lib_note = "absent"
     if lib is not None:
@@ -542,7 +854,8 @@ def convert(rec, mode, task_prefix="rtl-benchls/task2"):
             lib_note = "included"
 
     known = defined_modules(golden) | (defined_modules(lib) if lib_path else set())
-    undefined = sorted(undefined_instances(golden, rec["top_module"]) - known)
+    cells, cells_rejected = resolve_stdcells([golden] + ([lib] if lib_path else []), known)
+    undefined = sorted(undefined_instances(golden, rec["top_module"]) - known - VERILOG_PRIMITIVES - set(cells))
 
     task_id = f"{task_prefix}/{rec['task_id']}"
     starter = {dpath: masked}
@@ -550,6 +863,8 @@ def convert(rec, mode, task_prefix="rtl-benchls/task2"):
     if lib_path:
         starter[lib_path] = lib
         reference[lib_path] = lib
+    if cells:
+        starter[STDCELLS_FILE] = reference[STDCELLS_FILE] = stdcells_text(cells)
 
     sources = None
     if "sources.json" in files:
@@ -567,7 +882,7 @@ def convert(rec, mode, task_prefix="rtl-benchls/task2"):
         "suite": "rtl-benchls",
         "kind": "infill",
         "difficulty": "unknown",
-        "spec": write_spec(rec, dpath, lib_path, info, mode),
+        "spec": write_spec(rec, dpath, lib_path, info, mode, STDCELLS_FILE if cells else None),
         "top_module": rec["top_module"],
         "files": starter,
         "editable": [dpath],
@@ -603,6 +918,18 @@ def convert(rec, mode, task_prefix="rtl-benchls/task2"):
                 "primary_script_key": rec.get("primary_script_key"),
             },
             "lib_v": lib_note,
+            "stdcells": ({"file": STDCELLS_FILE, "cells": sorted(cells), "library": "taskgen/harness/stdcells.v",
+                          "note": "behavioural models of standard cells the design instantiates but does not ship"}
+                         if cells else None),
+            "stdcells_rejected": cells_rejected or None,
+            "sim_tasks_removed": ({"files": sim_removed,
+                                   "note": "simulation-only system-task statements replaced by `;` in the starter, "
+                                           "reference and lib alike (outside initial blocks; $finish/$stop anywhere)"}
+                                  if sim_removed else None),
+            "testbench_modules_removed": ({"modules": tb_dropped,
+                                           "note": "port-less modules unreachable from the top (testbenches) "
+                                                   "removed from the design file in the starter and reference"}
+                                          if tb_dropped else None),
             "undefined_modules": undefined,  # instantiated under the top but defined nowhere in the task (vendor cells etc.)
             "dropped_files": dropped,
             "description": None,  # the benchmark builds descriptions at run time with an LLM; none is shipped

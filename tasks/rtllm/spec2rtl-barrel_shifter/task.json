@@ -1,0 +1,98 @@
+{
+  "task_id": "rtllm/spec2rtl-barrel_shifter",
+  "suite": "rtllm",
+  "kind": "spec_to_rtl",
+  "difficulty": "unknown",
+  "top_module": "barrel_shifter",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "in",
+        "width": 8
+      },
+      {
+        "name": "ctrl",
+        "width": 3
+      }
+    ],
+    "outputs": [
+      {
+        "name": "out",
+        "width": 8
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "barrel_shifter.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "barrel_shifter.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "barrel_shifter.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1921016390
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py tasks/<group>/<task> <submission dir>"
+  },
+  "source_task_id": "rtllm/barrel_shifter/spec_to_rtl",
+  "provenance": {
+    "source": "rtllm",
+    "design": "barrel_shifter",
+    "description_file": "sources/rtllm/barrel_shifter/design_description.txt",
+    "reference_file": "sources/rtllm/barrel_shifter/verified_barrel_shifter.v",
+    "reference_module_renamed": null,
+    "reference_ports": [
+      "in",
+      "ctrl",
+      "out"
+    ],
+    "license": {
+      "license": "see upstream",
+      "upstream": "https://github.com/hkust-zhiyao/RTLLM",
+      "note": "Per sources/README.md: RTLLM LICENSE was not copied; see upstream."
+    },
+    "converter": "harness/convert_specs.py"
+  }
+}

@@ -7,7 +7,7 @@ RTL tasks for TrainRTL, plus the tooling that builds and grades them. The RL env
 ## Layout
 
 ```
-tasks/      the tasks: one folder per task + index.jsonl. Committed, generated; do not hand-edit
+tasks/      the tasks: one folder per task, grouped by source (generated, verilog-eval, rtllm, github-issues, benchls-*), + index.jsonl. Committed, generated; do not hand-edit
 taskgen/    generator (LLM bug injection, forked from agctute/liveverilogeval) and harness/ (convert, export, grade)
 sources/    upstream designs and benchmarks, read-only
 RTLBot_Proposal.txt   project proposal (background only)
@@ -15,7 +15,7 @@ RTLBot_Proposal.txt   project proposal (background only)
 
 - `sources/` is a read-only copy of upstream repos. Do not edit, reformat, or "fix" files there. Each folder keeps its upstream LICENSE; `sources/README.md` records source, license, and pinned commit. If you add a collection, add its row and its LICENSE.
 - `sources/YOSYS_STATUS.md` lists which seed files Yosys cannot parse. Check it before debugging a parse failure.
-- `tasks/<task>/` holds `spec.md`, the starter `.v`, read-only support files, `public_tb.v`, `hidden_tb.v`, `reference.v`, `task.json`. The format is in `tasks/README.md`. Regenerate folders with `taskgen/harness/export_tasks.py`; never edit them by hand.
+- `tasks/<group>/<task>/` holds `spec.md`, the starter `.v`, read-only support files, `public_tb.v`, `hidden_tb.v`, `reference.v`, `task.json`. The format is in `tasks/README.md`. Regenerate folders with `taskgen/harness/export_tasks.py`; never edit them by hand.
 - `taskgen/runs/` keeps generator inputs and outputs (designs, questions JSONL, run logs). `taskgen/build/` holds intermediate task JSONs and is gitignored.
 
 ## Setup
@@ -35,7 +35,7 @@ Generator scripts use paths relative to `taskgen/`; run them from there. Harness
 ```bash
 cd taskgen && .venv/bin/python -W ignore test_pipeline_offline.py   # generator: offline end-to-end test, no keys
 python3 taskgen/harness/test_rtltask.py                             # harness unit tests
-python3 taskgen/harness/grade.py tasks/<task> <submission dir>      # grade one submission
+python3 taskgen/harness/grade.py tasks/<group>/<task> <submission dir>      # grade one submission
 ```
 
 Run `test_pipeline_offline.py` after changing `taskgen/main.py` or `taskgen/utils/`, and `test_rtltask.py` after changing the harness. There is no linter or CI. A full generator run makes many LLM calls; use `--limit` unless a full run was asked for. Rebuild steps are in `taskgen/README.md`.

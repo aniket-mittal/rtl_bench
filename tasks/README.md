@@ -1,10 +1,18 @@
 # tasks
 
-Every folder here is one RTL task for an agent. Still being added: the rest of RTL-BenchLS Task 2, RTL-BenchLS
-Task 1 and Task 3, RTLLM, verilog-eval, and the remaining `taskgen` designs. `index.jsonl` lists them all (one line per task: name, suite, kind,
-difficulty, top module, sequential or not, source).
+One folder per RTL task for an agent, grouped by where the task came from. `index.jsonl` lists every task (path,
+kind, difficulty, top module, sequential or not, verification, source).
 
-## Layout of a task
+```
+generated/           repair-<design>-bug<k>, spec2rtl-<design>-bug<k>   taskgen: an LLM-injected bug; the spec describes the bugged variant
+verilog-eval/        spec2rtl-<problem>                                  verilog-eval problem statements
+rtllm/               spec2rtl-<design>                                   RTLLM design descriptions
+github-issues/       repair-<repo>-pr<n>                                 real bug fixes from GitHub (RTL-BenchLS Task 3)
+benchls-<dataset>/   infill-<design>[-block<k>]                          RTL-BenchLS designs with one block masked (Task 1 and 2), split by upstream dataset:
+                                                                          origen, rtlpp, mgverilog, autovcoder, github
+```
+
+## Inside a task
 
 ```
 <task>/
@@ -28,7 +36,7 @@ iverilog -g2012 -s tb -o sim public_tb.v <module>.v [lib.v] && vvp sim     # pri
 ## Grading
 
 ```bash
-python3 taskgen/harness/grade.py tasks/<task> <submission dir>
+python3 taskgen/harness/grade.py tasks/<group>/<task> <submission dir>
 ```
 
 `<submission dir>` holds the agent's edited files. The grader prints JSON. `reward` is 1 only when the design
@@ -37,17 +45,20 @@ compiles, `public_tb.v` and `hidden_tb.v` both print PASS, and Yosys proves the 
 synthesized cell count, for area work. Every task was checked when it was built: its reference scores reward 1, and a
 repair starter scores 0.
 
-## Kinds and suites
+## Kinds
 
-Folder names are `<kind>__<source>__<design>[__<variant>]` (`spec2rtl` in names is `spec_to_rtl` in `task.json`).
+`spec2rtl` in folder names is `spec_to_rtl` in `task.json`.
 
 | kind | starter | the agent must | from |
 |---|---|---|---|
-| `repair` | design that disagrees with the spec | fix it to match `spec.md` | `verilog-eval` / other open-source designs mutated by `taskgen` (the spec describes the mutated behavior, the starter is the original), RTL-BenchLS GitHub issue fixes (`rtl-benchls__task3`) |
+| `repair` | design that disagrees with the spec | fix it to match `spec.md` | `verilog-eval` / other open-source designs mutated by `taskgen` (the spec describes the mutated behavior, the starter is the original), RTL-BenchLS GitHub issue fixes (`github-issues/`) |
 | `spec_to_rtl` | port skeleton | write the module from `spec.md` | `taskgen` specs, RTLLM and verilog-eval problem statements |
-| `infill` | design with one block replaced by `[MASKED]` | fill it in so the design does what it evidently should | RTL-BenchLS designs (`rtl-benchls__task1`, `rtl-benchls__task2`) |
+| `infill` | design with one block replaced by `[MASKED]` | fill it in so the design does what it evidently should | RTL-BenchLS designs (`benchls-*/`) |
 
-`difficulty` is set only for `taskgen` tasks, from the solve rate of the validation model (Haiku): easy >= 0.75,
+`grading.verification` is `formal` for almost every task. It is `sim_only` when Yosys cannot finish the formal check
+even on the reference against itself; those tasks are graded by the two testbenches alone.
+
+`difficulty` is set only for `generated/` tasks, from the solve rate of the validation model (Haiku): easy >= 0.75,
 medium >= 0.4, hard < 0.4. Everything else is `unknown`.
 
 Provenance (source file, upstream license, generator, bug type, commits) is in each `task.json`. Do not hand-edit
