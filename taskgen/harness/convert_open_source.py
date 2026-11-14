@@ -3,8 +3,8 @@
 Convert taskgen open-source pipeline output into standard task JSONs (harness/FORMAT.md, schema_version 1).
 
 Input:
-  taskgen/runs/open_source/*_questions.jsonl   question rows (only rows with question_valid are used)
-  taskgen/runs/open_source/designs.jsonl       seed design index: hash -> source, collection
+  taskgen/runs/*_questions.jsonl   question rows (only rows with question_valid are used)
+  taskgen/runs/designs.jsonl       seed design index: hash -> source, collection
 
 Grouping and naming match taskgen/export_tasks.py: one task group per (seed design, mutant) pair with
 at least one valid question, numbered mutant_<k> per design in (source, mutant_index) order; the spec is
@@ -107,7 +107,7 @@ def normalize(code: str) -> str:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--raw", default=str(REPO / "taskgen/runs/open_source"))
+    ap.add_argument("--raw", default=str(REPO / "taskgen/runs"))
     ap.add_argument("--out", default=str(REPO / "taskgen/build/open_source"))
     args = ap.parse_args()
     raw, out = Path(args.raw), Path(args.out)

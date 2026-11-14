@@ -16,7 +16,7 @@ RTLBot_Proposal.txt   project proposal (background only)
 - `sources/` is a read-only copy of upstream repos. Do not edit, reformat, or "fix" files there. Each folder keeps its upstream LICENSE; `sources/README.md` records source, license, and pinned commit. If you add a collection, add its row and its LICENSE.
 - `sources/YOSYS_STATUS.md` lists which seed files Yosys cannot parse. Check it before debugging a parse failure.
 - `tasks/<task>/` holds `spec.md`, the starter `.v`, read-only support files, `public_tb.v`, `hidden_tb.v`, `reference.v`, `task.json`. The format is in `tasks/README.md`. Regenerate folders with `taskgen/harness/export_tasks.py`; never edit them by hand.
-- `taskgen/runs/open_source/` keeps generator inputs and outputs (designs, questions JSONL, run logs). `taskgen/build/` holds intermediate task JSONs and is gitignored.
+- `taskgen/runs/` keeps generator inputs and outputs (designs, questions JSONL, run logs). `taskgen/build/` holds intermediate task JSONs and is gitignored.
 
 ## Setup
 

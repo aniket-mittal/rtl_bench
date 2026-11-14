@@ -31,19 +31,19 @@ cp custom.yaml config.yaml                       # keys only needed for deepseek
 .venv/bin/python -W ignore test_pipeline_offline.py   # offline end-to-end test (fake LLM, real Yosys)
 
 # 1. seed designs from ../sources -> designs.jsonl (top module renamed to dut, must elaborate in Yosys)
-.venv/bin/python prepare_sources.py --out runs/open_source/designs.jsonl \
+.venv/bin/python prepare_sources.py --out runs/designs.jsonl \
     basic_verilog verilog-uart verilog-i2c secworks-sha256 secworks-aes serv picorv32 verilog-eval
 # 2. generate (set original_designs_path in config.yaml to that file)
-.venv/bin/python -W ignore main.py run --profile claude --output runs/open_source/<name>_questions.jsonl
+.venv/bin/python -W ignore main.py run --profile claude --output runs/<name>_questions.jsonl
 ```
 
-`runs/open_source/` keeps the generator's inputs and outputs (designs, questions, run logs).
+`runs/` keeps the generator's inputs and outputs (designs, questions, run logs).
 
 ## Harness
 
 | script | does |
 |---|---|
-| `convert_open_source.py` | generator output (`runs/open_source/*_questions.jsonl`) -> `repair` + `spec2rtl` tasks |
+| `convert_open_source.py` | generator output (`runs/*_questions.jsonl`) -> `repair` + `spec2rtl` tasks |
 | `convert_rtlbenchls.py` | RTL-BenchLS Task 2 -> `infill` tasks. The released masked files mask the whole design, so the mask is rebuilt: one always/assign/instance block per design |
 | `convert_rtlbenchls_task1.py` | RTL-BenchLS Task 1 designs -> `infill` tasks (same masking) |
 | `convert_rtlbenchls_task3.py` | RTL-BenchLS Task 3 GitHub issue fixes -> `repair` tasks (clones upstream repos into `~/.cache/rtl_bench_repos`) |
