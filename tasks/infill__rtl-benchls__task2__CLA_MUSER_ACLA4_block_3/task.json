@@ -69,6 +69,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "CLA_MUSER_ACLA4.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "CLA_MUSER_ACLA4.v"

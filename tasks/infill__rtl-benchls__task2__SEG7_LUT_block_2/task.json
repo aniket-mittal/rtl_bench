@@ -21,6 +21,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "SEG7_LUT.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "SEG7_LUT.v"

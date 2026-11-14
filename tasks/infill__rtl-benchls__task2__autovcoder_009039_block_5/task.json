@@ -93,6 +93,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "autovcoder_009039.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "autovcoder_009039.v"

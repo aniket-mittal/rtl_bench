@@ -235,6 +235,7 @@ def build(task_path, out_root):
         "top_module": top,
         "interface": iface,
         "files": {
+            "agent": ["spec.md"] + editable + sorted(read_only) + ["public_tb.v"],
             "spec": "spec.md",
             "editable": editable,
             "read_only": sorted(read_only),

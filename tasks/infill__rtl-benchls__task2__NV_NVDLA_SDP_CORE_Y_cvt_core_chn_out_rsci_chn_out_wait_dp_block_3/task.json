@@ -40,6 +40,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "NV_NVDLA_SDP_CORE_Y_cvt_core_chn_out_rsci_chn_out_wait_dp.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "NV_NVDLA_SDP_CORE_Y_cvt_core_chn_out_rsci_chn_out_wait_dp.v"

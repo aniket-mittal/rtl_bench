@@ -56,6 +56,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "SDP_X_X_relu_core_chn_relu_in_rsci_chn_relu_in_wait_ctrl.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "SDP_X_X_relu_core_chn_relu_in_rsci_chn_relu_in_wait_ctrl.v"

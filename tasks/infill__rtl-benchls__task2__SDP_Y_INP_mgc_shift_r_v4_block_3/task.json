@@ -25,6 +25,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "SDP_Y_INP_mgc_shift_r_v4.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "SDP_Y_INP_mgc_shift_r_v4.v"

@@ -17,8 +17,9 @@ difficulty, top module, sequential or not, source).
   task.json      top module, interface, editable / read-only / hidden files, tools, step and time limits, grading, provenance
 ```
 
-Give the agent everything except the files listed under `files.hidden` in `task.json` (`hidden_tb.v`, `reference.v`).
-The agent edits the files in `files.editable` and can run the public tests itself:
+Give the agent only the files in `task.json` `files.agent`: `spec.md`, the starter and read-only `.v` files, and
+`public_tb.v`. Keep `hidden_tb.v`, `reference.v` and `task.json` itself on the grader side; `task.json` provenance
+names the injected bug. The agent edits the files in `files.editable` and can run the public tests itself:
 
 ```bash
 iverilog -g2012 -s tb -o sim public_tb.v <module>.v [lib.v] && vvp sim     # prints PASS, or MISMATCH lines and FAIL

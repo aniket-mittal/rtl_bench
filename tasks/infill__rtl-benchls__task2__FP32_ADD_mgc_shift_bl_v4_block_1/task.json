@@ -25,6 +25,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "FP32_ADD_mgc_shift_bl_v4.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "FP32_ADD_mgc_shift_bl_v4.v"

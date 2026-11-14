@@ -25,6 +25,11 @@
     ]
   },
   "files": {
+    "agent": [
+      "spec.md",
+      "dut.v",
+      "public_tb.v"
+    ],
     "spec": "spec.md",
     "editable": [
       "dut.v"
