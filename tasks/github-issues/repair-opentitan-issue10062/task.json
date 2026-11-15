@@ -1,0 +1,184 @@
+{
+  "task_id": "github-issues/repair-opentitan-issue10062",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "pwm_chan",
+  "interface": {
+    "clock": "clk_i",
+    "reset": {
+      "name": "rst_ni",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "rst_ni",
+        "width": 1
+      },
+      {
+        "name": "pwm_en_i",
+        "width": 1
+      },
+      {
+        "name": "invert_i",
+        "width": 1
+      },
+      {
+        "name": "blink_en_i",
+        "width": 1
+      },
+      {
+        "name": "htbt_en_i",
+        "width": 1
+      },
+      {
+        "name": "phase_delay_i",
+        "width": 16
+      },
+      {
+        "name": "duty_cycle_a_i",
+        "width": 16
+      },
+      {
+        "name": "duty_cycle_b_i",
+        "width": 16
+      },
+      {
+        "name": "blink_param_x_i",
+        "width": 16
+      },
+      {
+        "name": "blink_param_y_i",
+        "width": 16
+      },
+      {
+        "name": "phase_ctr_i",
+        "width": 16
+      },
+      {
+        "name": "cycle_end_i",
+        "width": 1
+      },
+      {
+        "name": "clr_blink_cntr_i",
+        "width": 1
+      },
+      {
+        "name": "dc_resn_i",
+        "width": 4
+      }
+    ],
+    "outputs": [
+      {
+        "name": "pwm_o",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/pwm_chan.sv",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/pwm_chan.sv"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "src/pwm_chan.sv": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3622669109
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/lowRISC_opentitan_10690_10062",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "lowRISC_opentitan_10690_10062",
+    "repository": "lowRISC/opentitan",
+    "pr_number": 10690,
+    "issue_number": 10062,
+    "pr_url": "https://github.com/lowRISC/opentitan/pull/10690",
+    "issue_url": "https://github.com/lowRISC/opentitan/issues/10062",
+    "pr_title": "[pwm/rtl] Handle rounding errors in pwm_chan",
+    "issue_title": "PWM does not get the duty cycle correct",
+    "issue_labels": [
+      "Type:Bug"
+    ],
+    "base_commit": "5a990dd81fb8b33c21232c9621da7274ff5b643b",
+    "head_commit": "d58f47a2d7babcad4226629068c080f71af548ba",
+    "base_ref": "master",
+    "lec_status": "useful_pass",
+    "additions": 17,
+    "deletions": 21,
+    "upstream_verilog_files": [
+      "hw/ip/pwm/rtl/pwm_chan.sv"
+    ],
+    "top_from_changed_module": "pwm_chan",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/pwm_chan.sv": "hw/ip/pwm/rtl/pwm_chan.sv"
+    },
+    "editable_repo_paths": [
+      "hw/ip/pwm/rtl/pwm_chan.sv"
+    ],
+    "normalizations": [],
+    "unresolved_references": [],
+    "base_vs_head": "different",
+    "base_vs_head_detail": null,
+    "base_vs_head_timeout_s": 60,
+    "rtl_license": {
+      "files": {
+        "LICENSE": "Apache-2.0"
+      },
+      "spdx": "Apache-2.0",
+      "file_spdx": [
+        "Apache-2.0"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}

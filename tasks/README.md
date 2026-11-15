@@ -7,7 +7,7 @@ kind, difficulty, top module, sequential or not, verification, source).
 generated/           repair-<design>-bug<k>, spec2rtl-<design>-bug<k>   taskgen: an LLM-injected bug; the spec describes the bugged variant
 verilog-eval/        spec2rtl-<problem>                                  verilog-eval problem statements
 rtllm/               spec2rtl-<design>                                   RTLLM design descriptions
-github-issues/       repair-<repo>-pr<n>                                 real bug fixes from GitHub (RTL-BenchLS Task 3)
+github-issues/       repair-<repo>-issue<n>                               real bug fixes from GitHub (RTL-BenchLS Task 3)
 benchls-<dataset>/   infill-<name>-<number>                              RTL-BenchLS designs with one block masked (Task 1 and 2), split by upstream
                                                                           dataset: origen, rtlpp, mgverilog, autovcoder, github. Upstream renamed most
                                                                           modules to row ids, so <name> was written by Claude from the code; <number>

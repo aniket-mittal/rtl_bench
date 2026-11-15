@@ -1,0 +1,282 @@
+{
+  "task_id": "github-issues/repair-opentitan-issue13751",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "flash_mp",
+  "interface": {
+    "clock": "clk_i",
+    "reset": {
+      "name": "rst_ni",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "rst_ni",
+        "width": 1
+      },
+      {
+        "name": "flash_disable_i",
+        "width": 4
+      },
+      {
+        "name": "if_sel_i",
+        "width": 2
+      },
+      {
+        "name": "region_cfgs_i",
+        "width": 423
+      },
+      {
+        "name": "bank_cfgs_i",
+        "width": 2
+      },
+      {
+        "name": "info_page_cfgs_i",
+        "width": 1680
+      },
+      {
+        "name": "erase_suspend_i",
+        "width": 1
+      },
+      {
+        "name": "req_i",
+        "width": 1
+      },
+      {
+        "name": "phase_i",
+        "width": 2
+      },
+      {
+        "name": "req_addr_i",
+        "width": 9
+      },
+      {
+        "name": "req_part_i",
+        "width": 1
+      },
+      {
+        "name": "info_sel_i",
+        "width": 2
+      },
+      {
+        "name": "addr_ovfl_i",
+        "width": 1
+      },
+      {
+        "name": "rd_i",
+        "width": 1
+      },
+      {
+        "name": "prog_i",
+        "width": 1
+      },
+      {
+        "name": "pg_erase_i",
+        "width": 1
+      },
+      {
+        "name": "bk_erase_i",
+        "width": 1
+      },
+      {
+        "name": "rd_done_i",
+        "width": 1
+      },
+      {
+        "name": "prog_done_i",
+        "width": 1
+      },
+      {
+        "name": "erase_done_i",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "erase_suspend_done_o",
+        "width": 1
+      },
+      {
+        "name": "rd_done_o",
+        "width": 1
+      },
+      {
+        "name": "prog_done_o",
+        "width": 1
+      },
+      {
+        "name": "erase_done_o",
+        "width": 1
+      },
+      {
+        "name": "error_o",
+        "width": 1
+      },
+      {
+        "name": "req_o",
+        "width": 1
+      },
+      {
+        "name": "rd_o",
+        "width": 1
+      },
+      {
+        "name": "prog_o",
+        "width": 1
+      },
+      {
+        "name": "scramble_en_o",
+        "width": 1
+      },
+      {
+        "name": "ecc_en_o",
+        "width": 1
+      },
+      {
+        "name": "he_en_o",
+        "width": 1
+      },
+      {
+        "name": "pg_erase_o",
+        "width": 1
+      },
+      {
+        "name": "bk_erase_o",
+        "width": 1
+      },
+      {
+        "name": "erase_suspend_o",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/flash_mp.v",
+      "src/flash_mp_data_region_sel.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/flash_mp.v"
+    ],
+    "read_only": [
+      "src/flash_mp_data_region_sel.v"
+    ],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "src/flash_mp.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 678813058
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/lowRISC_opentitan_13794_13751",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "lowRISC_opentitan_13794_13751",
+    "repository": "lowRISC/opentitan",
+    "pr_number": 13794,
+    "issue_number": 13751,
+    "pr_url": "https://github.com/lowRISC/opentitan/pull/13794",
+    "issue_url": "https://github.com/lowRISC/opentitan/issues/13751",
+    "pr_title": "[flash_ctrl] Fix info access overflow",
+    "issue_title": "[flash_ctrl] info partitoin overflow is not handled gracefully",
+    "issue_labels": [
+      "Priority:P1",
+      "Type:Bug",
+      "Component:RTL",
+      "IP:flash_ctrl",
+      "Milestone:V2"
+    ],
+    "base_commit": "737e1a4407f5a1f2de4da2311bcab48c7b686a9e",
+    "head_commit": "2ef8474d362bfe90e5f136d28a43060e49be56ad",
+    "base_ref": "master",
+    "lec_status": "useful_pass",
+    "additions": 17,
+    "deletions": 10,
+    "upstream_verilog_files": [
+      "hw/ip/flash_ctrl/rtl/flash_mp.sv"
+    ],
+    "top_from_changed_module": "flash_mp",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/flash_mp.v": "hw/ip/flash_ctrl/rtl/flash_mp.sv",
+      "rtl/src/flash_mp_data_region_sel.v": "hw/ip/flash_ctrl/rtl/flash_mp_data_region_sel.sv"
+    },
+    "editable_repo_paths": [
+      "hw/ip/flash_ctrl/rtl/flash_mp.sv"
+    ],
+    "normalizations": [
+      "assert_dummy",
+      "define_synthesis",
+      "import_hoist",
+      "qualify_imported_types"
+    ],
+    "unresolved_references": [
+      "uvm_pkg::"
+    ],
+    "base_vs_head": "different",
+    "base_vs_head_detail": null,
+    "base_vs_head_timeout_s": 60,
+    "sv2v": {
+      "version": "0.0.13",
+      "applied": true
+    },
+    "sv2v_input_editable_repo_paths": [
+      "hw/ip/flash_ctrl/rtl/flash_mp.sv"
+    ],
+    "rtl_license": {
+      "files": {
+        "LICENSE": "Apache-2.0"
+      },
+      "spdx": "Apache-2.0",
+      "file_spdx": [
+        "Apache-2.0"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}

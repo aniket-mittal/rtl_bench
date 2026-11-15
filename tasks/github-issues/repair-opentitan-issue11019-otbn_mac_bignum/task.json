@@ -1,0 +1,221 @@
+{
+  "task_id": "github-issues/repair-opentitan-issue11019-otbn_mac_bignum",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "otbn_mac_bignum",
+  "interface": {
+    "clock": "clk_i",
+    "reset": {
+      "name": "rst_ni",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "rst_ni",
+        "width": 1
+      },
+      {
+        "name": "operation_i",
+        "width": 521
+      },
+      {
+        "name": "mac_en_i",
+        "width": 1
+      },
+      {
+        "name": "mac_commit_i",
+        "width": 1
+      },
+      {
+        "name": "mac_predec_bignum_i",
+        "width": 2
+      },
+      {
+        "name": "urnd_data_i",
+        "width": 256
+      },
+      {
+        "name": "sec_wipe_acc_urnd_i",
+        "width": 1
+      },
+      {
+        "name": "ispr_acc_wr_data_intg_i",
+        "width": 312
+      },
+      {
+        "name": "ispr_acc_wr_en_i",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "operation_result_o",
+        "width": 256
+      },
+      {
+        "name": "operation_flags_o",
+        "width": 4
+      },
+      {
+        "name": "operation_flags_en_o",
+        "width": 4
+      },
+      {
+        "name": "operation_intg_violation_err_o",
+        "width": 1
+      },
+      {
+        "name": "predec_error_o",
+        "width": 1
+      },
+      {
+        "name": "ispr_acc_intg_o",
+        "width": 312
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/otbn_mac_bignum.v",
+      "src/prim_and2.v",
+      "src/prim_blanker.v",
+      "src/prim_secded_inv_39_32_dec.v",
+      "src/prim_secded_inv_39_32_enc.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/otbn_mac_bignum.v"
+    ],
+    "read_only": [
+      "src/prim_and2.v",
+      "src/prim_blanker.v",
+      "src/prim_secded_inv_39_32_dec.v",
+      "src/prim_secded_inv_39_32_enc.v"
+    ],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "src/otbn_mac_bignum.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2659267205
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/lowRISC_opentitan_13192_11019__otbn_mac_bignum",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "lowRISC_opentitan_13192_11019",
+    "repository": "lowRISC/opentitan",
+    "pr_number": 13192,
+    "issue_number": 11019,
+    "pr_url": "https://github.com/lowRISC/opentitan/pull/13192",
+    "issue_url": "https://github.com/lowRISC/opentitan/issues/11019",
+    "pr_title": "[otbn] Remove reset from FF-based GPRs and WDRs",
+    "issue_title": "[otbn] D2S review opens",
+    "issue_labels": [
+      "Component:Doc",
+      "Type:Task",
+      "Component:RTL",
+      "Component:Security",
+      "IP:otbn",
+      "Milestone:D2S"
+    ],
+    "base_commit": "b1f6dddfdf29165e8c5f62c1a630e8b88025db6d",
+    "head_commit": "a607550697fe80d84ac23541c127ab98f75e3d76",
+    "base_ref": "master",
+    "lec_status": "useful_pass",
+    "additions": 19,
+    "deletions": 26,
+    "upstream_verilog_files": [
+      "hw/ip/otbn/rtl/otbn_alu_bignum.sv",
+      "hw/ip/otbn/rtl/otbn_mac_bignum.sv",
+      "hw/ip/otbn/rtl/otbn_rf_base_ff.sv",
+      "hw/ip/otbn/rtl/otbn_rf_bignum.sv",
+      "hw/ip/otbn/rtl/otbn_rf_bignum_ff.sv"
+    ],
+    "top_from_changed_module": "otbn_mac_bignum",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/otbn_mac_bignum.v": "hw/ip/otbn/rtl/otbn_mac_bignum.sv",
+      "rtl/src/prim_and2.v": "generated from prim_and2",
+      "rtl/src/prim_blanker.v": "hw/ip/prim/rtl/prim_blanker.sv",
+      "rtl/src/prim_secded_inv_39_32_dec.v": "hw/ip/prim/rtl/prim_secded_inv_39_32_dec.sv",
+      "rtl/src/prim_secded_inv_39_32_enc.v": "hw/ip/prim/rtl/prim_secded_inv_39_32_enc.sv"
+    },
+    "editable_repo_paths": [
+      "hw/ip/otbn/rtl/otbn_mac_bignum.sv"
+    ],
+    "normalizations": [
+      "assert_dummy",
+      "define_synthesis",
+      "import_hoist",
+      "primgen",
+      "qualify_imported_types"
+    ],
+    "unresolved_references": [
+      "uvm_pkg::"
+    ],
+    "base_vs_head": "different",
+    "base_vs_head_detail": null,
+    "base_vs_head_timeout_s": 60,
+    "sv2v": {
+      "version": "0.0.13",
+      "applied": true
+    },
+    "sv2v_input_editable_repo_paths": [
+      "hw/ip/otbn/rtl/otbn_mac_bignum.sv"
+    ],
+    "rtl_license": {
+      "files": {
+        "LICENSE": "Apache-2.0"
+      },
+      "spdx": "Apache-2.0",
+      "file_spdx": [
+        "Apache-2.0"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}

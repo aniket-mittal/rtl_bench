@@ -1,0 +1,564 @@
+{
+  "task_id": "github-issues/repair-cv32e40p-issue838-controller",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "cv32e40p_controller",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "rst_n",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "clk_ungated_i",
+        "width": 1
+      },
+      {
+        "name": "rst_n",
+        "width": 1
+      },
+      {
+        "name": "fetch_enable_i",
+        "width": 1
+      },
+      {
+        "name": "is_fetch_failed_i",
+        "width": 1
+      },
+      {
+        "name": "illegal_insn_i",
+        "width": 1
+      },
+      {
+        "name": "ecall_insn_i",
+        "width": 1
+      },
+      {
+        "name": "mret_insn_i",
+        "width": 1
+      },
+      {
+        "name": "uret_insn_i",
+        "width": 1
+      },
+      {
+        "name": "dret_insn_i",
+        "width": 1
+      },
+      {
+        "name": "mret_dec_i",
+        "width": 1
+      },
+      {
+        "name": "uret_dec_i",
+        "width": 1
+      },
+      {
+        "name": "dret_dec_i",
+        "width": 1
+      },
+      {
+        "name": "wfi_i",
+        "width": 1
+      },
+      {
+        "name": "ebrk_insn_i",
+        "width": 1
+      },
+      {
+        "name": "fencei_insn_i",
+        "width": 1
+      },
+      {
+        "name": "csr_status_i",
+        "width": 1
+      },
+      {
+        "name": "instr_valid_i",
+        "width": 1
+      },
+      {
+        "name": "pc_id_i",
+        "width": 32
+      },
+      {
+        "name": "is_compressed_i",
+        "width": 1
+      },
+      {
+        "name": "hwlp_start_addr_i",
+        "width": 64
+      },
+      {
+        "name": "hwlp_end_addr_i",
+        "width": 64
+      },
+      {
+        "name": "hwlp_counter_i",
+        "width": 64
+      },
+      {
+        "name": "data_req_ex_i",
+        "width": 1
+      },
+      {
+        "name": "data_we_ex_i",
+        "width": 1
+      },
+      {
+        "name": "data_misaligned_i",
+        "width": 1
+      },
+      {
+        "name": "data_load_event_i",
+        "width": 1
+      },
+      {
+        "name": "data_err_i",
+        "width": 1
+      },
+      {
+        "name": "mult_multicycle_i",
+        "width": 1
+      },
+      {
+        "name": "apu_en_i",
+        "width": 1
+      },
+      {
+        "name": "apu_read_dep_i",
+        "width": 1
+      },
+      {
+        "name": "apu_write_dep_i",
+        "width": 1
+      },
+      {
+        "name": "branch_taken_ex_i",
+        "width": 1
+      },
+      {
+        "name": "ctrl_transfer_insn_in_id_i",
+        "width": 2
+      },
+      {
+        "name": "ctrl_transfer_insn_in_dec_i",
+        "width": 2
+      },
+      {
+        "name": "irq_req_ctrl_i",
+        "width": 1
+      },
+      {
+        "name": "irq_sec_ctrl_i",
+        "width": 1
+      },
+      {
+        "name": "irq_id_ctrl_i",
+        "width": 5
+      },
+      {
+        "name": "irq_wu_ctrl_i",
+        "width": 1
+      },
+      {
+        "name": "current_priv_lvl_i",
+        "width": 2
+      },
+      {
+        "name": "debug_req_i",
+        "width": 1
+      },
+      {
+        "name": "debug_single_step_i",
+        "width": 1
+      },
+      {
+        "name": "debug_ebreakm_i",
+        "width": 1
+      },
+      {
+        "name": "debug_ebreaku_i",
+        "width": 1
+      },
+      {
+        "name": "trigger_match_i",
+        "width": 1
+      },
+      {
+        "name": "regfile_we_id_i",
+        "width": 1
+      },
+      {
+        "name": "regfile_alu_waddr_id_i",
+        "width": 6
+      },
+      {
+        "name": "regfile_we_ex_i",
+        "width": 1
+      },
+      {
+        "name": "regfile_waddr_ex_i",
+        "width": 6
+      },
+      {
+        "name": "regfile_we_wb_i",
+        "width": 1
+      },
+      {
+        "name": "regfile_alu_we_fw_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_ex_is_reg_a_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_ex_is_reg_b_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_ex_is_reg_c_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_wb_is_reg_a_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_wb_is_reg_b_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_wb_is_reg_c_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_alu_is_reg_a_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_alu_is_reg_b_i",
+        "width": 1
+      },
+      {
+        "name": "reg_d_alu_is_reg_c_i",
+        "width": 1
+      },
+      {
+        "name": "id_ready_i",
+        "width": 1
+      },
+      {
+        "name": "id_valid_i",
+        "width": 1
+      },
+      {
+        "name": "ex_valid_i",
+        "width": 1
+      },
+      {
+        "name": "wb_ready_i",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "ctrl_busy_o",
+        "width": 1
+      },
+      {
+        "name": "is_decoding_o",
+        "width": 1
+      },
+      {
+        "name": "deassert_we_o",
+        "width": 1
+      },
+      {
+        "name": "hwlp_mask_o",
+        "width": 1
+      },
+      {
+        "name": "instr_req_o",
+        "width": 1
+      },
+      {
+        "name": "pc_set_o",
+        "width": 1
+      },
+      {
+        "name": "pc_mux_o",
+        "width": 4
+      },
+      {
+        "name": "exc_pc_mux_o",
+        "width": 3
+      },
+      {
+        "name": "trap_addr_mux_o",
+        "width": 2
+      },
+      {
+        "name": "hwlp_dec_cnt_o",
+        "width": 2
+      },
+      {
+        "name": "hwlp_jump_o",
+        "width": 1
+      },
+      {
+        "name": "hwlp_targ_addr_o",
+        "width": 32
+      },
+      {
+        "name": "data_err_ack_o",
+        "width": 1
+      },
+      {
+        "name": "apu_stall_o",
+        "width": 1
+      },
+      {
+        "name": "irq_ack_o",
+        "width": 1
+      },
+      {
+        "name": "irq_id_o",
+        "width": 5
+      },
+      {
+        "name": "exc_cause_o",
+        "width": 5
+      },
+      {
+        "name": "debug_mode_o",
+        "width": 1
+      },
+      {
+        "name": "debug_cause_o",
+        "width": 3
+      },
+      {
+        "name": "debug_csr_save_o",
+        "width": 1
+      },
+      {
+        "name": "debug_p_elw_no_sleep_o",
+        "width": 1
+      },
+      {
+        "name": "debug_wfi_no_sleep_o",
+        "width": 1
+      },
+      {
+        "name": "debug_havereset_o",
+        "width": 1
+      },
+      {
+        "name": "debug_running_o",
+        "width": 1
+      },
+      {
+        "name": "debug_halted_o",
+        "width": 1
+      },
+      {
+        "name": "wake_from_sleep_o",
+        "width": 1
+      },
+      {
+        "name": "csr_save_if_o",
+        "width": 1
+      },
+      {
+        "name": "csr_save_id_o",
+        "width": 1
+      },
+      {
+        "name": "csr_save_ex_o",
+        "width": 1
+      },
+      {
+        "name": "csr_cause_o",
+        "width": 6
+      },
+      {
+        "name": "csr_irq_sec_o",
+        "width": 1
+      },
+      {
+        "name": "csr_restore_mret_id_o",
+        "width": 1
+      },
+      {
+        "name": "csr_restore_uret_id_o",
+        "width": 1
+      },
+      {
+        "name": "csr_restore_dret_id_o",
+        "width": 1
+      },
+      {
+        "name": "csr_save_cause_o",
+        "width": 1
+      },
+      {
+        "name": "operand_a_fw_mux_sel_o",
+        "width": 2
+      },
+      {
+        "name": "operand_b_fw_mux_sel_o",
+        "width": 2
+      },
+      {
+        "name": "operand_c_fw_mux_sel_o",
+        "width": 2
+      },
+      {
+        "name": "halt_if_o",
+        "width": 1
+      },
+      {
+        "name": "halt_id_o",
+        "width": 1
+      },
+      {
+        "name": "misaligned_stall_o",
+        "width": 1
+      },
+      {
+        "name": "jr_stall_o",
+        "width": 1
+      },
+      {
+        "name": "load_stall_o",
+        "width": 1
+      },
+      {
+        "name": "perf_pipeline_stall_o",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/cv32e40p_controller.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/cv32e40p_controller.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "src/cv32e40p_controller.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 226158309
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/openhwgroup_cv32e40p_841_838__cv32e40p_controller",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "openhwgroup_cv32e40p_841_838",
+    "repository": "openhwgroup/cv32e40p",
+    "pr_number": 841,
+    "issue_number": 838,
+    "pr_url": "https://github.com/openhwgroup/cv32e40p/pull/841",
+    "issue_url": "https://github.com/openhwgroup/cv32e40p/issues/838",
+    "pr_title": "3 RTL Issues corrections",
+    "issue_title": "pulp hwloop count not decrementing to 0 after the end of hwloop body execution",
+    "issue_labels": [
+      "Type:Bug",
+      "Status:Resolved",
+      "Component:RTL",
+      "PARAM:PULP_XPULP"
+    ],
+    "base_commit": "25907a07dc1e4557141e2bca957f35ce28cf6dad",
+    "head_commit": "0491837ebe928770ef46d57efecb73f43839c9b8",
+    "base_ref": "dev",
+    "lec_status": "useful_pass",
+    "additions": 48,
+    "deletions": 23,
+    "upstream_verilog_files": [
+      "rtl/cv32e40p_controller.sv",
+      "rtl/cv32e40p_cs_registers.sv",
+      "rtl/cv32e40p_id_stage.sv"
+    ],
+    "top_from_changed_module": "cv32e40p_controller",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/cv32e40p_controller.v": "rtl/cv32e40p_controller.sv"
+    },
+    "editable_repo_paths": [
+      "rtl/cv32e40p_controller.sv"
+    ],
+    "normalizations": [
+      "import_hoist",
+      "qualify_imported_types"
+    ],
+    "unresolved_references": [],
+    "base_vs_head": "different",
+    "base_vs_head_detail": null,
+    "base_vs_head_timeout_s": 60,
+    "sv2v": {
+      "version": "0.0.13",
+      "applied": true
+    },
+    "sv2v_input_editable_repo_paths": [
+      "rtl/cv32e40p_controller.sv"
+    ],
+    "rtl_license": {
+      "files": {
+        "LICENSE": "SHL-0.51"
+      },
+      "spdx": "SHL-0.51"
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}

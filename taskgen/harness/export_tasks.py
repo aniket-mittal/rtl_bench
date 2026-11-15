@@ -53,7 +53,9 @@ def task_path(source_task_id, suite, kind, provenance):
     if parts[:2] == ["rtl-benchls", "task3"]:        # GitHub issue fixes
         repo = (provenance.get("repository") or "repo").split("/")[-1]
         extra = parts[2].split("__", 1)[1] if "__" in parts[2] else ""
-        return "github-issues", f"{k}-{clean(repo)}-pr{provenance.get('pr_number')}" + (f"-{clean(extra)}" if extra else "")
+        extra = re.sub(r"^%s_" % re.escape(repo), "", extra)     # cv32e40p_controller -> controller
+        issue = provenance.get("issue_number") or parts[2].split("__")[0].split("_")[-1]
+        return "github-issues", f"{k}-{clean(repo)}-issue{issue}" + (f"-{clean(extra)}" if extra else "")
     origin = provenance.get("origin") or ""
     group = next((g for key, g in BENCHLS_GROUPS.items() if key in origin), "benchls-other")
     m = re.match(r"(.*)_(block|module)_(\d+)$", parts[-1])
