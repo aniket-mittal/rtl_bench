@@ -1,0 +1,8 @@
+module mg_08140(input wire clk,input wire [07 : 0] read_addr0,output wire [31 : 0] read_data0,input wire [07 : 0] read_addr1,output wire [31 : 0] read_data1,input wire wr,input wire [07 : 0] write_addr,input wire [31 : 0] write_data);
+reg [31 : 0] mem [0 : 255]; 
+  reg [31 : 0] tmp_read_data0; 
+  reg [31 : 0] tmp_read_data1; 
+  assign read_data0 = tmp_read_data0; 
+  assign read_data1 = tmp_read_data1; 
+  [MASKED] 
+ endmodule

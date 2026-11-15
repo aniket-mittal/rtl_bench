@@ -1,0 +1,6 @@
+module mg_07336(input D, input nCLK, input nSR, output reg Q);
+parameter [0:0] INIT = 1'bx; 
+  parameter[0:0] SRMODE = 1'bx; 
+  initial Q = INIT; 
+  [MASKED] 
+ endmodule

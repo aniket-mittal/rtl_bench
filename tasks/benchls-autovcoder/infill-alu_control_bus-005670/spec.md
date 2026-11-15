@@ -1,0 +1,72 @@
+# Fill in the masked region of `autovcoder_005670`
+
+The file `autovcoder_005670.v` holds a Verilog design whose top module is `autovcoder_005670` (combinational). Part of the design was removed, and the text `[MASKED]` appears exactly once in its place. That marker is the literal string `[MASKED]` (square brackets included), not a comment.
+
+**Your job:** replace `[MASKED]` with Verilog so the whole design again does what it is evidently meant to do. Work out the missing logic from the rest of the code: the port list, the declared signals, how those signals are used elsewhere, the module and signal names, and any comments.
+
+## What was masked
+
+- Mask type: **block**. The design has no single large statement, so 2 consecutive continuous `assign` statements in module `autovcoder_005670` were replaced together by `[MASKED]`. Write those `assign` statements in its place.
+- Design type: combinational. Origin: AutoVCoder-processed.
+
+## Rules
+
+- Edit only `autovcoder_005670.v`. When you are done it must not contain `[MASKED]`.
+- Keep every name the surrounding code uses (signals, ports, parameters, modules), and keep the rest of the file as it is. You may declare new internal signals if you need them.
+- Write synthesizable code that iverilog and yosys can compile. Use Verilog-2005, or SystemVerilog only where the file already uses SystemVerilog constructs.
+
+## Grading
+
+Your completed `autovcoder_005670` is simulated against the original design and checked for formal equivalence with it. Only behavior at the top-module ports counts. The code does not have to match the original text.
+
+---
+
+## Files
+
+Edit: `autovcoder_005670.v`. Only these files are graded.
+
+## Interface of `autovcoder_005670`
+
+| port | dir | width | note |
+|---|---|---|---|
+| `ctl_alu_oe` | in | 1 |  |
+| `ctl_alu_shift_oe` | in | 1 |  |
+| `ctl_alu_op2_oe` | in | 1 |  |
+| `ctl_alu_res_oe` | in | 1 |  |
+| `ctl_alu_op1_oe` | in | 1 |  |
+| `ctl_alu_bs_oe` | in | 1 |  |
+| `ctl_alu_op1_sel_bus` | in | 1 |  |
+| `ctl_alu_op1_sel_low` | in | 1 |  |
+| `ctl_alu_op1_sel_zero` | in | 1 |  |
+| `ctl_alu_op2_sel_zero` | in | 1 |  |
+| `ctl_alu_op2_sel_bus` | in | 1 |  |
+| `ctl_alu_op2_sel_lq` | in | 1 |  |
+| `ctl_alu_sel_op2_neg` | in | 1 |  |
+| `ctl_alu_sel_op2_high` | in | 1 |  |
+| `ctl_alu_core_R` | in | 1 |  |
+| `ctl_alu_core_V` | in | 1 |  |
+| `ctl_alu_core_S` | in | 1 |  |
+| `alu_oe` | out | 1 | |
+| `alu_shift_oe` | out | 1 | |
+| `alu_op2_oe` | out | 1 | |
+| `alu_res_oe` | out | 1 | |
+| `alu_op1_oe` | out | 1 | |
+| `alu_bs_oe` | out | 1 | |
+| `alu_op1_sel_bus` | out | 1 | |
+| `alu_op1_sel_low` | out | 1 | |
+| `alu_op1_sel_zero` | out | 1 | |
+| `alu_op2_sel_zero` | out | 1 | |
+| `alu_op2_sel_bus` | out | 1 | |
+| `alu_op2_sel_lq` | out | 1 | |
+| `alu_sel_op2_neg` | out | 1 | |
+| `alu_sel_op2_high` | out | 1 | |
+| `alu_core_R` | out | 1 | |
+| `alu_core_V` | out | 1 | |
+| `alu_core_S` | out | 1 | |
+
+## Testing
+
+    iverilog -g2012 -s tb -o sim public_tb.v autovcoder_005670.v && vvp sim
+
+It prints `PASS` or the mismatching cycles. Grading also runs hidden tests and a Yosys formal
+equivalence check against the reference, so passing the public tests is not enough on its own.

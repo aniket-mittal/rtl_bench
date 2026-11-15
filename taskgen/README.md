@@ -48,6 +48,7 @@ cp custom.yaml config.yaml                       # keys only needed for deepseek
 | `convert_rtlbenchls_task1.py` | RTL-BenchLS Task 1 designs -> `infill` tasks (same masking) |
 | `convert_rtlbenchls_task3.py` | RTL-BenchLS Task 3 GitHub issue fixes -> `repair` tasks (clones upstream repos into `~/.cache/rtl_bench_repos`) |
 | `convert_specs.py` | RTLLM and verilog-eval problem statements -> `spec2rtl` tasks |
+| `name_designs.py` | short readable names for RTL-BenchLS designs (upstream ids like `autovcoder_009039` say nothing); Haiku reads each design, cached in `runs/benchls_names.json` |
 | `export_tasks.py` | intermediate task JSONs -> task folders in `../tasks/`, keeping only tasks whose reference passes its own tests and formal check (and whose repair starter fails) |
 | `grade.py` | grade a submission against a task folder |
 | `rtltask.py` | shared code: port discovery, vector testbenches, Yosys formal equivalence, synthesis |
@@ -59,6 +60,7 @@ To rebuild everything:
 cd taskgen/harness
 python3 convert_open_source.py && python3 convert_rtlbenchls.py && python3 convert_rtlbenchls_task1.py \
   && python3 convert_rtlbenchls_task3.py && python3 convert_specs.py
+python3 name_designs.py
 python3 export_tasks.py --out ../../tasks --jobs 10 ../build/*
 python3 test_rtltask.py      # harness unit tests
 ```

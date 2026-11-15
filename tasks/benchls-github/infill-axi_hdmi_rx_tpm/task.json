@@ -1,0 +1,149 @@
+{
+  "task_id": "benchls-github/infill-axi_hdmi_rx_tpm",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "axi_hdmi_rx_tpm",
+  "interface": {
+    "clock": "hdmi_clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "hdmi_sof",
+        "width": 1
+      },
+      {
+        "name": "hdmi_de",
+        "width": 1
+      },
+      {
+        "name": "hdmi_data",
+        "width": 16
+      }
+    ],
+    "outputs": [
+      {
+        "name": "hdmi_tpm_oos",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "axi_hdmi_rx_tpm.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "axi_hdmi_rx_tpm.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "axi_hdmi_rx_tpm.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3125388023
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/axi_hdmi_rx_tpm",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "axi_hdmi_rx_tpm",
+    "parent_design": "axi_hdmi_rx_tpm",
+    "origin": "SEC-Flow-Star-repos-10.analog-hdl",
+    "origin_bucket": "S1",
+    "loc": 46,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 352504119,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 4,
+      "n_candidates": 5,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "axi_hdmi_rx_tpm",
+      "region_tokens": 61,
+      "region_chars": 486,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "axi_hdmi_rx_tpm.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_axi_hdmi_rx_tpm.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "axi_hdmi_rx_tpm_combined.v",
+      "sec_axi_hdmi_rx_tpm.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "axi_hdmi_rx_tpm",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/10.analog-hdl/library/axi_hdmi_rx/axi_hdmi_rx_tpm.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "axi_hdmi_rx_tpm",
+    "n_modules": 1,
+    "slice": "slice_09.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

@@ -1,0 +1,269 @@
+{
+  "task_id": "benchls-mgverilog/infill-dma_channel_stub-03928",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "mg_03928",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "rst",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "rst",
+        "width": 1
+      },
+      {
+        "name": "wb_rf_din",
+        "width": 32
+      },
+      {
+        "name": "wb_rf_adr",
+        "width": 8
+      },
+      {
+        "name": "wb_rf_we",
+        "width": 1
+      },
+      {
+        "name": "wb_rf_re",
+        "width": 1
+      },
+      {
+        "name": "ch_sel",
+        "width": 5
+      },
+      {
+        "name": "ndnr",
+        "width": 1
+      },
+      {
+        "name": "dma_busy",
+        "width": 1
+      },
+      {
+        "name": "dma_err",
+        "width": 1
+      },
+      {
+        "name": "dma_done",
+        "width": 1
+      },
+      {
+        "name": "dma_done_all",
+        "width": 1
+      },
+      {
+        "name": "de_csr",
+        "width": 32
+      },
+      {
+        "name": "de_txsz",
+        "width": 12
+      },
+      {
+        "name": "de_adr0",
+        "width": 32
+      },
+      {
+        "name": "de_adr1",
+        "width": 32
+      },
+      {
+        "name": "de_csr_we",
+        "width": 1
+      },
+      {
+        "name": "de_txsz_we",
+        "width": 1
+      },
+      {
+        "name": "de_adr0_we",
+        "width": 1
+      },
+      {
+        "name": "de_adr1_we",
+        "width": 1
+      },
+      {
+        "name": "de_fetch_descr",
+        "width": 1
+      },
+      {
+        "name": "dma_rest",
+        "width": 1
+      },
+      {
+        "name": "ptr_set",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "pointer",
+        "width": 32
+      },
+      {
+        "name": "pointer_s",
+        "width": 32
+      },
+      {
+        "name": "ch_csr",
+        "width": 32
+      },
+      {
+        "name": "ch_txsz",
+        "width": 32
+      },
+      {
+        "name": "ch_adr0",
+        "width": 32
+      },
+      {
+        "name": "ch_adr1",
+        "width": 32
+      },
+      {
+        "name": "ch_am0",
+        "width": 32
+      },
+      {
+        "name": "ch_am1",
+        "width": 32
+      },
+      {
+        "name": "sw_pointer",
+        "width": 32
+      },
+      {
+        "name": "ch_stop",
+        "width": 1
+      },
+      {
+        "name": "ch_dis",
+        "width": 1
+      },
+      {
+        "name": "irq",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "mg_03928.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "mg_03928.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "mg_03928.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 462690801
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/mg_03928",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "mg_03928",
+    "parent_design": "mg_03928",
+    "origin": "RTL-Dataset-MG-Verilog",
+    "origin_bucket": "S5",
+    "loc": 45,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 1899129267,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "fallback_assign_group",
+      "in_module": "mg_03928",
+      "n_statements": 2,
+      "region_tokens": 10,
+      "region_chars": 51,
+      "block_kind": "assign_group",
+      "reason": "no single always/assign/instance item has >= 8 tokens; masked the smallest run of consecutive assign statements reaching that size"
+    },
+    "upstream_golden_rtl_key": "mg_03928.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_mg_03928.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "mg_03928_combined.v",
+      "sec_mg_03928.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "mg_03928",
+        "file": "<upstream-pool>/RTL_Datasets/MG-Verilog_sec_input/designs/mg_03928.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "mg_03928",
+    "n_modules": 1,
+    "slice": "slice_06.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

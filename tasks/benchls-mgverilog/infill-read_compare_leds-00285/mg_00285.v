@@ -1,0 +1,9 @@
+module mg_00285(clock, reset, write_value, read_value,read_value_reg_en, led_success, led_fail);
+input clock, reset, read_value_reg_en; 
+  input [3:0] write_value, read_value; 
+  output led_success, led_fail; 
+  reg [3:0] read_value_reg; 
+  assign led_success = (write_value == read_value_reg); 
+  assign led_fail = ~led_success; 
+  [MASKED] 
+ endmodule

@@ -1,0 +1,24 @@
+module oh_edgealign (/*AUTOARG*/
+   // Outputs
+   firstedge,
+   // Inputs
+   fastclk, slowclk
+   );
+   
+   input  fastclk;
+   input  slowclk;
+   output firstedge;
+
+   reg 	  clk45;
+   reg 	  clk90;
+   reg 	  firstedge;
+
+   [MASKED]
+
+   always @ (posedge fastclk) 
+     begin
+	clk90     <= clk45;
+	firstedge <= ~clk45 & clk90;
+     end
+   
+endmodule

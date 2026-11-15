@@ -1,0 +1,14 @@
+module mg_02456 (input clk,input write_en,input [DATA_SZ_BYTES-1:0] write_bytes,input [ADDR_SZ-1:0] write_addr,input [(DATA_SZ_BYTES*8)-1:0] write_data,input read_en,input [ADDR_SZ-1:0] read_addr,output [(DATA_SZ_BYTES*8)-1:0] read_data);
+parameter ADDR_SZ = 9; 
+  parameter DATA_SZ_BYTES = 8; 
+  parameter MEM_SZ = 512; 
+  reg [(DATA_SZ_BYTES*8)-1:0] ram_block [MEM_SZ-1:0]; 
+  reg [(DATA_SZ_BYTES*8)-1:0] read_data_reg; 
+  generate 
+  genvar i; 
+  for (i = 0 ; i < DATA_SZ_BYTES ; i = i+1) begin 
+  [MASKED] 
+  end 
+  endgenerate 
+  assign read_data = read_data_reg; 
+ endmodule

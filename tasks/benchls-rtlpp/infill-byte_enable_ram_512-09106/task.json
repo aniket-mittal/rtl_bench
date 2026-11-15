@@ -1,0 +1,168 @@
+{
+  "task_id": "benchls-rtlpp/infill-byte_enable_ram_512-09106",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "rtlpp_09106",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "address",
+        "width": 9
+      },
+      {
+        "name": "byteenable",
+        "width": 4
+      },
+      {
+        "name": "chipselect",
+        "width": 1
+      },
+      {
+        "name": "clken",
+        "width": 1
+      },
+      {
+        "name": "reset",
+        "width": 1
+      },
+      {
+        "name": "write",
+        "width": 1
+      },
+      {
+        "name": "writedata",
+        "width": 32
+      }
+    ],
+    "outputs": [
+      {
+        "name": "readdata",
+        "width": 32
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "rtlpp_09106.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "rtlpp_09106.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "rtlpp_09106.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2743414793
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/rtlpp_09106",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "rtlpp_09106",
+    "parent_design": "rtlpp_09106",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 43,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 600977393,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "rtlpp_09106",
+      "region_tokens": 134,
+      "region_chars": 458,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "rtlpp_09106.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_rtlpp_09106.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "rtlpp_09106_combined.v",
+      "sec_rtlpp_09106.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "rtlpp_09106",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_09106.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "rtlpp_09106",
+    "n_modules": 1,
+    "slice": "slice_14.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

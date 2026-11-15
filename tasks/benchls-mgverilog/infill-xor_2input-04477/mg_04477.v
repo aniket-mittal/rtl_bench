@@ -1,0 +1,3 @@
+module mg_04477(DATA0X0,DATA1X0,RESULT0);
+[MASKED]
+endmodule

@@ -1,0 +1,92 @@
+// Hidden tests: 5000 cycles of seeded random inputs (seed 2817337015); the submission must match reference.v
+// cycle by cycle. Reference outputs that are x are don't care. Verifier only; the grader renames reference.v's
+// modules to <name>__ref before compiling.
+`timescale 1ns/1ps
+module tb;
+  localparam N = 5000;
+  localparam OW = 51;
+  reg clk;
+  reg [1:0] i_0;
+  reg [37:0] i_1;
+  reg [0:0] i_2;
+  reg [0:0] i_3;
+  wire [OW-1:0] out_dut, out_ref;
+  integer seed, c, b, bad, mismatches, shown;
+
+  niosII_system_nios2_qsys_0_jtag_debug_module_sysclk dut (
+    .clk(clk),
+    .ir_in(i_0),
+    .sr(i_1),
+    .vs_udr(i_2),
+    .vs_uir(i_3),
+    .jdo(out_dut[50:13]),
+    .take_action_break_a(out_dut[12:12]),
+    .take_action_break_b(out_dut[11:11]),
+    .take_action_break_c(out_dut[10:10]),
+    .take_action_ocimem_a(out_dut[9:9]),
+    .take_action_ocimem_b(out_dut[8:8]),
+    .take_action_tracectrl(out_dut[7:7]),
+    .take_action_tracemem_a(out_dut[6:6]),
+    .take_action_tracemem_b(out_dut[5:5]),
+    .take_no_action_break_a(out_dut[4:4]),
+    .take_no_action_break_b(out_dut[3:3]),
+    .take_no_action_break_c(out_dut[2:2]),
+    .take_no_action_ocimem_a(out_dut[1:1]),
+    .take_no_action_tracemem_a(out_dut[0:0])
+  );
+  niosII_system_nios2_qsys_0_jtag_debug_module_sysclk__ref ref_i (
+    .clk(clk),
+    .ir_in(i_0),
+    .sr(i_1),
+    .vs_udr(i_2),
+    .vs_uir(i_3),
+    .jdo(out_ref[50:13]),
+    .take_action_break_a(out_ref[12:12]),
+    .take_action_break_b(out_ref[11:11]),
+    .take_action_break_c(out_ref[10:10]),
+    .take_action_ocimem_a(out_ref[9:9]),
+    .take_action_ocimem_b(out_ref[8:8]),
+    .take_action_tracectrl(out_ref[7:7]),
+    .take_action_tracemem_a(out_ref[6:6]),
+    .take_action_tracemem_b(out_ref[5:5]),
+    .take_no_action_break_a(out_ref[4:4]),
+    .take_no_action_break_b(out_ref[3:3]),
+    .take_no_action_break_c(out_ref[2:2]),
+    .take_no_action_ocimem_a(out_ref[1:1]),
+    .take_no_action_tracemem_a(out_ref[0:0])
+  );
+
+  task check;
+    begin
+      bad = 0;
+      for (b = 0; b < OW; b = b + 1)
+        if (out_ref[b] !== 1'bx && out_dut[b] !== out_ref[b]) bad = 1;
+      if (bad) begin
+        mismatches = mismatches + 1;
+        if (shown < 10) begin
+          $display("MISMATCH cycle %0d: expected=%h got=%h", c, out_ref, out_dut);
+          shown = shown + 1;
+        end
+      end
+    end
+  endtask
+
+  initial begin
+    seed = 2817337015;
+    clk = 1'b0;
+    mismatches = 0;
+    shown = 0;
+    for (c = 0; c < N; c = c + 1) begin
+      i_0 = {$random(seed)};
+      i_1 = {$random(seed), $random(seed)};
+      i_2 = {$random(seed)};
+      i_3 = {$random(seed)};
+      #4 check;
+      #1 clk = 1'b1;
+      #5 clk = 1'b0;
+    end
+    if (mismatches == 0) $display("PASS %0d/%0d cycles", N, N);
+    else $display("FAIL %0d/%0d cycles mismatched", mismatches, N);
+    $finish;
+  end
+endmodule

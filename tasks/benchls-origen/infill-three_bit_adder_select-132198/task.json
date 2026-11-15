@@ -1,0 +1,138 @@
+{
+  "task_id": "benchls-origen/infill-three_bit_adder_select-132198",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_132198",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "a",
+        "width": 1
+      },
+      {
+        "name": "b",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "sum",
+        "width": 1
+      },
+      {
+        "name": "carry",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_132198.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_132198.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_132198.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 807390087
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_132198",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_132198",
+    "parent_design": "origen_132198",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 57,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 2190961550,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "fallback_assign_group",
+      "in_module": "origen_132198",
+      "n_statements": 2,
+      "region_tokens": 14,
+      "region_chars": 45,
+      "block_kind": "assign_group",
+      "reason": "no single always/assign/instance item has >= 8 tokens; masked the smallest run of consecutive assign statements reaching that size"
+    },
+    "upstream_golden_rtl_key": "origen_132198.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_origen_132198.do"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "conformal_rtl_origen_132198.do"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_132198",
+    "n_modules": 4,
+    "slice": "slice_09.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

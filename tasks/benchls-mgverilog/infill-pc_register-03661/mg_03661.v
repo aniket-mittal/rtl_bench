@@ -1,0 +1,7 @@
+module mg_03661(clk, pc_we, pc_next, pc);
+input clk; 
+  input pc_we; 
+  input [31:0] pc_next; 
+  output reg [31:0] pc; 
+  [MASKED] 
+ endmodule

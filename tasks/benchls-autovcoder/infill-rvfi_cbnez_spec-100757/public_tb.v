@@ -1,0 +1,207 @@
+// Public tests: 64 cycles with the expected outputs written in. Generated; do not edit.
+// Run: iverilog -g2012 -s tb -o sim public_tb.v <your .v files> && vvp sim
+// Prints PASS N/N cycles, or MISMATCH lines (inputs/expected/got, packed in interface order) and FAIL.
+// One stimulus word per cycle (inputs packed MSB-first, interface order); one expected word per cycle
+// (outputs packed MSB-first). 'x' digits in expected.hex are don't care.
+`timescale 1ns/1ps
+module tb;
+  localparam N = 64;
+  localparam IW = 161;
+  localparam OW = 153;
+  reg [IW-1:0] stim [0:N-1];
+  reg [OW-1:0] expv [0:N-1];
+  reg [OW-1:0] act [0:N-1];
+  reg [IW-1:0] in_vec;
+  wire [OW-1:0] out_vec;
+  reg clk;
+  reg [8*1024-1:0] stim_file, exp_file, act_file;
+  integer c, b, fd, mismatches, shown, bad;
+
+  autovcoder_100757 dut (
+    .rvfi_valid(in_vec[160:160]),
+    .rvfi_insn(in_vec[159:128]),
+    .rvfi_pc_rdata(in_vec[127:96]),
+    .rvfi_rs1_rdata(in_vec[95:64]),
+    .rvfi_rs2_rdata(in_vec[63:32]),
+    .rvfi_mem_rdata(in_vec[31:0]),
+    .spec_valid(out_vec[152:152]),
+    .spec_trap(out_vec[151:151]),
+    .spec_rs1_addr(out_vec[150:146]),
+    .spec_rs2_addr(out_vec[145:141]),
+    .spec_rd_addr(out_vec[140:136]),
+    .spec_rd_wdata(out_vec[135:104]),
+    .spec_pc_wdata(out_vec[103:72]),
+    .spec_mem_addr(out_vec[71:40]),
+    .spec_mem_rmask(out_vec[39:36]),
+    .spec_mem_wmask(out_vec[35:32]),
+    .spec_mem_wdata(out_vec[31:0])
+  );
+
+  task sample;
+    begin
+      act[c] = out_vec;
+    end
+  endtask
+
+  initial begin
+    clk = 1'b0;
+    in_vec = {IW{1'b0}};
+    stim[0] = 161'h195d0fdb8d36028849483b4b4abbc51ec87f5cb74;
+    stim[1] = 161'h0b9f26c1bbf7a6979292f7529a367955f030f6c09;
+    stim[2] = 161'h04da0ac096050b69c0cda6e39a14f0b306de13188;
+    stim[3] = 161'h14b167f3b883c740ffb1c3a195ab6602d348634fe;
+    stim[4] = 161'h156eda64860c75c3fbb8c95bbe28c8ffb1068267c;
+    stim[5] = 161'h1a3d890d17a43574ad43e780726302d864907837e;
+    stim[6] = 161'h0ff5fe48e7beb6f12d8df4499671e4318f144a11b;
+    stim[7] = 161'h069de300ad80cbb5db00104ed43598d03d31a2631;
+    stim[8] = 161'h136cd90107486aebe97867c8898b8959c4127b452;
+    stim[9] = 161'h0eccff5aab8d5bcfb22c91ba64e23b002220d757a;
+    stim[10] = 161'h0cdc29037aa218c4c3cc4243e0cacaa5f2489f8ea;
+    stim[11] = 161'h0a68fbd2516ec77b506dc237f7745145f42eaac23;
+    stim[12] = 161'h15924cd04e86192823912a4f7ff705b6d4c077c8c;
+    stim[13] = 161'h153d2d11fe46fdeb74d17813eefad56fc9c7edd39;
+    stim[14] = 161'h1cbd801873f903601221a12f91cc542ff0a105680;
+    stim[15] = 161'h0bd7ab6b137dd3abe8462d11fb6f3cdce639ab851;
+    stim[16] = 161'h0912a79a15ab8a143011b6919a68c835126c66f0a;
+    stim[17] = 161'h08d017d3d7906b13a524e1e070855084bf4d7460e;
+    stim[18] = 161'h1f830bd0d29d8136e7849cb0f8ebd35bc1ecd3ad3;
+    stim[19] = 161'h15bbef7e7016545b0fd4b95dbd78a2b139d10de14;
+    stim[20] = 161'h0218b791c3f2621bff0165a68358a8d7ed3ea013d;
+    stim[21] = 161'h0f3c2b776be6c90e4d58970b5d5eee76b7c3b4843;
+    stim[22] = 161'h0d49ff96c964f2e2e0f5628b6d58a3a1cf953f7be;
+    stim[23] = 161'h021a5066a807370fda4c6df8c6c8b58b1c15560c8;
+    stim[24] = 161'h09b27ec37670296d8994be71bbbfb421411716b8d;
+    stim[25] = 161'h0913dfce7a61157da30b8e7cbd3084ad0e7d9c47a;
+    stim[26] = 161'h06365cbaf7de4400c59de6f2b93e7b5fd9862d4b4;
+    stim[27] = 161'h05bee32906fb73c4d2ae263d5feb79230e4383eac;
+    stim[28] = 161'h0c9f88043517fb94b6eb32b664a919d83b7f60532;
+    stim[29] = 161'h025035446a6fb5a4bdae777d16c748a2e2ea516cf;
+    stim[30] = 161'h12591d8211979e1c8f9920a9d887a3b1c6346ed6e;
+    stim[31] = 161'h14340671729f2fd6020e4f62df2c8aaf70d07e24c;
+    stim[32] = 161'h0807ac52bad4078294073c9c8f48848d201196ba4;
+    stim[33] = 161'h16bb899982e58a9ea43997e29370f2777d8a9bcad;
+    stim[34] = 161'h1cc127f7a6c882c22327d8ecf41fa3967dcdf0e78;
+    stim[35] = 161'h027a51f6884e9e1268030c39cf591f49f8ebece54;
+    stim[36] = 161'h1fde884bf810b6666c4dc35e57a00245c1ec0964d;
+    stim[37] = 161'h09e7cb553ee36be5fcfeae5dde321cf0204f70817;
+    stim[38] = 161'h0f0cae4d70c8d39d9df56ac434516ed7ec7e66fe6;
+    stim[39] = 161'h16b6216423565c47a0e7801374a4ce1f40a42a843;
+    stim[40] = 161'h00f88c061a286013310c517f6f30173bb3194f573;
+    stim[41] = 161'h045ccb617b5c3694088b276bd2f76345e09b598ca;
+    stim[42] = 161'h0796e709b29690b8fdd5f54f6a5a2377222180f57;
+    stim[43] = 161'h13afbd1fba95c69c101cd04187a0416ac50b744dc;
+    stim[44] = 161'h01e6a56259f0a6722c52c880d13f586723eb42cc6;
+    stim[45] = 161'h0913956710b85fc3dbc5493e04e2b0b52230e9813;
+    stim[46] = 161'h063b9d5612ce0a14de6f75cb4729d006b4324e18c;
+    stim[47] = 161'h1b94e8f5d6adf1e85abe6857d2cafdc2b167ebd05;
+    stim[48] = 161'h13bef5fa149e293d8b4c5f286d520a1a4302bf920;
+    stim[49] = 161'h00d4825cdc6784e6492bcc844b5755c99990fad33;
+    stim[50] = 161'h00c7626b9308fc6145bac3782469e044184c775bc;
+    stim[51] = 161'h0ecf52f517d81115df9368bdbb792b06f8165dcd0;
+    stim[52] = 161'h1e393aef21d2d1c3213d7c673815d679a9372d37f;
+    stim[53] = 161'h1a897e6f71f6c9767ce4f543c5501e3e70f71e3d7;
+    stim[54] = 161'h05e9a917f4d8ea70ca00906e47dbc5e95a63f98da;
+    stim[55] = 161'h0a9bc708b643c4f51cc238eb5665d21d5f8e4d429;
+    stim[56] = 161'h08ca43914cfd271758537b5d47364aee014619c96;
+    stim[57] = 161'h1f070f99c708472fd1d08c286221ad531e068a457;
+    stim[58] = 161'h0a3a3e22e8ef61599a977adc657be92c1cf3d99c4;
+    stim[59] = 161'h09a132818424a3c7a36c35993ddca925474a1df16;
+    stim[60] = 161'h05ced9124e002c218fba69ada872e1e2ee61bbff2;
+    stim[61] = 161'h17164daf2c493897c433a2d6f14f4692a1a0868ff;
+    stim[62] = 161'h0ed7e150dc299af7c43ec761ac883c31e18247631;
+    stim[63] = 161'h18b2b4d9ab3df6e6eda3de7e01ba033e992b47116;
+    for (c = 0; c < N; c = c + 1) begin
+      in_vec = stim[c];
+      #1 sample;
+      #1;
+    end
+    if ($value$plusargs("actual=%s", act_file)) begin
+      fd = $fopen(act_file, "w");
+      for (c = 0; c < N; c = c + 1) $fdisplay(fd, "%h", act[c]);
+      $fclose(fd);
+    end
+    if (!$test$plusargs("nocheck")) begin
+      expv[0] = 153'h02c0000000000d36027e2000000000000000000;
+      expv[1] = 153'h0a00000000000bf7a6997000000000000000000;
+      expv[2] = 153'h02000000000006050b6b6000000000000000000;
+      expv[3] = 153'h0b80000000000883c736d000000000000000000;
+      expv[4] = 153'h0b0000000000060c75cc9000000000000000000;
+      expv[5] = 153'h02400000000007a4356ce000000000000000000;
+      expv[6] = 153'h02400000000007beb6f3c000000000000000000;
+      expv[7] = 153'h0a00000000000d80cba5f000000000000000000;
+      expv[8] = 153'h02000000000007486adc2000000000000000000;
+      expv[9] = 153'h0ac0000000000b8d5bc45000000000000000000;
+      expv[10] = 153'h0200000000000aa218bb0000000000000000000;
+      expv[11] = 153'h0a8000000000016ec772d000000000000000000;
+      expv[12] = 153'h0280000000000e86192ba000000000000000000;
+      expv[13] = 153'h0a80000000000e46fdddd000000000000000000;
+      expv[14] = 153'h0ac00000000003f903621000000000000000000;
+      expv[15] = 153'h034000000000037dd3a0a000000000000000000;
+      expv[16] = 153'h0ac00000000005ab8a093000000000000000000;
+      expv[17] = 153'h02800000000007906b0b8000000000000000000;
+      expv[18] = 153'h028000000000029d812a8000000000000000000;
+      expv[19] = 153'h03c000000000001654598000000000000000000;
+      expv[20] = 153'h0a800000000003f2620f5000000000000000000;
+      expv[21] = 153'h0380000000000be6c90d0000000000000000000;
+      expv[22] = 153'h0280000000000964f2e20000000000000000000;
+      expv[23] = 153'h0b00000000000807371c7000000000000000000;
+      expv[24] = 153'h020000000000067029754000000000000000000;
+      expv[25] = 153'h0240000000000a61157d2000000000000000000;
+      expv[26] = 153'h03c00000000007de4407e000000000000000000;
+      expv[27] = 153'h0b400000000006fb73b51000000000000000000;
+      expv[28] = 153'h0a00000000000517fb9cb000000000000000000;
+      expv[29] = 153'h0a00000000000a6fb59f3000000000000000000;
+      expv[30] = 153'h02000000000001979e118000000000000000000;
+      expv[31] = 153'h038000000000029f2fd8c000000000000000000;
+      expv[32] = 153'h0a80000000000ad407873000000000000000000;
+      expv[33] = 153'h02c00000000002e58a900000000000000000000;
+      expv[34] = 153'h03800000000006c882c00000000000000000000;
+      expv[35] = 153'h038000000000084e9e100000000000000000000;
+      expv[36] = 153'h0240000000000810b66d4000000000000000000;
+      expv[37] = 153'h0a80000000000ee36bdeb000000000000000000;
+      expv[38] = 153'h0a400000000000c8d3a85000000000000000000;
+      expv[39] = 153'h03000000000003565c402000000000000000000;
+      expv[40] = 153'h0a00000000000a28601f3000000000000000000;
+      expv[41] = 153'h0300000000000b5c3686c000000000000000000;
+      expv[42] = 153'h0a4000000000029690a95000000000000000000;
+      expv[43] = 153'h0ac0000000000a95c6987000000000000000000;
+      expv[44] = 153'h03000000000009f0a668a000000000000000000;
+      expv[45] = 153'h0b000000000000b85fc09000000000000000000;
+      expv[46] = 153'h0a800000000002ce0a115000000000000000000;
+      expv[47] = 153'h0b800000000006adf1f43000000000000000000;
+      expv[48] = 153'h03c000000000049e29330000000000000000000;
+      expv[49] = 153'h02c0000000000c6784f0e000000000000000000;
+      expv[50] = 153'h0340000000000308fc662000000000000000000;
+      expv[51] = 153'h0b800000000007d8111f9000000000000000000;
+      expv[52] = 153'h03400000000001d2d1d0e000000000000000000;
+      expv[53] = 153'h0b400000000001f6c9853000000000000000000;
+      expv[54] = 153'h02800000000004d8ea6f2000000000000000000;
+      expv[55] = 153'h0a40000000000643c4e53000000000000000000;
+      expv[56] = 153'h0a80000000000cfd270a9000000000000000000;
+      expv[57] = 153'h0ac000000000070847233000000000000000000;
+      expv[58] = 153'h0b000000000008ef615fb000000000000000000;
+      expv[59] = 153'h0200000000000424a3c90000000000000000000;
+      expv[60] = 153'h0280000000000e002c178000000000000000000;
+      expv[61] = 153'h0340000000000c4938950000000000000000000;
+      expv[62] = 153'h0280000000000c299aea6000000000000000000;
+      expv[63] = 153'h02c0000000000b3df6e8c000000000000000000;
+      mismatches = 0;
+      shown = 0;
+      for (c = 0; c < N; c = c + 1) begin
+        bad = 0;
+        for (b = 0; b < OW; b = b + 1)
+          if (expv[c][b] !== 1'bx && act[c][b] !== expv[c][b]) bad = 1;
+        if (bad) begin
+          mismatches = mismatches + 1;
+          if (shown < 10) begin
+            $display("MISMATCH cycle %0d: inputs=%h expected=%h got=%h", c, stim[c], expv[c], act[c]);
+            shown = shown + 1;
+          end
+        end
+      end
+      if (mismatches == 0) $display("PASS %0d/%0d cycles", N, N);
+      else $display("FAIL %0d/%0d cycles mismatched", mismatches, N);
+    end
+    $finish;
+  end
+endmodule

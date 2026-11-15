@@ -1,0 +1,3 @@
+module mg_00880(input clock,input reset,input IF_Flush,input IF_Stall,input ID_Stall,input [31:0] IF_Instruction,input [31:0] IF_PCAdd4,input [31:0] IF_PC,input IF_IsBDS,input [31:0] ID_Instruction,input [31:0] ID_PCAdd4,input [31:0] ID_RestartPC,input ID_IsBDS,input ID_IsFlushed,output reg [31:0] vote_ID_Instruction,output reg [31:0] vote_ID_PCAdd4,output reg [31:0] vote_ID_RestartPC,output reg vote_ID_IsBDS,output reg vote_ID_IsFlushed);
+[MASKED] 
+ endmodule

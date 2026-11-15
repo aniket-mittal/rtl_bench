@@ -1,0 +1,8 @@
+module regn (R, L, Clock, Q); 
+    parameter n = 8; 
+    input [n-1:0] R; 
+    input L, Clock; 
+    output [n-1:0] Q; 
+    reg [n-1:0] Q; 
+    [MASKED] 
+endmodule

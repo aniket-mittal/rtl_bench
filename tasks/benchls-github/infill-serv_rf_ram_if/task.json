@@ -1,0 +1,218 @@
+{
+  "task_id": "benchls-github/infill-serv_rf_ram_if",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "serv_rf_ram_if",
+  "interface": {
+    "clock": "i_clk",
+    "reset": {
+      "name": "i_rst",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "i_rst",
+        "width": 1
+      },
+      {
+        "name": "i_wreq",
+        "width": 1
+      },
+      {
+        "name": "i_rreq",
+        "width": 1
+      },
+      {
+        "name": "i_wreg0",
+        "width": 6
+      },
+      {
+        "name": "i_wreg1",
+        "width": 6
+      },
+      {
+        "name": "i_wen0",
+        "width": 1
+      },
+      {
+        "name": "i_wen1",
+        "width": 1
+      },
+      {
+        "name": "i_wdata0",
+        "width": 1
+      },
+      {
+        "name": "i_wdata1",
+        "width": 1
+      },
+      {
+        "name": "i_rreg0",
+        "width": 6
+      },
+      {
+        "name": "i_rreg1",
+        "width": 6
+      },
+      {
+        "name": "i_rdata",
+        "width": 8
+      }
+    ],
+    "outputs": [
+      {
+        "name": "o_ready",
+        "width": 1
+      },
+      {
+        "name": "o_rdata0",
+        "width": 1
+      },
+      {
+        "name": "o_rdata1",
+        "width": 1
+      },
+      {
+        "name": "o_waddr",
+        "width": 8
+      },
+      {
+        "name": "o_wdata",
+        "width": 8
+      },
+      {
+        "name": "o_wen",
+        "width": 1
+      },
+      {
+        "name": "o_raddr",
+        "width": 8
+      },
+      {
+        "name": "o_ren",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "serv_rf_ram_if.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "serv_rf_ram_if.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "serv_rf_ram_if.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1488706305
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/serv_rf_ram_if",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "serv_rf_ram_if",
+    "parent_design": "serv_rf_ram_if",
+    "origin": "SEC-Flow-Star-repos-7.serv",
+    "origin_bucket": "S1",
+    "loc": 179,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 3491665169,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 1,
+      "n_candidates": 4,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "serv_rf_ram_if",
+      "region_tokens": 54,
+      "region_chars": 145,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "serv_rf_ram_if.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_serv_rf_ram_if.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_serv_rf_ram_if.tcl",
+      "serv_rf_ram_if_combined.v"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "serv_rf_ram_if",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/7.serv/rtl/serv_rf_ram_if.v"
+      },
+      "deps": [],
+      "missing_deps": [
+        "Address"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "serv_rf_ram_if",
+    "n_modules": 1,
+    "slice": "slice_18.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

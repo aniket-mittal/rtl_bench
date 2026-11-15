@@ -1,0 +1,3 @@
+module mg_03179(input clock,input reset,input M_Flush,input M_Stall,input WB_Stall,input M_RegWrite,input M_MemtoReg,input [31:0] M_ReadData,input [31:0] M_ALU_Result,input [4:0] M_RtRd,input WB_RegWrite,input WB_MemtoReg,input [31:0] WB_ReadData,input [31:0] WB_ALU_Result,input [4:0] WB_RtRd,output reg vote_WB_RegWrite,output reg vote_WB_MemtoReg,output reg [31:0] vote_WB_ReadData,output reg [31:0] vote_WB_ALU_Result,output reg [4:0] vote_WB_RtRd);
+[MASKED] 
+ endmodule

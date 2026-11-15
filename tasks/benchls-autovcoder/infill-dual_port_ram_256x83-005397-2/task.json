@@ -1,0 +1,153 @@
+{
+  "task_id": "benchls-autovcoder/infill-dual_port_ram_256x83-005397-2",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "autovcoder_005397",
+  "interface": {
+    "clock": "pclk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "mem_addr_add",
+        "width": 8
+      },
+      {
+        "name": "mem_write_add",
+        "width": 1
+      },
+      {
+        "name": "mem_write_data_add",
+        "width": 83
+      },
+      {
+        "name": "mem_addr_age",
+        "width": 8
+      },
+      {
+        "name": "mem_write_age",
+        "width": 1
+      },
+      {
+        "name": "mem_write_data_age",
+        "width": 83
+      }
+    ],
+    "outputs": [
+      {
+        "name": "mem_read_data_add",
+        "width": 83
+      },
+      {
+        "name": "mem_read_data_age",
+        "width": 83
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "autovcoder_005397.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "autovcoder_005397.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "autovcoder_005397.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3295264220
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/autovcoder_005397_block_2",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "autovcoder_005397_block_2",
+    "parent_design": "autovcoder_005397",
+    "origin": "AutoVCoder-processed",
+    "origin_bucket": "S3",
+    "loc": 36,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 2,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 2,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "autovcoder_005397",
+      "region_tokens": 28,
+      "region_chars": 191,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "af453d58ef74f0c43b56081e7014491ea3e9b244487880be60452c6b77f7fef7",
+    "upstream_golden_rtl_key": "autovcoder_005397.v",
+    "upstream_masked_rtl_key": "autovcoder_005397_masked.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_autovcoder_005397.do"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "conformal_rtl_autovcoder_005397.do"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

@@ -1,0 +1,46 @@
+module rtlpp_00073 (
+  bram_addr,
+  bram_clk,
+  bram_rst,
+  bram_din,
+  bram_dout,
+  bram_en,
+  bram_we,
+  addr,
+  cache,
+  cready,
+  clk_memory,
+  aresetn
+);
+
+output wire [12 : 0] bram_addr;
+output wire bram_clk;
+output wire bram_rst;
+output wire [63 : 0] bram_din;
+input wire [63 : 0] bram_dout;
+output wire bram_en;
+output wire [0 : 0] bram_we;
+input wire [20 : 3] addr;
+input wire [63 : 0] cache;
+input wire cready;
+input wire clk_memory;
+input wire aresetn;
+
+// Internal register and wire declarations
+reg [12:0] bram_addr_reg;
+reg bram_clk_reg;
+reg bram_rst_reg;
+reg [63:0] bram_din_reg;
+reg bram_en_reg;
+reg bram_we_reg;
+
+assign bram_addr = bram_addr_reg;
+assign bram_clk = bram_clk_reg;
+assign bram_rst = bram_rst_reg;
+assign bram_din = bram_din_reg;
+assign bram_en = bram_en_reg;
+assign bram_we = bram_we_reg;
+
+[MASKED]
+
+endmodule

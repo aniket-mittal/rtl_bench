@@ -1,0 +1,36 @@
+module rtlpp_11457 (
+    address,
+    chipselect,
+    clk,
+    reset_n,
+    write_n,
+    writedata,
+    out_port,
+    readdata
+);
+
+  output           out_port;
+  output  [31: 0]  readdata;
+  input   [1: 0]   address;
+  input            chipselect;
+  input            clk;
+  input            reset_n;
+  input            write_n;
+  input   [31: 0]  writedata;
+
+  reg              data_out;
+  wire             clk_en;
+  wire             read_mux_out;
+  wire    [31: 0]  readdata;
+  wire             out_port;
+
+  assign clk_en = 1;
+
+  assign read_mux_out = (address == 0) ? data_out : 1'b0;
+  
+  [MASKED]
+
+  assign readdata = {31'b0, read_mux_out};
+  assign out_port = data_out;
+
+endmodule

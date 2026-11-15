@@ -1,0 +1,3 @@
+module mg_09576(input clock,input reset,input debugEnable,input debugReset,input[4:0] writeRegister,input[31:0] writeData,input[31:0] aluOut,input regWrite,input memToReg,input [3:0]memWrite,input [1:0] memReadWidth,input eop,output reg[4:0] writeRegisterOut,output reg[31:0] writeDataOut,output reg[31:0] aluOutOut,output reg regWriteOut,output reg memToRegOut,output reg [3:0]memWriteOut,output reg [1:0] memReadWidthOut,output reg eopOut);
+[MASKED] 
+ endmodule

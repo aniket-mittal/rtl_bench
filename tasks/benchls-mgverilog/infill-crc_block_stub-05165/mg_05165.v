@@ -1,0 +1,10 @@
+module mg_05165 (clk,shiftnld,ldsrc,crcerror,regout);
+input clk; 
+ input shiftnld; 
+ input ldsrc; 
+ output crcerror; 
+ output regout; 
+ [MASKED] 
+ parameter oscillator_divider = 1; 
+ parameter lpm_type = "cyclone_crcblock"; 
+ endmodule

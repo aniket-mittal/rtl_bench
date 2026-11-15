@@ -1,0 +1,169 @@
+{
+  "task_id": "benchls-rtlpp/infill-fl1p3dx_func",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "FL1P3DX_FUNC",
+  "interface": {
+    "clock": "CK",
+    "reset": {
+      "name": "SR",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "D0",
+        "width": 1
+      },
+      {
+        "name": "D1",
+        "width": 1
+      },
+      {
+        "name": "SP",
+        "width": 1
+      },
+      {
+        "name": "SD",
+        "width": 1
+      },
+      {
+        "name": "CD",
+        "width": 1
+      },
+      {
+        "name": "SR",
+        "width": 1
+      },
+      {
+        "name": "notifier",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Q",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "FL1P3DX_FUNC.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "FL1P3DX_FUNC.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "FL1P3DX_FUNC.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3865403951
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/FL1P3DX_FUNC",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "FL1P3DX_FUNC",
+    "parent_design": "FL1P3DX_FUNC",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 18,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 2902138113,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "FL1P3DX_FUNC",
+      "region_tokens": 46,
+      "region_chars": 174,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "FL1P3DX_FUNC.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_FL1P3DX_FUNC.do"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "FL1P3DX_FUNC_combined.v",
+      "conformal_rtl_FL1P3DX_FUNC.do",
+      "fm_rtl_FL1P3DX_FUNC.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "FL1P3DX_FUNC",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_03885.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "FL1P3DX_FUNC",
+    "n_modules": 1,
+    "slice": "slice_15.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

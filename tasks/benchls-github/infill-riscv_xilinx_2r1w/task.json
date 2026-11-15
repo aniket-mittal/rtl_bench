@@ -1,0 +1,171 @@
+{
+  "task_id": "benchls-github/infill-riscv_xilinx_2r1w",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "riscv_xilinx_2r1w",
+  "interface": {
+    "clock": "clk_i",
+    "reset": {
+      "name": "rst_i",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "rst_i",
+        "width": 1
+      },
+      {
+        "name": "rd0_i",
+        "width": 5
+      },
+      {
+        "name": "rd0_value_i",
+        "width": 32
+      },
+      {
+        "name": "ra_i",
+        "width": 5
+      },
+      {
+        "name": "rb_i",
+        "width": 5
+      }
+    ],
+    "outputs": [
+      {
+        "name": "ra_value_o",
+        "width": 32
+      },
+      {
+        "name": "rb_value_o",
+        "width": 32
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "riscv_xilinx_2r1w.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "riscv_xilinx_2r1w.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "riscv_xilinx_2r1w.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3729734243
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/riscv_xilinx_2r1w",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "riscv_xilinx_2r1w",
+    "parent_design": "riscv_xilinx_2r1w",
+    "origin": "SEC-Flow-Star-repos-30.ultraembedded-riscv",
+    "origin_bucket": "S1",
+    "loc": 84,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 4101180383,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 3,
+      "n_candidates": 5,
+      "index_in_range": false,
+      "block_kind": "instance",
+      "in_module": "riscv_xilinx_2r1w",
+      "region_tokens": 111,
+      "region_chars": 241,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "riscv_xilinx_2r1w_combined.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_riscv_xilinx_2r1w.tcl"
+    },
+    "lib_v": "redundant (all modules already in design file)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "riscv_xilinx_2r1w.v",
+      "sec_riscv_xilinx_2r1w.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "riscv_xilinx_2r1w",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/30.ultraembedded-riscv/core/riscv/riscv_xilinx_2r1w.v"
+      },
+      "deps": [
+        {
+          "module": "RAM16X1D",
+          "file": "<upstream-pool>/Infructructure-Agents/Star-repos/30.ultraembedded-riscv/core/riscv/riscv_xilinx_2r1w.v"
+        }
+      ],
+      "missing_deps": [
+        "Register"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "riscv_xilinx_2r1w",
+    "n_modules": 1,
+    "slice": "slice_15.jsonl",
+    "golden_choice": "combined (defines dependencies the design file lacks)",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

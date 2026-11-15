@@ -1,0 +1,141 @@
+{
+  "task_id": "benchls-github/infill-ct_rtu_expand_8",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "ct_rtu_expand_8",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "x_num",
+        "width": 3
+      }
+    ],
+    "outputs": [
+      {
+        "name": "x_num_expand",
+        "width": 8
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "ct_rtu_expand_8.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "ct_rtu_expand_8.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "ct_rtu_expand_8.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1202642914
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/ct_rtu_expand_8",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "ct_rtu_expand_8",
+    "parent_design": "ct_rtu_expand_8",
+    "origin": "SEC-Flow-Star-repos-32.openc910",
+    "origin_bucket": "S1",
+    "loc": 30,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 4157658194,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 2,
+      "n_candidates": 8,
+      "index_in_range": false,
+      "block_kind": "assign",
+      "in_module": "ct_rtu_expand_8",
+      "region_tokens": 17,
+      "region_chars": 46,
+      "min_tokens": 8,
+      "threshold_relaxed": true
+    },
+    "upstream_golden_rtl_key": "ct_rtu_expand_8.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_ct_rtu_expand_8.do"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "conformal_rtl_ct_rtu_expand_8.do",
+      "ct_rtu_expand_8_combined.v"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "ct_rtu_expand_8",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/32.openc910/C910_RTL_FACTORY/gen_rtl/rtu/rtl/ct_rtu_expand_8.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "ct_rtu_expand_8",
+    "n_modules": 1,
+    "slice": "slice_05.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

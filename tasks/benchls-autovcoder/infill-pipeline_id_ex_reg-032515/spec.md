@@ -1,0 +1,78 @@
+# Fill in the masked region of `autovcoder_032515`
+
+The file `autovcoder_032515.v` holds a Verilog design whose top module is `autovcoder_032515` (sequential). Part of the design was removed, and the text `[MASKED]` appears exactly once in its place. That marker is the literal string `[MASKED]` (square brackets included), not a comment.
+
+**Your job:** replace `[MASKED]` with Verilog so the whole design again does what it is evidently meant to do. Work out the missing logic from the rest of the code: the port list, the declared signals, how those signals are used elsewhere, the module and signal names, and any comments.
+
+## What was masked
+
+- Mask type: **block**. One complete module item, an `always` block in module `autovcoder_032515`, was replaced by `[MASKED]`. Write that one item, with the same kind of construct, in its place.
+- Design type: sequential. Origin: AutoVCoder-processed.
+
+## Rules
+
+- Edit only `autovcoder_032515.v`. When you are done it must not contain `[MASKED]`.
+- Keep every name the surrounding code uses (signals, ports, parameters, modules), and keep the rest of the file as it is. You may declare new internal signals if you need them.
+- Write synthesizable code that iverilog and yosys can compile. Use Verilog-2005, or SystemVerilog only where the file already uses SystemVerilog constructs.
+
+## Grading
+
+Your completed `autovcoder_032515` is simulated against the original design and checked for formal equivalence with it. Only behavior at the top-module ports counts. The code does not have to match the original text.
+
+---
+
+## Files
+
+Edit: `autovcoder_032515.v`. Only these files are graded.
+
+## Interface of `autovcoder_032515`
+
+| port | dir | width | note |
+|---|---|---|---|
+| `clk` | in | 1 | clock, rising edge |
+| `rst` | in | 1 | reset, active high |
+| `stallE` | in | 1 |  |
+| `flushE` | in | 1 |  |
+| `pcD` | in | 32 |  |
+| `rd1D` | in | 32 |  |
+| `rd2D` | in | 32 |  |
+| `rsD` | in | 5 |  |
+| `rtD` | in | 5 |  |
+| `rdD` | in | 5 |  |
+| `immD` | in | 32 |  |
+| `pc_plus4D` | in | 32 |  |
+| `instrD` | in | 32 |  |
+| `pc_branchD` | in | 32 |  |
+| `pred_takeD` | in | 1 |  |
+| `branchD` | in | 1 |  |
+| `jump_conflictD` | in | 1 |  |
+| `saD` | in | 5 |  |
+| `is_in_delayslot_iD` | in | 1 |  |
+| `alu_controlD` | in | 5 |  |
+| `jumpD` | in | 1 |  |
+| `branch_judge_controlD` | in | 5 |  |
+| `pcE` | out | 32 | |
+| `rd1E` | out | 32 | |
+| `rd2E` | out | 32 | |
+| `rsE` | out | 5 | |
+| `rtE` | out | 5 | |
+| `rdE` | out | 5 | |
+| `immE` | out | 32 | |
+| `pc_plus4E` | out | 32 | |
+| `instrE` | out | 32 | |
+| `pc_branchE` | out | 32 | |
+| `pred_takeE` | out | 1 | |
+| `branchE` | out | 1 | |
+| `jump_conflictE` | out | 1 | |
+| `saE` | out | 5 | |
+| `is_in_delayslot_iE` | out | 1 | |
+| `alu_controlE` | out | 5 | |
+| `jumpE` | out | 1 | |
+| `branch_judge_controlE` | out | 5 | |
+
+## Testing
+
+    iverilog -g2012 -s tb -o sim public_tb.v autovcoder_032515.v && vvp sim
+
+It prints `PASS` or the mismatching cycles. Grading also runs hidden tests and a Yosys formal
+equivalence check against the reference, so passing the public tests is not enough on its own.

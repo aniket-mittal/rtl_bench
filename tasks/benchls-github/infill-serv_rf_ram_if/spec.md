@@ -1,0 +1,59 @@
+# Fill in the masked region of `serv_rf_ram_if`
+
+The file `serv_rf_ram_if.v` holds a Verilog design whose top module is `serv_rf_ram_if` (sequential). Part of the design was removed, and the text `[MASKED]` appears exactly once in its place. That marker is the literal string `[MASKED]` (square brackets included), not a comment.
+
+**Your job:** replace `[MASKED]` with Verilog so the whole design again does what it is evidently meant to do. Work out the missing logic from the rest of the code: the port list, the declared signals, how those signals are used elsewhere, the module and signal names, and any comments.
+
+## What was masked
+
+- Mask type: **block**. One complete module item, an `always` block in module `serv_rf_ram_if`, was replaced by `[MASKED]`. Write that one item, with the same kind of construct, in its place.
+- Design type: sequential. Origin: SEC-Flow-Star-repos-7.serv.
+
+## Rules
+
+- Edit only `serv_rf_ram_if.v`. When you are done it must not contain `[MASKED]`.
+- Keep every name the surrounding code uses (signals, ports, parameters, modules), and keep the rest of the file as it is. You may declare new internal signals if you need them.
+- Write synthesizable code that iverilog and yosys can compile. Use Verilog-2005, or SystemVerilog only where the file already uses SystemVerilog constructs.
+
+## Grading
+
+Your completed `serv_rf_ram_if` is simulated against the original design and checked for formal equivalence with it. Only behavior at the top-module ports counts. The code does not have to match the original text.
+
+---
+
+## Files
+
+Edit: `serv_rf_ram_if.v`. Only these files are graded.
+
+## Interface of `serv_rf_ram_if`
+
+| port | dir | width | note |
+|---|---|---|---|
+| `i_clk` | in | 1 | clock, rising edge |
+| `i_rst` | in | 1 | reset, active high |
+| `i_wreq` | in | 1 |  |
+| `i_rreq` | in | 1 |  |
+| `i_wreg0` | in | 6 |  |
+| `i_wreg1` | in | 6 |  |
+| `i_wen0` | in | 1 |  |
+| `i_wen1` | in | 1 |  |
+| `i_wdata0` | in | 1 |  |
+| `i_wdata1` | in | 1 |  |
+| `i_rreg0` | in | 6 |  |
+| `i_rreg1` | in | 6 |  |
+| `i_rdata` | in | 8 |  |
+| `o_ready` | out | 1 | |
+| `o_rdata0` | out | 1 | |
+| `o_rdata1` | out | 1 | |
+| `o_waddr` | out | 8 | |
+| `o_wdata` | out | 8 | |
+| `o_wen` | out | 1 | |
+| `o_raddr` | out | 8 | |
+| `o_ren` | out | 1 | |
+
+## Testing
+
+    iverilog -g2012 -s tb -o sim public_tb.v serv_rf_ram_if.v && vvp sim
+
+It prints `PASS` or the mismatching cycles. Grading also runs hidden tests and a Yosys formal
+equivalence check against the reference, so passing the public tests is not enough on its own.

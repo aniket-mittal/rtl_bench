@@ -1,0 +1,200 @@
+// Public tests: 64 cycles with the expected outputs written in. Generated; do not edit.
+// Run: iverilog -g2012 -s tb -o sim public_tb.v <your .v files> && vvp sim
+// Prints PASS N/N cycles, or MISMATCH lines (inputs/expected/got, packed in interface order) and FAIL.
+// One stimulus word per cycle (inputs packed MSB-first, interface order); one expected word per cycle
+// (outputs packed MSB-first). 'x' digits in expected.hex are don't care.
+`timescale 1ns/1ps
+module tb;
+  localparam N = 64;
+  localparam IW = 31;
+  localparam OW = 36;
+  reg [IW-1:0] stim [0:N-1];
+  reg [OW-1:0] expv [0:N-1];
+  reg [OW-1:0] act [0:N-1];
+  reg [IW-1:0] in_vec;
+  wire [OW-1:0] out_vec;
+  reg clk;
+  reg [8*1024-1:0] stim_file, exp_file, act_file;
+  integer c, b, fd, mismatches, shown, bad;
+
+  rtlpp_09670 dut (
+    .clk(clk),
+    .rstn(in_vec[30:30]),
+    .tic_enable(in_vec[29:29]),
+    .f_control(in_vec[28:0]),
+    .carrier_val(out_vec[35:4]),
+    .i_sign(out_vec[3:3]),
+    .i_mag(out_vec[2:2]),
+    .q_sign(out_vec[1:1]),
+    .q_mag(out_vec[0:0])
+  );
+
+  task sample;
+    begin
+      act[c] = out_vec;
+    end
+  endtask
+
+  initial begin
+    clk = 1'b0;
+    in_vec = {IW{1'b0}};
+    stim[0] = 31'h0a38a9f4;
+    stim[1] = 31'h27f9320d;
+    stim[2] = 31'h5f243b31;
+    stim[3] = 31'h663c7a72;
+    stim[4] = 31'h7cbf9008;
+    stim[5] = 31'h5e3b7891;
+    stim[6] = 31'h7b7ad789;
+    stim[7] = 31'h4f722142;
+    stim[8] = 31'h712f5a05;
+    stim[9] = 31'h617b41f1;
+    stim[10] = 31'h5b557bed;
+    stim[11] = 31'h44d0a989;
+    stim[12] = 31'h50af8e78;
+    stim[13] = 31'h614ca5e6;
+    stim[14] = 31'h42a4e469;
+    stim[15] = 31'h4d704577;
+    stim[16] = 31'h77eb46f8;
+    stim[17] = 31'h40749f4a;
+    stim[18] = 31'h631834e5;
+    stim[19] = 31'h755ec461;
+    stim[20] = 31'h52466495;
+    stim[21] = 31'h554e514d;
+    stim[22] = 31'h7e4cbb23;
+    stim[23] = 31'h61ee5c06;
+    stim[24] = 31'h5a4f7f44;
+    stim[25] = 31'h6d5d2f5e;
+    stim[26] = 31'h4227aa0b;
+    stim[27] = 31'h52e1dd74;
+    stim[28] = 31'h420987bc;
+    stim[29] = 31'h46c20514;
+    stim[30] = 31'h7acd99cb;
+    stim[31] = 31'h61c87ce2;
+    stim[32] = 31'h77f56067;
+    stim[33] = 31'h44059685;
+    stim[34] = 31'h4d32b277;
+    stim[35] = 31'h66dee04e;
+    stim[36] = 31'h4ac04d57;
+    stim[37] = 31'h7f84a29d;
+    stim[38] = 31'h63655472;
+    stim[39] = 31'h1115e3e8;
+    stim[40] = 31'h58eddfe6;
+    stim[41] = 31'h568417ca;
+    stim[42] = 31'h6ef7a8ae;
+    stim[43] = 31'h60d23e1f;
+    stim[44] = 31'h451648b3;
+    stim[45] = 31'h5494ed5e;
+    stim[46] = 31'h5c0f117e;
+    stim[47] = 31'h75a84dc8;
+    stim[48] = 31'h5c96c6bd;
+    stim[49] = 31'h7449008a;
+    stim[50] = 31'h5236ce28;
+    stim[51] = 31'h6efa043b;
+    stim[52] = 31'h47ed1588;
+    stim[53] = 31'h681acc16;
+    stim[54] = 31'h7cff5c3b;
+    stim[55] = 31'h526387f6;
+    stim[56] = 31'h7bf86597;
+    stim[57] = 31'h1e2ac7e4;
+    stim[58] = 31'h41eb274f;
+    stim[59] = 31'h48e063aa;
+    stim[60] = 31'h71b697c5;
+    stim[61] = 31'h449b0c48;
+    stim[62] = 31'h574268b9;
+    stim[63] = 31'h53a386e5;
+    for (c = 0; c < N; c = c + 1) begin
+      #1 in_vec = stim[c];
+      #3 sample;
+      #1 clk = 1'b1;
+      #5 clk = 1'b0;
+    end
+    if ($value$plusargs("actual=%s", act_file)) begin
+      fd = $fopen(act_file, "w");
+      for (c = 0; c < N; c = c + 1) $fdisplay(fd, "%h", act[c]);
+      $fclose(fd);
+    end
+    if (!$test$plusargs("nocheck")) begin
+      expv[0] = 36'hxxxxxxxxb;
+      expv[1] = 36'hxxxxxxxxb;
+      expv[2] = 36'hxxxxxxxx9;
+      expv[3] = 36'hxxxxxxxx1;
+      expv[4] = 36'h000001f23;
+      expv[5] = 36'h000002569;
+      expv[6] = 36'h000002566;
+      expv[7] = 36'h00000205b;
+      expv[8] = 36'h000002059;
+      expv[9] = 36'h000004b49;
+      expv[10] = 36'h000001c76;
+      expv[11] = 36'h000001c73;
+      expv[12] = 36'h000001c7e;
+      expv[13] = 36'h000001c7e;
+      expv[14] = 36'h000004ece;
+      expv[15] = 36'h000004ec9;
+      expv[16] = 36'h000004ec6;
+      expv[17] = 36'h000002026;
+      expv[18] = 36'h000002026;
+      expv[19] = 36'h00000388e;
+      expv[20] = 36'h000003ba9;
+      expv[21] = 36'h000003ba6;
+      expv[22] = 36'h000003bac;
+      expv[23] = 36'h00000389c;
+      expv[24] = 36'h0000016e4;
+      expv[25] = 36'h0000016e3;
+      expv[26] = 36'h000003323;
+      expv[27] = 36'h00000332c;
+      expv[28] = 36'h00000332c;
+      expv[29] = 36'h000003329;
+      expv[30] = 36'h000003326;
+      expv[31] = 36'h000001e56;
+      expv[32] = 36'h00000392e;
+      expv[33] = 36'h000003aec;
+      expv[34] = 36'h000003ae1;
+      expv[35] = 36'h000003ae1;
+      expv[36] = 36'h000002416;
+      expv[37] = 36'h00000241c;
+      expv[38] = 36'h0000035bc;
+      expv[39] = 36'h00000153e;
+      expv[40] = 36'h00000153c;
+      expv[41] = 36'h000001534;
+      expv[42] = 36'h000001533;
+      expv[43] = 36'h000002f73;
+      expv[44] = 36'h000003e6b;
+      expv[45] = 36'h000003e6c;
+      expv[46] = 36'h000003e66;
+      expv[47] = 36'h000003e6b;
+      expv[48] = 36'h0000074f1;
+      expv[49] = 36'h0000074f6;
+      expv[50] = 36'h00000273e;
+      expv[51] = 36'h000002739;
+      expv[52] = 36'h000004db1;
+      expv[53] = 36'h000004db4;
+      expv[54] = 36'h00000249b;
+      expv[55] = 36'h000002cb9;
+      expv[56] = 36'h000002cb6;
+      expv[57] = 36'h000001c19;
+      expv[58] = 36'h000001c13;
+      expv[59] = 36'h000001c1b;
+      expv[60] = 36'h000001c19;
+      expv[61] = 36'h000000ac9;
+      expv[62] = 36'h000000ac6;
+      expv[63] = 36'h000000ace;
+      mismatches = 0;
+      shown = 0;
+      for (c = 0; c < N; c = c + 1) begin
+        bad = 0;
+        for (b = 0; b < OW; b = b + 1)
+          if (expv[c][b] !== 1'bx && act[c][b] !== expv[c][b]) bad = 1;
+        if (bad) begin
+          mismatches = mismatches + 1;
+          if (shown < 10) begin
+            $display("MISMATCH cycle %0d: inputs=%h expected=%h got=%h", c, stim[c], expv[c], act[c]);
+            shown = shown + 1;
+          end
+        end
+      end
+      if (mismatches == 0) $display("PASS %0d/%0d cycles", N, N);
+      else $display("FAIL %0d/%0d cycles mismatched", mismatches, N);
+    end
+    $finish;
+  end
+endmodule

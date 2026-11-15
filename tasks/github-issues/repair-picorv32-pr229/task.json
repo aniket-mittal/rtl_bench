@@ -169,7 +169,7 @@
       "accept_bounded": true
     },
     "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
-    "command": "python3 taskgen/harness/grade.py tasks/<group>/<task> <submission dir>"
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
   },
   "source_task_id": "rtl-benchls/task3/YosysHQ_picorv32_229_228",
   "provenance": {

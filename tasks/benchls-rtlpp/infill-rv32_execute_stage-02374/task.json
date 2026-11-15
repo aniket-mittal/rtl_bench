@@ -1,0 +1,328 @@
+{
+  "task_id": "benchls-rtlpp/infill-rv32_execute_stage-02374",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "rtlpp_02374",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset_n",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "reset_n",
+        "width": 1
+      },
+      {
+        "name": "stall",
+        "width": 1
+      },
+      {
+        "name": "a_decode",
+        "width": 32
+      },
+      {
+        "name": "b_decode",
+        "width": 32
+      },
+      {
+        "name": "offset_decode",
+        "width": 32
+      },
+      {
+        "name": "a_rs_idx",
+        "width": 5
+      },
+      {
+        "name": "b_rs_idx",
+        "width": 5
+      },
+      {
+        "name": "regfile_rd_idx",
+        "width": 5
+      },
+      {
+        "name": "regfile_rd_val",
+        "width": 32
+      },
+      {
+        "name": "pc_in",
+        "width": 32
+      },
+      {
+        "name": "rd_in",
+        "width": 5
+      },
+      {
+        "name": "branch_in",
+        "width": 1
+      },
+      {
+        "name": "jump_in",
+        "width": 1
+      },
+      {
+        "name": "system_in",
+        "width": 1
+      },
+      {
+        "name": "load_in",
+        "width": 1
+      },
+      {
+        "name": "store_in",
+        "width": 1
+      },
+      {
+        "name": "ld_store_width",
+        "width": 3
+      },
+      {
+        "name": "cancelled",
+        "width": 1
+      },
+      {
+        "name": "add_nsub",
+        "width": 1
+      },
+      {
+        "name": "arith",
+        "width": 1
+      },
+      {
+        "name": "cmp_unsigned",
+        "width": 1
+      },
+      {
+        "name": "cmp_is_lt",
+        "width": 1
+      },
+      {
+        "name": "cmp_is_ge",
+        "width": 1
+      },
+      {
+        "name": "cmp_is_eq",
+        "width": 1
+      },
+      {
+        "name": "cmp_is_ne",
+        "width": 1
+      },
+      {
+        "name": "bit_is_and",
+        "width": 1
+      },
+      {
+        "name": "bit_is_or",
+        "width": 1
+      },
+      {
+        "name": "bit_is_xor",
+        "width": 1
+      },
+      {
+        "name": "shift_arith",
+        "width": 1
+      },
+      {
+        "name": "shift_left",
+        "width": 1
+      },
+      {
+        "name": "shift_right",
+        "width": 1
+      },
+      {
+        "name": "extm_update_rd",
+        "width": 1
+      },
+      {
+        "name": "extm_rd_idx",
+        "width": 5
+      },
+      {
+        "name": "extm_rd_val",
+        "width": 32
+      },
+      {
+        "name": "clr_load_op",
+        "width": 1
+      },
+      {
+        "name": "ld_data",
+        "width": 32
+      }
+    ],
+    "outputs": [
+      {
+        "name": "rd",
+        "width": 5
+      },
+      {
+        "name": "update_pc",
+        "width": 1
+      },
+      {
+        "name": "load",
+        "width": 1
+      },
+      {
+        "name": "store",
+        "width": 1
+      },
+      {
+        "name": "pc",
+        "width": 32
+      },
+      {
+        "name": "c",
+        "width": 32
+      },
+      {
+        "name": "addr",
+        "width": 32
+      },
+      {
+        "name": "st_be",
+        "width": 4
+      },
+      {
+        "name": "retired_instr",
+        "width": 1
+      },
+      {
+        "name": "misaligned_load",
+        "width": 1
+      },
+      {
+        "name": "misaligned_store",
+        "width": 1
+      },
+      {
+        "name": "misaligned_addr",
+        "width": 32
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "rtlpp_02374.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "rtlpp_02374.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "rtlpp_02374.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 289176645
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/rtlpp_02374",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "rtlpp_02374",
+    "parent_design": "rtlpp_02374",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 196,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 1413989053,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "rtlpp_02374",
+      "region_tokens": 422,
+      "region_chars": 2627,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "rtlpp_02374.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_rtlpp_02374.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "rtlpp_02374_combined.v",
+      "sec_rtlpp_02374.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "rtlpp_02374",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_02374.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "rtlpp_02374",
+    "n_modules": 1,
+    "slice": "slice_16.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

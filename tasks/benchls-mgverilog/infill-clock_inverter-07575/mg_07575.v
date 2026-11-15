@@ -1,0 +1,8 @@
+module mg_07575(CLK_IN, PREEDGE, CLK_OUT);
+input CLK_IN; 
+  output PREEDGE; 
+  output CLK_OUT; 
+  wire CLK_OUT; 
+  wire PREEDGE; 
+  [MASKED] 
+ endmodule

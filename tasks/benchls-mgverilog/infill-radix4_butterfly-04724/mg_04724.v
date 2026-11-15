@@ -1,0 +1,31 @@
+module mg_04724 ( CLK,DS ,ED, MPYJ,DR,DI ,DOR ,DOI );
+parameter total_bits = 32; 
+  input CLK ; 
+  wire CLK ; 
+  input DS ; 
+  wire DS ; 
+  input ED; 
+  input MPYJ ; 
+  wire MPYJ ; 
+  input [total_bits-1:0] DR ; 
+  wire signed [total_bits-1:0] DR ; 
+  input [total_bits-1:0] DI ; 
+  wire signed [total_bits-1:0] DI ; 
+  output [total_bits:0] DOR ; 
+  reg [total_bits:0] DOR ; 
+  output [total_bits:0] DOI ; 
+  reg [total_bits:0] DOI ; 
+  reg signed [total_bits+2 :0] dx5; 
+  reg signed [total_bits-1 :0] dx7; 
+  reg signed [total_bits-1 :0] dii; 
+  reg signed [total_bits : 0] dt; 
+  wire signed [total_bits+3 : 0] dx5p; 
+  wire signed [total_bits+3 : 0] dot; 
+  reg edd,edd2, edd3; 
+  reg mpyjd,mpyjd2,mpyjd3; 
+  reg [total_bits:0] doo ; 
+  reg [total_bits:0] droo ; 
+  [MASKED] 
+  assign dx5p=(dx5<<1)+(dx7>>>1); 
+  assign dot= (dx5p+(dt>>>6) -(dx5>>>13)); 
+ endmodule

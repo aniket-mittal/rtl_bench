@@ -1,0 +1,58 @@
+# Fill in the masked region of `autovcoder_122222`
+
+The file `autovcoder_122222.v` holds a Verilog design whose top module is `autovcoder_122222` (combinational). Part of the design was removed, and the text `[MASKED]` appears exactly once in its place. That marker is the literal string `[MASKED]` (square brackets included), not a comment.
+
+**Your job:** replace `[MASKED]` with Verilog so the whole design again does what it is evidently meant to do. Work out the missing logic from the rest of the code: the port list, the declared signals, how those signals are used elsewhere, the module and signal names, and any comments.
+
+## What was masked
+
+- Mask type: **block**. One complete module item, an `always` block in module `autovcoder_122222`, was replaced by `[MASKED]`. Write that one item, with the same kind of construct, in its place.
+- Design type: combinational. Origin: AutoVCoder-processed.
+
+## Rules
+
+- Edit only `autovcoder_122222.v`. When you are done it must not contain `[MASKED]`.
+- Keep every name the surrounding code uses (signals, ports, parameters, modules), and keep the rest of the file as it is. You may declare new internal signals if you need them.
+- Write synthesizable code that iverilog and yosys can compile. Use Verilog-2005, or SystemVerilog only where the file already uses SystemVerilog constructs.
+
+## Grading
+
+Your completed `autovcoder_122222` is simulated against the original design and checked for formal equivalence with it. Only behavior at the top-module ports counts. The code does not have to match the original text.
+
+---
+
+## Files
+
+Edit: `autovcoder_122222.v`. Only these files are graded.
+
+## Interface of `autovcoder_122222`
+
+| port | dir | width | note |
+|---|---|---|---|
+| `BCLK` | in | 1 | clock, rising edge |
+| `BRESET` | in | 1 | reset, active high |
+| `I_IOA` | in | 32 |  |
+| `D_IOA` | in | 32 |  |
+| `I_IORD` | in | 1 |  |
+| `D_IORD` | in | 1 |  |
+| `D_IOWR` | in | 1 |  |
+| `IO_READY` | in | 1 |  |
+| `GENSTAT` | in | 3 |  |
+| `D_IOBE` | in | 4 |  |
+| `ILO_SIG` | in | 1 |  |
+| `DCWACC` | in | 2 |  |
+| `IO_A` | out | 32 | |
+| `IO_RD` | out | 1 | |
+| `IO_WR` | out | 1 | |
+| `IO_BE` | out | 4 | |
+| `I_IORDY` | out | 1 | |
+| `D_IORDY` | out | 1 | |
+| `STATUS` | out | 4 | |
+| `ILO` | out | 1 | |
+
+## Testing
+
+    iverilog -g2012 -s tb -o sim public_tb.v autovcoder_122222.v && vvp sim
+
+It prints `PASS` or the mismatching cycles. Grading also runs hidden tests and a Yosys formal
+equivalence check against the reference, so passing the public tests is not enough on its own.

@@ -1,0 +1,244 @@
+{
+  "task_id": "benchls-origen/infill-vga_scan_generator-186560",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_186560",
+  "interface": {
+    "clock": "clk25",
+    "reset": {
+      "name": "rst",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "rst",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "hsync",
+        "width": 1
+      },
+      {
+        "name": "hsync_n",
+        "width": 1
+      },
+      {
+        "name": "vsync",
+        "width": 1
+      },
+      {
+        "name": "vsync_n",
+        "width": 1
+      },
+      {
+        "name": "x",
+        "width": 11
+      },
+      {
+        "name": "x_n",
+        "width": 11
+      },
+      {
+        "name": "y",
+        "width": 11
+      },
+      {
+        "name": "y_n",
+        "width": 11
+      },
+      {
+        "name": "sx",
+        "width": 11
+      },
+      {
+        "name": "sx_n",
+        "width": 11
+      },
+      {
+        "name": "sy",
+        "width": 11
+      },
+      {
+        "name": "sy_n",
+        "width": 11
+      },
+      {
+        "name": "sx_counter",
+        "width": 10
+      },
+      {
+        "name": "sx_counter_n",
+        "width": 10
+      },
+      {
+        "name": "sy_counter",
+        "width": 10
+      },
+      {
+        "name": "sy_counter_n",
+        "width": 10
+      },
+      {
+        "name": "bit_num",
+        "width": 8
+      },
+      {
+        "name": "bit_num_n",
+        "width": 8
+      },
+      {
+        "name": "byte_num",
+        "width": 16
+      },
+      {
+        "name": "byte_num_n",
+        "width": 16
+      },
+      {
+        "name": "next_byte_num",
+        "width": 16
+      },
+      {
+        "name": "next_byte_num_n",
+        "width": 16
+      },
+      {
+        "name": "next_y",
+        "width": 11
+      },
+      {
+        "name": "next_y_n",
+        "width": 11
+      },
+      {
+        "name": "next_sy",
+        "width": 11
+      },
+      {
+        "name": "next_sy_n",
+        "width": 11
+      },
+      {
+        "name": "blank",
+        "width": 1
+      },
+      {
+        "name": "blank_n",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_186560.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_186560.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_186560.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2167377129
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_186560",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_186560",
+    "parent_design": "origen_186560",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 107,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 3770897601,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_186560",
+      "region_tokens": 422,
+      "region_chars": 2309,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "origen_186560.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_origen_186560.do"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "conformal_rtl_origen_186560.do"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_186560",
+    "n_modules": 1,
+    "slice": "slice_15.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

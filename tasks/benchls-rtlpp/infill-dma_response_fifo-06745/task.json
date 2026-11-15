@@ -1,0 +1,220 @@
+{
+  "task_id": "benchls-rtlpp/infill-dma_response_fifo-06745",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "rtlpp_06745",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "reset",
+        "width": 1
+      },
+      {
+        "name": "mm_response_read",
+        "width": 1
+      },
+      {
+        "name": "mm_response_address",
+        "width": 1
+      },
+      {
+        "name": "mm_response_byteenable",
+        "width": 4
+      },
+      {
+        "name": "src_response_ready",
+        "width": 1
+      },
+      {
+        "name": "sw_reset",
+        "width": 1
+      },
+      {
+        "name": "done_strobe",
+        "width": 1
+      },
+      {
+        "name": "actual_bytes_transferred",
+        "width": 32
+      },
+      {
+        "name": "error",
+        "width": 8
+      },
+      {
+        "name": "early_termination",
+        "width": 1
+      },
+      {
+        "name": "transfer_complete_IRQ_mask",
+        "width": 1
+      },
+      {
+        "name": "error_IRQ_mask",
+        "width": 8
+      },
+      {
+        "name": "early_termination_IRQ_mask",
+        "width": 1
+      },
+      {
+        "name": "descriptor_buffer_full",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "mm_response_readdata",
+        "width": 32
+      },
+      {
+        "name": "mm_response_waitrequest",
+        "width": 1
+      },
+      {
+        "name": "src_response_data",
+        "width": 256
+      },
+      {
+        "name": "src_response_valid",
+        "width": 1
+      },
+      {
+        "name": "response_watermark",
+        "width": 16
+      },
+      {
+        "name": "response_fifo_full",
+        "width": 1
+      },
+      {
+        "name": "response_fifo_empty",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "rtlpp_06745.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "rtlpp_06745.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "rtlpp_06745.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2773491236
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/rtlpp_06745",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "rtlpp_06745",
+    "parent_design": "rtlpp_06745",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 178,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 3074239164,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 6,
+      "index_in_range": false,
+      "block_kind": "assign",
+      "in_module": "rtlpp_06745",
+      "region_tokens": 30,
+      "region_chars": 127,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "rtlpp_06745.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_rtlpp_06745.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "rtlpp_06745_combined.v",
+      "sec_rtlpp_06745.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "rtlpp_06745",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_06745.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "rtlpp_06745",
+    "n_modules": 1,
+    "slice": "slice_09.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

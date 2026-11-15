@@ -1,0 +1,13 @@
+module mg_06071(clk, rst, x, y, sum);
+input clk, rst; 
+  input x, y; 
+  output reg sum; 
+  reg sc; 
+  wire hsum1, hco1; 
+  assign hsum1 = y ^ sc; 
+  assign hco1 = y & sc; 
+  wire hsum2, hco2; 
+  assign hsum2 = x ^ hsum1; 
+  assign hco2 = x & hsum1; 
+  [MASKED] 
+ endmodule

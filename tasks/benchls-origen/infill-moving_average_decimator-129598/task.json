@@ -1,0 +1,177 @@
+{
+  "task_id": "benchls-origen/infill-moving_average_decimator-129598",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_129598",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "rst",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "rst",
+        "width": 1
+      },
+      {
+        "name": "bypass",
+        "width": 1
+      },
+      {
+        "name": "run",
+        "width": 1
+      },
+      {
+        "name": "cpi",
+        "width": 8
+      },
+      {
+        "name": "stb_in",
+        "width": 1
+      },
+      {
+        "name": "data_in",
+        "width": 24
+      }
+    ],
+    "outputs": [
+      {
+        "name": "stb_out",
+        "width": 1
+      },
+      {
+        "name": "data_out",
+        "width": 24
+      },
+      {
+        "name": "count_out",
+        "width": 2
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_129598.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_129598.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_129598.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3703605741
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_129598",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_129598",
+    "parent_design": "origen_129598",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 137,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 2100497144,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_129598",
+      "region_tokens": 158,
+      "region_chars": 1191,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "origen_129598.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_origen_129598.tcl"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": {
+      "files": {
+        "origen_129598.v": {
+          "$finish": 1,
+          "$display": 1
+        }
+      },
+      "note": "simulation-only system-task statements replaced by `;` in the starter, reference and lib alike (outside initial blocks; $finish/$stop anywhere)"
+    },
+    "testbench_modules_removed": {
+      "modules": [
+        "testbench"
+      ],
+      "note": "port-less modules unreachable from the top (testbenches) removed from the design file in the starter and reference"
+    },
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_origen_129598.tcl"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_129598",
+    "n_modules": 2,
+    "slice": "slice_11.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

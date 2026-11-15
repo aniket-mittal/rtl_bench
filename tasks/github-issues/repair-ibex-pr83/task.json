@@ -1,0 +1,282 @@
+{
+  "task_id": "github-issues/repair-ibex-pr83",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "ibex_cs_registers",
+  "interface": {
+    "clock": "clk_i",
+    "reset": {
+      "name": "rst_ni",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "rst_ni",
+        "width": 1
+      },
+      {
+        "name": "core_id_i",
+        "width": 4
+      },
+      {
+        "name": "cluster_id_i",
+        "width": 6
+      },
+      {
+        "name": "boot_addr_i",
+        "width": 32
+      },
+      {
+        "name": "csr_access_i",
+        "width": 1
+      },
+      {
+        "name": "csr_addr_i",
+        "width": 12
+      },
+      {
+        "name": "csr_wdata_i",
+        "width": 32
+      },
+      {
+        "name": "csr_op_i",
+        "width": 2
+      },
+      {
+        "name": "debug_cause_i",
+        "width": 3
+      },
+      {
+        "name": "debug_csr_save_i",
+        "width": 1
+      },
+      {
+        "name": "pc_if_i",
+        "width": 32
+      },
+      {
+        "name": "pc_id_i",
+        "width": 32
+      },
+      {
+        "name": "csr_save_if_i",
+        "width": 1
+      },
+      {
+        "name": "csr_save_id_i",
+        "width": 1
+      },
+      {
+        "name": "csr_restore_mret_i",
+        "width": 1
+      },
+      {
+        "name": "csr_restore_dret_i",
+        "width": 1
+      },
+      {
+        "name": "csr_cause_i",
+        "width": 6
+      },
+      {
+        "name": "csr_save_cause_i",
+        "width": 1
+      },
+      {
+        "name": "insn_ret_i",
+        "width": 1
+      },
+      {
+        "name": "id_valid_i",
+        "width": 1
+      },
+      {
+        "name": "is_compressed_i",
+        "width": 1
+      },
+      {
+        "name": "is_decoding_i",
+        "width": 1
+      },
+      {
+        "name": "imiss_i",
+        "width": 1
+      },
+      {
+        "name": "pc_set_i",
+        "width": 1
+      },
+      {
+        "name": "jump_i",
+        "width": 1
+      },
+      {
+        "name": "branch_i",
+        "width": 1
+      },
+      {
+        "name": "branch_taken_i",
+        "width": 1
+      },
+      {
+        "name": "mem_load_i",
+        "width": 1
+      },
+      {
+        "name": "mem_store_i",
+        "width": 1
+      },
+      {
+        "name": "lsu_busy_i",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "csr_rdata_o",
+        "width": 32
+      },
+      {
+        "name": "m_irq_enable_o",
+        "width": 1
+      },
+      {
+        "name": "mepc_o",
+        "width": 32
+      },
+      {
+        "name": "depc_o",
+        "width": 32
+      },
+      {
+        "name": "debug_single_step_o",
+        "width": 1
+      },
+      {
+        "name": "debug_ebreakm_o",
+        "width": 1
+      },
+      {
+        "name": "illegal_csr_insn_o",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/ibex_cs_registers.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/ibex_cs_registers.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "src/ibex_cs_registers.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3064097198
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/lowRISC_ibex_83_80",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "lowRISC_ibex_83_80",
+    "repository": "lowRISC/ibex",
+    "pr_number": 83,
+    "issue_number": 80,
+    "pr_url": "https://github.com/lowRISC/ibex/pull/83",
+    "issue_url": "https://github.com/lowRISC/ibex/issues/80",
+    "pr_title": "Fix perf counters",
+    "issue_title": "Number of performance counters",
+    "issue_labels": [],
+    "base_commit": "92803bb8e5b7508b9c68116a55e4517cf8d67b4d",
+    "head_commit": "08a0eada23bdef78984bf4dab8df80822adcddfe",
+    "base_ref": "master",
+    "lec_status": "useful_pass",
+    "additions": 45,
+    "deletions": 34,
+    "upstream_verilog_files": [
+      "rtl/ibex_cs_registers.sv",
+      "rtl/ibex_defines.sv"
+    ],
+    "top_from_changed_module": "ibex_cs_registers",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/ibex_cs_registers.v": "rtl/ibex_cs_registers.sv"
+    },
+    "editable_repo_paths": [
+      "rtl/ibex_cs_registers.sv"
+    ],
+    "normalizations": [
+      "import_hoist",
+      "qualify_imported_types"
+    ],
+    "unresolved_references": [],
+    "base_vs_head": "different",
+    "base_vs_head_detail": null,
+    "base_vs_head_timeout_s": 60,
+    "sv2v": {
+      "version": "0.0.13",
+      "applied": true
+    },
+    "sv2v_input_editable_repo_paths": [
+      "rtl/ibex_defines.sv",
+      "rtl/ibex_cs_registers.sv"
+    ],
+    "rtl_license": {
+      "files": {
+        "LICENSE": "Apache-2.0"
+      },
+      "spdx": "Apache-2.0",
+      "file_spdx": [
+        "Apache-2.0"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}

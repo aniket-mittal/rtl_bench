@@ -1,0 +1,205 @@
+{
+  "task_id": "benchls-mgverilog/infill-exmem_memwb_pipe_reg-03486",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "mg_03486",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "s7_exmem",
+        "width": 1
+      },
+      {
+        "name": "rf_wen_exmem",
+        "width": 1
+      },
+      {
+        "name": "mem2reg_exmem",
+        "width": 1
+      },
+      {
+        "name": "rf_waddr_exmem",
+        "width": 4
+      },
+      {
+        "name": "aluout_exmem",
+        "width": 16
+      },
+      {
+        "name": "extended_exmem",
+        "width": 16
+      },
+      {
+        "name": "nop_lw_exmem",
+        "width": 1
+      },
+      {
+        "name": "pc_added_exmem",
+        "width": 16
+      },
+      {
+        "name": "jal_exmem",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "rf_wen_memwb",
+        "width": 1
+      },
+      {
+        "name": "mem2reg_memwb",
+        "width": 1
+      },
+      {
+        "name": "rf_waddr_memwb",
+        "width": 4
+      },
+      {
+        "name": "aluout_memwb",
+        "width": 16
+      },
+      {
+        "name": "extended_memwb",
+        "width": 16
+      },
+      {
+        "name": "s7_memwb",
+        "width": 1
+      },
+      {
+        "name": "nop_lw_memwb",
+        "width": 1
+      },
+      {
+        "name": "pc_added_memwb",
+        "width": 16
+      },
+      {
+        "name": "jal_memwb",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "mg_03486.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "mg_03486.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "mg_03486.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1424012467
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/mg_03486",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "mg_03486",
+    "parent_design": "mg_03486",
+    "origin": "RTL-Dataset-MG-Verilog",
+    "origin_bucket": "S5",
+    "loc": 51,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 894495850,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "mg_03486",
+      "region_tokens": 44,
+      "region_chars": 362,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "mg_03486.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_mg_03486.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "mg_03486_combined.v",
+      "sec_mg_03486.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "mg_03486",
+        "file": "<upstream-pool>/RTL_Datasets/MG-Verilog_sec_input/designs/mg_03486.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "mg_03486",
+    "n_modules": 1,
+    "slice": "slice_08.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

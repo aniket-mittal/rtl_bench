@@ -1,0 +1,9 @@
+module mg_10125(clock,eleventh,twelfth,out5);
+input clock; 
+ input eleventh; 
+ input twelfth; 
+ output out5; 
+ reg out5; 
+ reg temp6; 
+ [MASKED] 
+ endmodule

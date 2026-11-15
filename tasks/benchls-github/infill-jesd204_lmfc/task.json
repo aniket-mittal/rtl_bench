@@ -1,0 +1,196 @@
+{
+  "task_id": "benchls-github/infill-jesd204_lmfc",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "jesd204_lmfc",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "reset",
+        "width": 1
+      },
+      {
+        "name": "sysref",
+        "width": 1
+      },
+      {
+        "name": "cfg_octets_per_multiframe",
+        "width": 10
+      },
+      {
+        "name": "cfg_beats_per_multiframe",
+        "width": 8
+      },
+      {
+        "name": "cfg_lmfc_offset",
+        "width": 8
+      },
+      {
+        "name": "cfg_sysref_oneshot",
+        "width": 1
+      },
+      {
+        "name": "cfg_sysref_disable",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "lmfc_edge",
+        "width": 1
+      },
+      {
+        "name": "lmfc_clk",
+        "width": 1
+      },
+      {
+        "name": "lmfc_counter",
+        "width": 8
+      },
+      {
+        "name": "lmc_edge",
+        "width": 1
+      },
+      {
+        "name": "lmc_quarter_edge",
+        "width": 1
+      },
+      {
+        "name": "eoemb",
+        "width": 1
+      },
+      {
+        "name": "sysref_edge",
+        "width": 1
+      },
+      {
+        "name": "sysref_alignment_error",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "jesd204_lmfc.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "jesd204_lmfc.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "jesd204_lmfc.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 4139621715
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/jesd204_lmfc",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "jesd204_lmfc",
+    "parent_design": "jesd204_lmfc",
+    "origin": "SEC-Flow-Star-repos-10.analog-hdl",
+    "origin_bucket": "S1",
+    "loc": 193,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 1805993923,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 8,
+      "n_candidates": 11,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "jesd204_lmfc",
+      "region_tokens": 36,
+      "region_chars": 188,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "jesd204_lmfc.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_jesd204_lmfc.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "jesd204_lmfc_combined.v",
+      "sec_jesd204_lmfc.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "jesd204_lmfc",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/10.analog-hdl/library/jesd204/jesd204_common/jesd204_lmfc.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "jesd204_lmfc",
+    "n_modules": 1,
+    "slice": "slice_16.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

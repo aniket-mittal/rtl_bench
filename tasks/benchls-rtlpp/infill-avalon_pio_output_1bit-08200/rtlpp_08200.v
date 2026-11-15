@@ -1,0 +1,32 @@
+module rtlpp_08200 (
+    address,
+    chipselect,
+    clk,
+    reset_n,
+    write_n,
+    writedata,
+    out_port,
+    readdata
+);
+
+    output           out_port;
+    output [31:0]    readdata;
+    input  [1:0]     address;
+    input            chipselect;
+    input            clk;
+    input            reset_n;
+    input            write_n;
+    input  [31:0]    writedata;
+
+    reg              data_out;
+    wire             read_mux_out;
+    wire [31:0]      readdata;
+
+    assign read_mux_out = (address == 0) ? data_out : 0;
+
+    [MASKED]
+
+    assign readdata = {31'b0, read_mux_out};
+    assign out_port = data_out;
+
+endmodule

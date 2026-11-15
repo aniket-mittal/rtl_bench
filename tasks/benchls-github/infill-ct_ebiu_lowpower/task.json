@@ -1,0 +1,172 @@
+{
+  "task_id": "benchls-github/infill-ct_ebiu_lowpower",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "ct_ebiu_lowpower",
+  "interface": {
+    "clock": "forever_cpuclk",
+    "reset": {
+      "name": "cpurst_b",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "clk_en",
+        "width": 1
+      },
+      {
+        "name": "cpurst_b",
+        "width": 1
+      },
+      {
+        "name": "ebiu_read_channel_no_op",
+        "width": 1
+      },
+      {
+        "name": "ebiu_snoop_channel_no_op",
+        "width": 1
+      },
+      {
+        "name": "ebiu_write_channel_no_op",
+        "width": 1
+      },
+      {
+        "name": "pad_ebiu_csysreq",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "ebiu_pad_cactive",
+        "width": 1
+      },
+      {
+        "name": "ebiu_pad_csysack",
+        "width": 1
+      },
+      {
+        "name": "ebiu_xx_no_op",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "ct_ebiu_lowpower.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "ct_ebiu_lowpower.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "ct_ebiu_lowpower.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1845337935
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/ct_ebiu_lowpower",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "ct_ebiu_lowpower",
+    "parent_design": "ct_ebiu_lowpower",
+    "origin": "SEC-Flow-Star-repos-32.openc910",
+    "origin_bucket": "S1",
+    "loc": 66,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 2095473047,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "ct_ebiu_lowpower",
+      "region_tokens": 41,
+      "region_chars": 238,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "ct_ebiu_lowpower.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_ct_ebiu_lowpower.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "ct_ebiu_lowpower_combined.v",
+      "sec_ct_ebiu_lowpower.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "ct_ebiu_lowpower",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/32.openc910/C910_RTL_FACTORY/gen_rtl/ciu/rtl/ct_ebiu_lowpower.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "ct_ebiu_lowpower",
+    "n_modules": 1,
+    "slice": "slice_19.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

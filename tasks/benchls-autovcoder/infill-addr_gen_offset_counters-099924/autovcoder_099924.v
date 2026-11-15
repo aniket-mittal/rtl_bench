@@ -1,0 +1,32 @@
+module autovcoder_099924 (
+    clk,
+    rst,
+    enable,
+    addr2,
+    addr3,
+    addr4,
+    addr5,
+    addr6
+);
+  input clk, rst;
+  input enable;
+  output [3:0] addr2;
+  output [5:0] addr3;
+  output [7:0] addr4;
+  output [9:0] addr5;
+  output [11:0] addr6;
+  reg [11:0] ad_reg2, ad_reg3, ad_reg4, ad_reg5, ad_reg6;
+
+  [MASKED]
+
+  assign addr2 = {ad_reg2[11:10], ad_reg2[1:0]};
+  //assign addr2={ad_reg2[9:8],ad_reg2[1:0]}; //9:82bit, [7:0]
+  assign addr3 = {ad_reg3[11:8], ad_reg3[1:0]};
+  //assign addr3={ad_reg3[9:6],ad_reg3[1:0]}; //9:64bit[5:0]6bit 64
+  assign addr4 = {ad_reg4[11:6], ad_reg4[1:0]};
+  //assign addr4={ad_reg4[9:4],ad_reg4[1:0]};
+  assign addr5 = {ad_reg5[11:4], ad_reg5[1:0]};
+  //assign addr5= ad_reg5;
+  assign addr6 = ad_reg6;
+endmodule
+

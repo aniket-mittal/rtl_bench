@@ -1,0 +1,166 @@
+{
+  "task_id": "benchls-github/infill-ct_spsram_4096x32",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "ct_spsram_4096x32",
+  "interface": {
+    "clock": "CLK",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "A",
+        "width": 12
+      },
+      {
+        "name": "CEN",
+        "width": 1
+      },
+      {
+        "name": "D",
+        "width": 32
+      },
+      {
+        "name": "GWEN",
+        "width": 1
+      },
+      {
+        "name": "WEN",
+        "width": 32
+      }
+    ],
+    "outputs": [
+      {
+        "name": "Q",
+        "width": 32
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "ct_spsram_4096x32.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "ct_spsram_4096x32.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "ct_spsram_4096x32.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2913416571
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/ct_spsram_4096x32",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "ct_spsram_4096x32",
+    "parent_design": "ct_spsram_4096x32",
+    "origin": "SEC-Flow-Star-repos-32.openc910",
+    "origin_bucket": "S1",
+    "loc": 62,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 2243900675,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 9,
+      "n_candidates": 14,
+      "index_in_range": false,
+      "block_kind": "instance",
+      "in_module": "ct_f_spsram_4096x32",
+      "region_tokens": 40,
+      "region_chars": 164,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "ct_spsram_4096x32_combined.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_ct_spsram_4096x32.tcl"
+    },
+    "lib_v": "redundant (all modules already in design file)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "ct_spsram_4096x32.v",
+      "sec_ct_spsram_4096x32.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "ct_spsram_4096x32",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/32.openc910/C910_RTL_FACTORY/gen_rtl/lsu/rtl/ct_spsram_4096x32.v"
+      },
+      "deps": [
+        {
+          "module": "fpga_ram",
+          "file": "<upstream-pool>/Infructructure-Agents/Star-repos/32.openc910/C910_RTL_FACTORY/gen_rtl/fpga/rtl/fpga_ram.v"
+        },
+        {
+          "module": "ct_f_spsram_4096x32",
+          "file": "<upstream-pool>/Infructructure-Agents/Star-repos/32.openc910/C910_RTL_FACTORY/gen_rtl/fpga/rtl/ct_f_spsram_4096x32.v"
+        }
+      ],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "ct_spsram_4096x32",
+    "n_modules": 1,
+    "slice": "slice_18.jsonl",
+    "golden_choice": "combined (defines dependencies the design file lacks)",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

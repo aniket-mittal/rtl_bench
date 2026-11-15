@@ -1,0 +1,196 @@
+module rtlpp_02374
+(
+  input                                clk,
+  input                                reset_n,
+
+  input                                stall,
+
+  input  [31:0]                        a_decode,
+  input  [31:0]                        b_decode,
+
+  input  [31:0]                        offset_decode,
+
+  input   [4:0]                        a_rs_idx,
+  input   [4:0]                        b_rs_idx,
+
+  input   [4:0]                        regfile_rd_idx,
+  input  [31:0]                        regfile_rd_val,
+
+  input  [31:0]                        pc_in,
+  input   [4:0]                        rd_in,
+  input                                branch_in,
+  input                                jump_in,
+  input                                system_in,
+  input                                load_in,
+  input                                store_in,
+  input   [2:0]                        ld_store_width,
+  input                                cancelled,
+
+  input                                add_nsub,
+  input                                arith,
+
+  input                                cmp_unsigned,
+  input                                cmp_is_lt,
+  input                                cmp_is_ge,
+  input                                cmp_is_eq,
+  input                                cmp_is_ne,
+
+  input                                bit_is_and,
+  input                                bit_is_or,
+  input                                bit_is_xor,
+
+  input                                shift_arith,
+  input                                shift_left,
+  input                                shift_right,
+
+  input                                extm_update_rd,
+  input       [4:0]                    extm_rd_idx,
+  input      [31:0]                    extm_rd_val,
+
+  input                                clr_load_op,
+  output reg  [4:0]                    rd,
+  output reg                           update_pc,
+  output reg                           load,
+  output reg                           store,
+
+  output reg [31:0]                    pc,
+  output reg [31:0]                    c,
+
+  output reg [31:0]                    addr,
+  output reg  [3:0]                    st_be,
+  input      [31:0]                    ld_data,
+
+  output reg                           retired_instr,
+
+  output                               misaligned_load,
+  output                               misaligned_store,
+  output     [31:0]                    misaligned_addr
+);
+
+reg           [2:0]                    ld_width;
+
+reg           [1:0]                    addr_lo;
+
+wire        [31:0] a                   = (a_rs_idx == regfile_rd_idx && regfile_rd_idx != 5'h0) ? regfile_rd_val : a_decode;
+wire        [31:0] b                   = (b_rs_idx == regfile_rd_idx && regfile_rd_idx != 5'h0) ? regfile_rd_val : b_decode;
+
+wire        [31:0] add                 = a + b;
+wire        [31:0] sub                 = a - b;
+wire        [31:0] add_sub             = add_nsub ? add : sub;
+
+wire signed [31:0] a_signed            = a;
+wire signed [31:0] b_signed            = b;
+
+wire               lt_unsigned         = (a        <  b);
+wire               ge                  = (a_signed >= b_signed);
+wire               ge_unsigned         = (a        >= b);
+wire               eq                  = (a_signed == b_signed);
+wire        [31:0] cmp                 = {31'h0, (cmp_is_eq & eq) | (cmp_is_ne & ~eq) |
+                                                 (cmp_is_ge & ~cmp_unsigned &  ge)    | (cmp_is_ge & cmp_unsigned & ge_unsigned) |
+                                                 (cmp_is_lt & ~cmp_unsigned & ~ge)    | (cmp_is_lt & cmp_unsigned & lt_unsigned)};
+
+wire        [31:0] andop               = a & b;
+wire        [31:0] orop                = a | b;
+wire        [31:0] xorop               = a ^ b;
+
+wire        [31:0] bitop               = ({32{bit_is_and}} & andop) | ({32{bit_is_or}} & orop) | ({32{bit_is_xor}} & xorop);
+
+wire        [31:0] sll                 = a        <<  b[4:0];
+wire        [31:0] srl                 = a        >>  b[4:0];
+wire        [31:0] sra                 = a_signed >>> b[4:0];
+
+wire        [31:0] shift               = ({32{shift_left}}                 & sll) |
+                                         ({32{shift_right & ~shift_arith}} & srl) |
+                                         ({32{shift_right &  shift_arith}} & sra);
+
+wire               branch_taken        = branch_in & cmp[0];
+
+wire        [31:0] next_pc             = (jump_in | system_in) ? add :
+                                                                 pc_in + offset_decode;
+
+wire         [4:0] next_rd             = extm_update_rd ? extm_rd_idx :
+                                         stall          ? rd          :
+                                                          ((~update_pc & ~((jump_in | branch_taken) & |next_pc[1:0])) ? rd_in : 5'h0);
+
+wire        [31:0] next_addr           = a + offset_decode;
+
+wire               addr_is_misaligned  = (load_in | store_in) & ((ld_store_width[0] & next_addr[0]) | (ld_store_width[1] & |next_addr[1:0])) & ~load;
+
+assign             misaligned_store    = store_in & addr_is_misaligned;
+assign             misaligned_load     = load_in  & addr_is_misaligned;
+assign             misaligned_addr     = next_addr;
+
+wire        [31:0] ld_data_shift = ld_data >> {addr_lo, 3'b000};
+
+always @(posedge clk or negedge reset_n)
+begin
+  if (!reset_n)
+  begin
+    rd                                 <= 5'h0;
+    load                               <= 1'b0;
+    store                              <= 1'b0;
+    update_pc                          <= 1'b0;
+    ld_width                           <= 3'b000;
+    retired_instr                      <= 1'b0;
+  end
+  else
+  begin
+    retired_instr                      <= ~stall & ~cancelled;
+
+    if (extm_update_rd)
+    begin
+      c                                <= extm_rd_val;
+    end
+    else if (load)
+    begin
+      c                                <= (ld_data_shift & {{16{ld_width[1]}}, {8{|ld_width[1:0]}}, 8'hff}) |
+                                          {{16{~ld_width[2] & ~ld_width[1] &  ld_width[0] & ld_data_shift[15]}}, 16'h0} |
+                                          {{24{~ld_width[2] & ~ld_width[1] & ~ld_width[0] & ld_data_shift[7]}}, 8'h0};
+    end
+    else if (arith)
+    begin
+      c                                <= add_sub;
+    end
+    else if (bit_is_and | bit_is_or | bit_is_xor)
+    begin
+      c                                <= bitop;
+    end
+    else if (cmp_is_lt | cmp_is_ge | cmp_is_eq | cmp_is_ne)
+    begin
+      c                                <= cmp;
+    end
+    else if (shift_left | shift_right)
+    begin
+      c                                <= shift;
+    end
+    else if (jump_in)
+    begin
+      c                                <= pc_in + 32'h4;
+    end
+    else if (store_in)
+    begin
+      c                                <= b << {next_addr[1:0] & {~ld_store_width[1], ~ld_store_width[0]}, 3'b000};
+    end
+
+    if (load_in | store_in)
+    begin
+      addr                             <= stall ? addr          : {next_addr[31:2], 2'b00};
+      addr_lo                          <= stall ? addr_lo [1:0] : next_addr[1:0];
+    end
+
+    rd                                 <= next_rd;
+    pc                                 <= stall ? pc : next_pc;
+    update_pc                          <= stall ? update_pc : ((jump_in | system_in | branch_taken) & ~update_pc);
+
+    load                               <= (stall ? load : (load_in  & ~update_pc)) & ~clr_load_op & ~misaligned_load;
+    store                              <= store_in & ~update_pc & ~misaligned_store;
+
+    st_be                              <= ld_store_width[1] ? 4'b1111 :
+                                          ld_store_width[0] ? (4'b0011 << {next_addr[1], 1'b0}):
+                                                              (4'b0001 <<  next_addr[1:0]);
+
+    ld_width                           <= stall ? ld_width : ld_store_width;
+  end
+end
+
+endmodule

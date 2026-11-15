@@ -1,0 +1,13 @@
+module mg_07970(clk,baud,baud16,rst);
+input clk,rst; 
+  output baud; 
+  output baud16; 
+  parameter b_rate = 57600; 
+  parameter c_rate = 25000000; 
+  parameter divider = c_rate / b_rate; 
+  parameter divider16 = c_rate / (16 * b_rate); 
+  reg [31:0] count,count16; 
+  assign baud = (count == 0) ? 1 : 0; 
+  assign baud16 = (count16 == 0) ? 1 : 0; 
+  [MASKED] 
+ endmodule

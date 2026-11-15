@@ -1,0 +1,249 @@
+{
+  "task_id": "benchls-github/infill-axis_fifo",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "axis_fifo",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "rst",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "rst",
+        "width": 1
+      },
+      {
+        "name": "s_axis_tdata",
+        "width": 8
+      },
+      {
+        "name": "s_axis_tkeep",
+        "width": 1
+      },
+      {
+        "name": "s_axis_tvalid",
+        "width": 1
+      },
+      {
+        "name": "s_axis_tlast",
+        "width": 1
+      },
+      {
+        "name": "s_axis_tid",
+        "width": 8
+      },
+      {
+        "name": "s_axis_tdest",
+        "width": 8
+      },
+      {
+        "name": "s_axis_tuser",
+        "width": 1
+      },
+      {
+        "name": "m_axis_tready",
+        "width": 1
+      },
+      {
+        "name": "pause_req",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "s_axis_tready",
+        "width": 1
+      },
+      {
+        "name": "m_axis_tdata",
+        "width": 8
+      },
+      {
+        "name": "m_axis_tkeep",
+        "width": 1
+      },
+      {
+        "name": "m_axis_tvalid",
+        "width": 1
+      },
+      {
+        "name": "m_axis_tlast",
+        "width": 1
+      },
+      {
+        "name": "m_axis_tid",
+        "width": 8
+      },
+      {
+        "name": "m_axis_tdest",
+        "width": 8
+      },
+      {
+        "name": "m_axis_tuser",
+        "width": 1
+      },
+      {
+        "name": "pause_ack",
+        "width": 1
+      },
+      {
+        "name": "status_depth",
+        "width": 13
+      },
+      {
+        "name": "status_depth_commit",
+        "width": 13
+      },
+      {
+        "name": "status_overflow",
+        "width": 1
+      },
+      {
+        "name": "status_bad_frame",
+        "width": 1
+      },
+      {
+        "name": "status_good_frame",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "axis_fifo.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "axis_fifo.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "axis_fifo.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3861846787
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/axis_fifo",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "axis_fifo",
+    "parent_design": "axis_fifo",
+    "origin": "SEC-Flow-Star-repos-2.verilog-ethernet",
+    "origin_bucket": "S1",
+    "loc": 530,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 3047526818,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 7,
+      "index_in_range": false,
+      "block_kind": "assign",
+      "in_module": "axis_fifo",
+      "region_tokens": 25,
+      "region_chars": 126,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "axis_fifo.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_axis_fifo.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": {
+      "files": {
+        "axis_fifo.v": {
+          "$finish": 7
+        }
+      },
+      "note": "simulation-only system-task statements replaced by `;` in the starter, reference and lib alike (outside initial blocks; $finish/$stop anywhere)"
+    },
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "axis_fifo_combined.v",
+      "sec_axis_fifo.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "axis_fifo",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/2.verilog-ethernet/lib/axis/rtl/axis_fifo.v"
+      },
+      "deps": [],
+      "missing_deps": [
+        "DROP_OVERSIZE_FRAME",
+        "FRAME_FIFO",
+        "LAST_ENABLE",
+        "USER_BAD_FRAME_MASK",
+        "frame",
+        "in",
+        "mode",
+        "signal",
+        "with"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "axis_fifo",
+    "n_modules": 1,
+    "slice": "slice_15.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

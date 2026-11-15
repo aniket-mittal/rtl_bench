@@ -1,0 +1,152 @@
+{
+  "task_id": "benchls-github/infill-gearbox_66b64b-2",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "gearbox_66b64b",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "reset",
+        "width": 1
+      },
+      {
+        "name": "i_data",
+        "width": 66
+      },
+      {
+        "name": "i_valid",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "o_data",
+        "width": 64
+      },
+      {
+        "name": "o_rd_en",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "gearbox_66b64b.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "gearbox_66b64b.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "gearbox_66b64b.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2269541398
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/gearbox_66b64b_block_12",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "gearbox_66b64b_block_12",
+    "parent_design": "gearbox_66b64b",
+    "origin": "SEC-Flow-Star-repos-10.analog-hdl",
+    "origin_bucket": "S1",
+    "loc": 44,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 12,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 2,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "gearbox_66b64b",
+      "region_tokens": 41,
+      "region_chars": 200,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "8b0b7492991f21f29379607a28bd9069b93d7f903a0b3c4a2d206bcfa04e9f5a",
+    "upstream_golden_rtl_key": "gearbox_66b64b.v",
+    "upstream_masked_rtl_key": "gearbox_66b64b_masked.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_gearbox_66b64b.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "gearbox_66b64b_combined.v",
+      "sec_gearbox_66b64b.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "gearbox_66b64b",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/10.analog-hdl/library/intel/jesd204c/jesd204_f_tile_adapter_tx/gearbox_66b64b.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "task_id": "benchls-rtlpp/infill-toplevel74181",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "TopLevel74181",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "S",
+        "width": 4
+      },
+      {
+        "name": "A",
+        "width": 4
+      },
+      {
+        "name": "B",
+        "width": 4
+      },
+      {
+        "name": "M",
+        "width": 1
+      },
+      {
+        "name": "CNb",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "F",
+        "width": 4
+      },
+      {
+        "name": "X",
+        "width": 1
+      },
+      {
+        "name": "Y",
+        "width": 1
+      },
+      {
+        "name": "CN4b",
+        "width": 1
+      },
+      {
+        "name": "AEB",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "TopLevel74181.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "TopLevel74181.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "TopLevel74181.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2713419171
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/TopLevel74181",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "TopLevel74181",
+    "parent_design": "TopLevel74181",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 14,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 1963293125,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 2,
+      "n_candidates": 19,
+      "index_in_range": false,
+      "block_kind": "instance",
+      "in_module": "CLAmodule",
+      "region_tokens": 21,
+      "region_chars": 46,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "TopLevel74181_combined.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_TopLevel74181.do"
+    },
+    "lib_v": "redundant (all modules already in design file)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "TopLevel74181.v",
+      "conformal_rtl_TopLevel74181.do",
+      "fm_rtl_TopLevel74181.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "TopLevel74181",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_00001.v"
+      },
+      "deps": [
+        {
+          "module": "CLAmodule",
+          "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_00001.v"
+        },
+        {
+          "module": "Dmodule",
+          "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_00001.v"
+        },
+        {
+          "module": "Emodule",
+          "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_00001.v"
+        },
+        {
+          "module": "Summodule",
+          "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_00001.v"
+        }
+      ],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "TopLevel74181",
+    "n_modules": 1,
+    "slice": "slice_08.jsonl",
+    "golden_choice": "combined (defines dependencies the design file lacks)",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

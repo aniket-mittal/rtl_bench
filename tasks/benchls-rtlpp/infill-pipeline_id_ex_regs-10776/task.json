@@ -1,0 +1,424 @@
+{
+  "task_id": "benchls-rtlpp/infill-pipeline_id_ex_regs-10776",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "rtlpp_10776",
+  "interface": {
+    "clock": "clock",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "reset",
+        "width": 1
+      },
+      {
+        "name": "ID_Flush",
+        "width": 1
+      },
+      {
+        "name": "ID_Stall",
+        "width": 1
+      },
+      {
+        "name": "EX_Stall",
+        "width": 1
+      },
+      {
+        "name": "ID_Link",
+        "width": 1
+      },
+      {
+        "name": "ID_RegDst",
+        "width": 1
+      },
+      {
+        "name": "ID_ALUSrcImm",
+        "width": 1
+      },
+      {
+        "name": "ID_ALUOp",
+        "width": 5
+      },
+      {
+        "name": "ID_Movn",
+        "width": 1
+      },
+      {
+        "name": "ID_Movz",
+        "width": 1
+      },
+      {
+        "name": "ID_LLSC",
+        "width": 1
+      },
+      {
+        "name": "ID_MemRead",
+        "width": 1
+      },
+      {
+        "name": "ID_MemWrite",
+        "width": 1
+      },
+      {
+        "name": "ID_MemByte",
+        "width": 1
+      },
+      {
+        "name": "ID_MemHalf",
+        "width": 1
+      },
+      {
+        "name": "ID_MemSignExtend",
+        "width": 1
+      },
+      {
+        "name": "ID_Left",
+        "width": 1
+      },
+      {
+        "name": "ID_Right",
+        "width": 1
+      },
+      {
+        "name": "ID_RegWrite",
+        "width": 1
+      },
+      {
+        "name": "ID_MemtoReg",
+        "width": 1
+      },
+      {
+        "name": "ID_ReverseEndian",
+        "width": 1
+      },
+      {
+        "name": "ID_Rs",
+        "width": 5
+      },
+      {
+        "name": "ID_Rt",
+        "width": 5
+      },
+      {
+        "name": "ID_WantRsByEX",
+        "width": 1
+      },
+      {
+        "name": "ID_NeedRsByEX",
+        "width": 1
+      },
+      {
+        "name": "ID_WantRtByEX",
+        "width": 1
+      },
+      {
+        "name": "ID_NeedRtByEX",
+        "width": 1
+      },
+      {
+        "name": "ID_KernelMode",
+        "width": 1
+      },
+      {
+        "name": "ID_RestartPC",
+        "width": 32
+      },
+      {
+        "name": "ID_IsBDS",
+        "width": 1
+      },
+      {
+        "name": "ID_Trap",
+        "width": 1
+      },
+      {
+        "name": "ID_TrapCond",
+        "width": 1
+      },
+      {
+        "name": "ID_EX_CanErr",
+        "width": 1
+      },
+      {
+        "name": "ID_M_CanErr",
+        "width": 1
+      },
+      {
+        "name": "ID_ReadData1",
+        "width": 32
+      },
+      {
+        "name": "ID_ReadData2",
+        "width": 32
+      },
+      {
+        "name": "ID_SignExtImm",
+        "width": 17
+      }
+    ],
+    "outputs": [
+      {
+        "name": "EX_Link",
+        "width": 1
+      },
+      {
+        "name": "EX_LinkRegDst",
+        "width": 2
+      },
+      {
+        "name": "EX_ALUSrcImm",
+        "width": 1
+      },
+      {
+        "name": "EX_ALUOp",
+        "width": 5
+      },
+      {
+        "name": "EX_Movn",
+        "width": 1
+      },
+      {
+        "name": "EX_Movz",
+        "width": 1
+      },
+      {
+        "name": "EX_LLSC",
+        "width": 1
+      },
+      {
+        "name": "EX_MemRead",
+        "width": 1
+      },
+      {
+        "name": "EX_MemWrite",
+        "width": 1
+      },
+      {
+        "name": "EX_MemByte",
+        "width": 1
+      },
+      {
+        "name": "EX_MemHalf",
+        "width": 1
+      },
+      {
+        "name": "EX_MemSignExtend",
+        "width": 1
+      },
+      {
+        "name": "EX_Left",
+        "width": 1
+      },
+      {
+        "name": "EX_Right",
+        "width": 1
+      },
+      {
+        "name": "EX_RegWrite",
+        "width": 1
+      },
+      {
+        "name": "EX_MemtoReg",
+        "width": 1
+      },
+      {
+        "name": "EX_ReverseEndian",
+        "width": 1
+      },
+      {
+        "name": "EX_Rs",
+        "width": 5
+      },
+      {
+        "name": "EX_Rt",
+        "width": 5
+      },
+      {
+        "name": "EX_WantRsByEX",
+        "width": 1
+      },
+      {
+        "name": "EX_NeedRsByEX",
+        "width": 1
+      },
+      {
+        "name": "EX_WantRtByEX",
+        "width": 1
+      },
+      {
+        "name": "EX_NeedRtByEX",
+        "width": 1
+      },
+      {
+        "name": "EX_KernelMode",
+        "width": 1
+      },
+      {
+        "name": "EX_RestartPC",
+        "width": 32
+      },
+      {
+        "name": "EX_IsBDS",
+        "width": 1
+      },
+      {
+        "name": "EX_Trap",
+        "width": 1
+      },
+      {
+        "name": "EX_TrapCond",
+        "width": 1
+      },
+      {
+        "name": "EX_EX_CanErr",
+        "width": 1
+      },
+      {
+        "name": "EX_M_CanErr",
+        "width": 1
+      },
+      {
+        "name": "EX_ReadData1",
+        "width": 32
+      },
+      {
+        "name": "EX_ReadData2",
+        "width": 32
+      },
+      {
+        "name": "EX_SignExtImm",
+        "width": 32
+      },
+      {
+        "name": "EX_Rd",
+        "width": 5
+      },
+      {
+        "name": "EX_Shamt",
+        "width": 5
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "rtlpp_10776.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "rtlpp_10776.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "rtlpp_10776.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 666633887
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/rtlpp_10776",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "rtlpp_10776",
+    "parent_design": "rtlpp_10776",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 197,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 1258194514,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 2,
+      "index_in_range": false,
+      "block_kind": "assign",
+      "in_module": "rtlpp_10776",
+      "region_tokens": 32,
+      "region_chars": 123,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "rtlpp_10776.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_rtlpp_10776.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "rtlpp_10776_combined.v",
+      "sec_rtlpp_10776.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "rtlpp_10776",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_10776.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "rtlpp_10776",
+    "n_modules": 1,
+    "slice": "slice_10.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

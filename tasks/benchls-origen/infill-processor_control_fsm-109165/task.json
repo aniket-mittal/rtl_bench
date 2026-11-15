@@ -1,0 +1,184 @@
+{
+  "task_id": "benchls-origen/infill-processor_control_fsm-109165",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_109165",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "reset",
+        "width": 1
+      },
+      {
+        "name": "irOutput",
+        "width": 12
+      },
+      {
+        "name": "pushBtnLeft",
+        "width": 1
+      },
+      {
+        "name": "pushBtnRight",
+        "width": 1
+      },
+      {
+        "name": "switches",
+        "width": 12
+      }
+    ],
+    "outputs": [
+      {
+        "name": "D_addr",
+        "width": 4
+      },
+      {
+        "name": "D_rd",
+        "width": 1
+      },
+      {
+        "name": "D_wr",
+        "width": 1
+      },
+      {
+        "name": "RF_we",
+        "width": 1
+      },
+      {
+        "name": "RF_waddr",
+        "width": 3
+      },
+      {
+        "name": "isExternal",
+        "width": 1
+      },
+      {
+        "name": "AluSel",
+        "width": 1
+      },
+      {
+        "name": "ra",
+        "width": 3
+      },
+      {
+        "name": "rb",
+        "width": 3
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_109165.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_109165.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_109165.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 4126692425
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_109165",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_109165",
+    "parent_design": "origen_109165",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 104,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 3183791767,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 1,
+      "n_candidates": 3,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_109165",
+      "region_tokens": 81,
+      "region_chars": 537,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "origen_109165.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_origen_109165.tcl"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_origen_109165.tcl"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_109165",
+    "n_modules": 1,
+    "slice": "slice_10.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

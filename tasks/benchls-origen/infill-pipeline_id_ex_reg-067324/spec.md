@@ -1,0 +1,70 @@
+# Fill in the masked region of `origen_067324`
+
+The file `origen_067324.v` holds a Verilog design whose top module is `origen_067324` (sequential). Part of the design was removed, and the text `[MASKED]` appears exactly once in its place. That marker is the literal string `[MASKED]` (square brackets included), not a comment.
+
+**Your job:** replace `[MASKED]` with Verilog so the whole design again does what it is evidently meant to do. Work out the missing logic from the rest of the code: the port list, the declared signals, how those signals are used elsewhere, the module and signal names, and any comments.
+
+## What was masked
+
+- Mask type: **block**. One complete module item, an `always` block in module `origen_067324`, was replaced by `[MASKED]`. Write that one item, with the same kind of construct, in its place.
+- Design type: sequential. Origin: OriGen-processed.
+
+## Rules
+
+- Edit only `origen_067324.v`. When you are done it must not contain `[MASKED]`.
+- Keep every name the surrounding code uses (signals, ports, parameters, modules), and keep the rest of the file as it is. You may declare new internal signals if you need them.
+- Write synthesizable code that iverilog and yosys can compile. Use Verilog-2005, or SystemVerilog only where the file already uses SystemVerilog constructs.
+
+## Grading
+
+Your completed `origen_067324` is simulated against the original design and checked for formal equivalence with it. Only behavior at the top-module ports counts. The code does not have to match the original text.
+
+---
+
+## Files
+
+Edit: `origen_067324.v`. Only these files are graded.
+
+## Interface of `origen_067324`
+
+| port | dir | width | note |
+|---|---|---|---|
+| `clk` | in | 1 | clock, rising edge |
+| `Reset` | in | 1 | reset, active high |
+| `PCSrc_in` | in | 1 |  |
+| `RegDst_in` | in | 1 |  |
+| `RegWr_in` | in | 1 |  |
+| `ALUSrc1_in` | in | 1 |  |
+| `ALUSrc2_in` | in | 1 |  |
+| `Sign_in` | in | 1 |  |
+| `MemWr_in` | in | 1 |  |
+| `MemRd_in` | in | 1 |  |
+| `MemToReg_in` | in | 1 |  |
+| `ALUFun_in` | in | 4 |  |
+| `PC4_in` | in | 32 |  |
+| `R1_in` | in | 32 |  |
+| `R2_in` | in | 32 |  |
+| `Imm_in` | in | 32 |  |
+| `RdAdress_in` | in | 5 |  |
+| `PCSrc_out` | out | 1 | |
+| `RegDst_out` | out | 1 | |
+| `RegWr_out` | out | 1 | |
+| `ALUSrc1_out` | out | 1 | |
+| `ALUSrc2_out` | out | 1 | |
+| `Sign_out` | out | 1 | |
+| `MemWr_out` | out | 1 | |
+| `MemRd_out` | out | 1 | |
+| `MemToReg_out` | out | 1 | |
+| `ALUFun_out` | out | 4 | |
+| `PC4_out` | out | 32 | |
+| `R1_out` | out | 32 | |
+| `R2_out` | out | 32 | |
+| `Imm_out` | out | 32 | |
+| `RdAdress_out` | out | 5 | |
+
+## Testing
+
+    iverilog -g2012 -s tb -o sim public_tb.v origen_067324.v && vvp sim
+
+It prints `PASS` or the mismatching cycles. Grading also runs hidden tests and a Yosys formal
+equivalence check against the reference, so passing the public tests is not enough on its own.

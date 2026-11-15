@@ -1,0 +1,55 @@
+module rtlpp_03742 (
+    input clock,
+    input reset,
+    input i_v,
+    output i_b,
+    output o_v,
+    input o_b,
+    output [3:0] stateo,
+    input f_start_i_eq_0,
+    input f_zeros_i_eq_0,
+    input f_zeros_t_cnt_eq_15
+);
+
+    parameter state_start     = 4'd0;
+    parameter state_start_t   = 4'd1;
+    parameter state_start_e   = 4'd2;
+    parameter state_zeros     = 4'd3;
+    parameter state_zeros_t   = 4'd4;
+    parameter state_zeros_t_t = 4'd5;
+    parameter state_zeros_t_e = 4'd6;
+    parameter state_zeros_e   = 4'd7;
+    parameter state_pending   = 4'd8;
+
+    reg [3:0] state, next_state;
+    reg i_b_, o_v_;
+    reg fire;
+
+    assign stateo = state;
+    assign i_b = i_b_;
+    assign o_v = o_v_;
+
+    always @(posedge clock or negedge reset)
+        if (!reset)
+            state <= state_start;
+        else
+            state <= next_state;
+
+    always @(state or i_v or o_b) begin
+        case (state)
+            state_start:      fire <= i_v;
+            state_start_t:    fire <= 1;
+            state_start_e:    fire <= !o_b;
+            state_zeros:      fire <= i_v;
+            state_zeros_t:    fire <= 1;
+            state_zeros_t_t:  fire <= !o_b;
+            state_zeros_t_e:  fire <= 1;
+            state_zeros_e:    fire <= !o_b;
+            state_pending:    fire <= !o_b;
+            default:          fire <= 0;
+        endcase 
+    end 
+
+    [MASKED] 
+
+endmodule

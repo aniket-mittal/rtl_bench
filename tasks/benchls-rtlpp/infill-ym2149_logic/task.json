@@ -1,0 +1,176 @@
+{
+  "task_id": "benchls-rtlpp/infill-ym2149_logic",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "ym2149_logic",
+  "interface": {
+    "clock": "CLK",
+    "reset": {
+      "name": "RESET",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "RESET",
+        "width": 1
+      },
+      {
+        "name": "CE",
+        "width": 1
+      },
+      {
+        "name": "SEL",
+        "width": 1
+      },
+      {
+        "name": "MODE",
+        "width": 1
+      },
+      {
+        "name": "BC",
+        "width": 1
+      },
+      {
+        "name": "BDIR",
+        "width": 1
+      },
+      {
+        "name": "DI",
+        "width": 8
+      }
+    ],
+    "outputs": [
+      {
+        "name": "CHANNEL_A",
+        "width": 8
+      },
+      {
+        "name": "CHANNEL_B",
+        "width": 8
+      },
+      {
+        "name": "CHANNEL_C",
+        "width": 8
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "ym2149_logic.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "ym2149_logic.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "ym2149_logic.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 939518619
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/ym2149_logic",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "ym2149_logic",
+    "parent_design": "ym2149_logic",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 41,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 372340177,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "ym2149_logic",
+      "region_tokens": 72,
+      "region_chars": 455,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "ym2149_logic.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_ym2149_logic.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_ym2149_logic.tcl",
+      "ym2149_logic_combined.v"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "ym2149_logic",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_09966.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "ym2149_logic",
+    "n_modules": 1,
+    "slice": "slice_10.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

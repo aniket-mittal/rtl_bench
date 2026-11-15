@@ -1,0 +1,165 @@
+{
+  "task_id": "benchls-origen/infill-max_index_10way-189240-2",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_189240",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "out1",
+        "width": 26
+      },
+      {
+        "name": "out2",
+        "width": 26
+      },
+      {
+        "name": "out3",
+        "width": 26
+      },
+      {
+        "name": "out4",
+        "width": 26
+      },
+      {
+        "name": "out5",
+        "width": 26
+      },
+      {
+        "name": "out6",
+        "width": 26
+      },
+      {
+        "name": "out7",
+        "width": 26
+      },
+      {
+        "name": "out8",
+        "width": 26
+      },
+      {
+        "name": "out9",
+        "width": 26
+      },
+      {
+        "name": "out10",
+        "width": 26
+      }
+    ],
+    "outputs": [
+      {
+        "name": "max",
+        "width": 4
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_189240.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_189240.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_189240.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 293261434
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task2/origen_189240_block_0",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task2_mask_infilling",
+    "original_task_id": "origen_189240_block_0",
+    "parent_design": "origen_189240",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 49,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 0,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": true,
+      "block_kind": "always",
+      "in_module": "origen_189240",
+      "region_tokens": 463,
+      "region_chars": 2000,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_ref_rtl_sha256": "56e37d72b0df386d9ccef282f376d1fadfb72ca10de9137ceb7f1d4e71867ed5",
+    "upstream_golden_rtl_key": "origen_189240.v",
+    "upstream_masked_rtl_key": "origen_189240_masked.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_origen_189240.do"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "conformal_rtl_origen_189240.do"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls.py"
+  }
+}

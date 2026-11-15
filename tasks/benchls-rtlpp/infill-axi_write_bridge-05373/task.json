@@ -1,0 +1,358 @@
+{
+  "task_id": "benchls-rtlpp/infill-axi_write_bridge-05373",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "rtlpp_05373",
+  "interface": {
+    "clock": "aclk",
+    "reset": {
+      "name": "aresetn",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "aresetn",
+        "width": 1
+      },
+      {
+        "name": "s_axi_awaddr",
+        "width": 32
+      },
+      {
+        "name": "s_axi_awlen",
+        "width": 8
+      },
+      {
+        "name": "s_axi_awsize",
+        "width": 3
+      },
+      {
+        "name": "s_axi_awburst",
+        "width": 2
+      },
+      {
+        "name": "s_axi_awlock",
+        "width": 1
+      },
+      {
+        "name": "s_axi_awcache",
+        "width": 4
+      },
+      {
+        "name": "s_axi_awprot",
+        "width": 3
+      },
+      {
+        "name": "s_axi_awregion",
+        "width": 4
+      },
+      {
+        "name": "s_axi_awqos",
+        "width": 4
+      },
+      {
+        "name": "s_axi_awvalid",
+        "width": 1
+      },
+      {
+        "name": "s_axi_wdata",
+        "width": 32
+      },
+      {
+        "name": "s_axi_wstrb",
+        "width": 4
+      },
+      {
+        "name": "s_axi_wlast",
+        "width": 1
+      },
+      {
+        "name": "s_axi_wvalid",
+        "width": 1
+      },
+      {
+        "name": "s_axi_bready",
+        "width": 1
+      },
+      {
+        "name": "s_axi_araddr",
+        "width": 32
+      },
+      {
+        "name": "s_axi_arlen",
+        "width": 8
+      },
+      {
+        "name": "s_axi_arsize",
+        "width": 3
+      },
+      {
+        "name": "s_axi_arburst",
+        "width": 2
+      },
+      {
+        "name": "s_axi_arlock",
+        "width": 1
+      },
+      {
+        "name": "s_axi_arcache",
+        "width": 4
+      },
+      {
+        "name": "s_axi_arprot",
+        "width": 3
+      },
+      {
+        "name": "s_axi_arregion",
+        "width": 4
+      },
+      {
+        "name": "s_axi_arqos",
+        "width": 4
+      },
+      {
+        "name": "s_axi_arvalid",
+        "width": 1
+      },
+      {
+        "name": "s_axi_rready",
+        "width": 1
+      },
+      {
+        "name": "m_axi_awready",
+        "width": 1
+      },
+      {
+        "name": "m_axi_wready",
+        "width": 1
+      },
+      {
+        "name": "m_axi_bresp",
+        "width": 2
+      },
+      {
+        "name": "m_axi_bvalid",
+        "width": 1
+      },
+      {
+        "name": "m_axi_arready",
+        "width": 1
+      },
+      {
+        "name": "m_axi_rdata",
+        "width": 32
+      },
+      {
+        "name": "m_axi_rresp",
+        "width": 2
+      },
+      {
+        "name": "m_axi_rvalid",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "s_axi_awready",
+        "width": 1
+      },
+      {
+        "name": "s_axi_wready",
+        "width": 1
+      },
+      {
+        "name": "s_axi_bresp",
+        "width": 2
+      },
+      {
+        "name": "s_axi_bvalid",
+        "width": 1
+      },
+      {
+        "name": "s_axi_arready",
+        "width": 1
+      },
+      {
+        "name": "s_axi_rdata",
+        "width": 32
+      },
+      {
+        "name": "s_axi_rresp",
+        "width": 2
+      },
+      {
+        "name": "s_axi_rlast",
+        "width": 1
+      },
+      {
+        "name": "s_axi_rvalid",
+        "width": 1
+      },
+      {
+        "name": "m_axi_awaddr",
+        "width": 32
+      },
+      {
+        "name": "m_axi_awprot",
+        "width": 3
+      },
+      {
+        "name": "m_axi_awvalid",
+        "width": 1
+      },
+      {
+        "name": "m_axi_wdata",
+        "width": 32
+      },
+      {
+        "name": "m_axi_wstrb",
+        "width": 4
+      },
+      {
+        "name": "m_axi_wvalid",
+        "width": 1
+      },
+      {
+        "name": "m_axi_bready",
+        "width": 1
+      },
+      {
+        "name": "m_axi_araddr",
+        "width": 32
+      },
+      {
+        "name": "m_axi_arprot",
+        "width": 3
+      },
+      {
+        "name": "m_axi_arvalid",
+        "width": 1
+      },
+      {
+        "name": "m_axi_rready",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "rtlpp_05373.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "rtlpp_05373.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "rtlpp_05373.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2296389508
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/rtlpp_05373",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "rtlpp_05373",
+    "parent_design": "rtlpp_05373",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 113,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 4227740890,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "rtlpp_05373",
+      "region_tokens": 183,
+      "region_chars": 1511,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "rtlpp_05373.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_rtlpp_05373.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "rtlpp_05373_combined.v",
+      "sec_rtlpp_05373.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "rtlpp_05373",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_05373.v"
+      },
+      "deps": [],
+      "missing_deps": [
+        "Logic"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "rtlpp_05373",
+    "n_modules": 1,
+    "slice": "slice_05.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

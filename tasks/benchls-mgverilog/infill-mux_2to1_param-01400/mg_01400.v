@@ -1,0 +1,9 @@
+module mg_01400 (dout, in0, in1, sel);
+parameter SIZE = 1; 
+ output [SIZE-1:0] dout; 
+ input [SIZE-1:0] in0; 
+ input [SIZE-1:0] in1; 
+ input sel; 
+ reg [SIZE-1:0] dout ; 
+ [MASKED] 
+ endmodule

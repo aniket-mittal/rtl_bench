@@ -1,0 +1,206 @@
+{
+  "task_id": "github-issues/repair-opentitan-pr25590",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "prim_sha2_pad",
+  "interface": {
+    "clock": "clk_i",
+    "reset": {
+      "name": "rst_ni",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "rst_ni",
+        "width": 1
+      },
+      {
+        "name": "fifo_rvalid_i",
+        "width": 1
+      },
+      {
+        "name": "fifo_rdata_i",
+        "width": 72
+      },
+      {
+        "name": "shaf_rready_i",
+        "width": 1
+      },
+      {
+        "name": "sha_en_i",
+        "width": 1
+      },
+      {
+        "name": "hash_start_i",
+        "width": 1
+      },
+      {
+        "name": "hash_stop_i",
+        "width": 1
+      },
+      {
+        "name": "hash_continue_i",
+        "width": 1
+      },
+      {
+        "name": "digest_mode_i",
+        "width": 4
+      },
+      {
+        "name": "hash_process_i",
+        "width": 1
+      },
+      {
+        "name": "hash_done_i",
+        "width": 1
+      },
+      {
+        "name": "message_length_i",
+        "width": 128
+      }
+    ],
+    "outputs": [
+      {
+        "name": "fifo_rready_o",
+        "width": 1
+      },
+      {
+        "name": "shaf_rvalid_o",
+        "width": 1
+      },
+      {
+        "name": "shaf_rdata_o",
+        "width": 64
+      },
+      {
+        "name": "msg_feed_complete_o",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/prim_sha2_pad.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/prim_sha2_pad.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "src/prim_sha2_pad.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2880179063
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/lowRISC_opentitan_25590_23936",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "lowRISC_opentitan_25590_23936",
+    "repository": "lowRISC/opentitan",
+    "pr_number": 25590,
+    "issue_number": 23936,
+    "pr_url": "https://github.com/lowRISC/opentitan/pull/25590",
+    "issue_url": "https://github.com/lowRISC/opentitan/issues/23936",
+    "pr_title": "[hmac, rtl] Do not skip padding after a hash stop command",
+    "issue_title": "[prim_sha2_pad, hmac] Don't allow skipping the padding after stopping a hash operation",
+    "issue_labels": [
+      "Type:Bug",
+      "Component:RTL",
+      "IP:hmac",
+      "Type:FutureRelease",
+      "NoECO_IntegratePostM5"
+    ],
+    "base_commit": "1518dc864134bb8a23aa77bd000d6319f2bf1c8d",
+    "head_commit": "23bbd40018719e5970e4df0d98a83f4a9d19767f",
+    "base_ref": "master",
+    "lec_status": "useful_pass",
+    "additions": 7,
+    "deletions": 2,
+    "upstream_verilog_files": [
+      "hw/ip/prim/rtl/prim_sha2_pad.sv"
+    ],
+    "top_from_changed_module": "prim_sha2_pad",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/prim_sha2_pad.v": "hw/ip/prim/rtl/prim_sha2_pad.sv"
+    },
+    "editable_repo_paths": [
+      "hw/ip/prim/rtl/prim_sha2_pad.sv"
+    ],
+    "normalizations": [
+      "assert_dummy",
+      "define_synthesis",
+      "import_hoist",
+      "qualify_imported_types"
+    ],
+    "unresolved_references": [
+      "uvm_pkg::"
+    ],
+    "base_vs_head": "different",
+    "base_vs_head_detail": null,
+    "base_vs_head_timeout_s": 60,
+    "sv2v": {
+      "version": "0.0.13",
+      "applied": true
+    },
+    "sv2v_input_editable_repo_paths": [
+      "hw/ip/prim/rtl/prim_sha2_pad.sv"
+    ],
+    "rtl_license": {
+      "files": {
+        "LICENSE": "Apache-2.0"
+      },
+      "spdx": "Apache-2.0",
+      "file_spdx": [
+        "Apache-2.0"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}

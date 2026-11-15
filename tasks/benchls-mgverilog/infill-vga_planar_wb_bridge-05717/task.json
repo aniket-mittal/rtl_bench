@@ -1,0 +1,212 @@
+{
+  "task_id": "benchls-mgverilog/infill-vga_planar_wb_bridge-05717",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "mg_05717",
+  "interface": {
+    "clock": "wb_clk_i",
+    "reset": {
+      "name": "wb_rst_i",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "wb_rst_i",
+        "width": 1
+      },
+      {
+        "name": "wbs_adr_i",
+        "width": 16
+      },
+      {
+        "name": "wbs_sel_i",
+        "width": 2
+      },
+      {
+        "name": "wbs_stb_i",
+        "width": 1
+      },
+      {
+        "name": "wbm_dat_i",
+        "width": 16
+      },
+      {
+        "name": "wbm_ack_i",
+        "width": 1
+      },
+      {
+        "name": "memory_mapping1",
+        "width": 1
+      },
+      {
+        "name": "read_mode",
+        "width": 1
+      },
+      {
+        "name": "read_map_select",
+        "width": 2
+      },
+      {
+        "name": "color_compare",
+        "width": 4
+      },
+      {
+        "name": "color_dont_care",
+        "width": 4
+      }
+    ],
+    "outputs": [
+      {
+        "name": "wbs_dat_o",
+        "width": 16
+      },
+      {
+        "name": "wbs_ack_o",
+        "width": 1
+      },
+      {
+        "name": "wbm_adr_o",
+        "width": 17
+      },
+      {
+        "name": "wbm_stb_o",
+        "width": 1
+      },
+      {
+        "name": "latch0",
+        "width": 8
+      },
+      {
+        "name": "latch1",
+        "width": 8
+      },
+      {
+        "name": "latch2",
+        "width": 8
+      },
+      {
+        "name": "latch3",
+        "width": 8
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "mg_05717.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "mg_05717.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "mg_05717.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2342484861
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/mg_05717",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "mg_05717",
+    "parent_design": "mg_05717",
+    "origin": "RTL-Dataset-MG-Verilog",
+    "origin_bucket": "S5",
+    "loc": 46,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 3981573559,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 2,
+      "n_candidates": 13,
+      "index_in_range": false,
+      "block_kind": "assign",
+      "in_module": "mg_05717",
+      "region_tokens": 25,
+      "region_chars": 59,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "mg_05717.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_mg_05717.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "mg_05717_combined.v",
+      "sec_mg_05717.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "mg_05717",
+        "file": "<upstream-pool>/RTL_Datasets/MG-Verilog_sec_input/designs/mg_05717.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "mg_05717",
+    "n_modules": 1,
+    "slice": "slice_17.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

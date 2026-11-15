@@ -1,0 +1,36 @@
+module  NV_BLKBOX_SRC0 (
+	 Y
+	);
+
+output	 Y ;
+
+assign Y = 1'b0;
+
+endmodule
+
+module oneHotClk_async_write_clock (
+   enable_w
+  );
+
+output	enable_w;
+
+// If one_hot_enable = 0, (functional mode, 	i.e. enable_w = 1 	& enable_r = 1)
+// If one_hot_enable = 1, (test mode,		i.e. enable_w = TP 	& enable_r = ~TP) due to ANDing with functional enable either read or write CG will be off for the pattern.
+//	enable_w = ~one_hot_enable |  TP
+//		enable_w & func_en
+//	enable_r = ~one_hot_enable | ~TP
+//		enable_r & func_en
+
+wire one_hot_enable;
+wire tp;
+
+// synopsys template
+NV_BLKBOX_SRC0 UJ_dft_xclamp_ctrl_asyncfifo_onehotclk_write (.Y(one_hot_enable));
+NV_BLKBOX_SRC0 UJ_dft_xclamp_scan_asyncfifo_onehotclk_write (.Y(tp));
+
+assign enable_w = ((!one_hot_enable) ||   tp );
+
+// synopsys dc_script_begin
+// synopsys dc_script_end
+
+endmodule

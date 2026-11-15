@@ -1,0 +1,184 @@
+{
+  "task_id": "benchls-origen/infill-duck_hunt_fsm-111947",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_111947",
+  "interface": {
+    "clock": "Clk",
+    "reset": {
+      "name": "Reset",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "Reset",
+        "width": 1
+      },
+      {
+        "name": "start",
+        "width": 1
+      },
+      {
+        "name": "no_shots_left",
+        "width": 1
+      },
+      {
+        "name": "flew_away",
+        "width": 1
+      },
+      {
+        "name": "game_over",
+        "width": 1
+      },
+      {
+        "name": "bird_shot",
+        "width": 1
+      },
+      {
+        "name": "duck_ded_done",
+        "width": 1
+      },
+      {
+        "name": "dog_start",
+        "width": 1
+      },
+      {
+        "name": "dog_duck",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "new_round",
+        "width": 1
+      },
+      {
+        "name": "reset_shots",
+        "width": 1
+      },
+      {
+        "name": "reset_score",
+        "width": 1
+      },
+      {
+        "name": "reset_birds",
+        "width": 1
+      },
+      {
+        "name": "state",
+        "width": 3
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_111947.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_111947.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_111947.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 3729936499
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_111947",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_111947",
+    "parent_design": "origen_111947",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 103,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 3571530464,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 2,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_111947",
+      "region_tokens": 21,
+      "region_chars": 147,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "origen_111947.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_origen_111947.tcl"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_origen_111947.tcl"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_111947",
+    "n_modules": 1,
+    "slice": "slice_06.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

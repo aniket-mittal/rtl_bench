@@ -1,0 +1,151 @@
+{
+  "task_id": "benchls-rtlpp/infill-nine_bit_twos_complement",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "Nine_Bit_Twos_Complement",
+  "interface": {
+    "clock": null,
+    "reset": {
+      "name": "RESET",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "A",
+        "width": 9
+      },
+      {
+        "name": "RESET",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "OUTPUT",
+        "width": 9
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "Nine_Bit_Twos_Complement.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "Nine_Bit_Twos_Complement.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "Nine_Bit_Twos_Complement.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 4038350181
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/Nine_Bit_Twos_Complement",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "Nine_Bit_Twos_Complement",
+    "parent_design": "Nine_Bit_Twos_Complement",
+    "origin": "RTL-Dataset-RTLPP",
+    "origin_bucket": "S4",
+    "loc": 83,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 7967182,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 27,
+      "n_candidates": 35,
+      "index_in_range": false,
+      "block_kind": "assign",
+      "in_module": "Nine_Bit_Twos_Complement",
+      "region_tokens": 13,
+      "region_chars": 45,
+      "min_tokens": 8,
+      "threshold_relaxed": true
+    },
+    "upstream_golden_rtl_key": "Nine_Bit_Twos_Complement.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_Nine_Bit_Twos_Complement.do"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "Nine_Bit_Twos_Complement_combined.v",
+      "conformal_rtl_Nine_Bit_Twos_Complement.do",
+      "fm_rtl_Nine_Bit_Twos_Complement.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "Nine_Bit_Twos_Complement",
+        "file": "<upstream-pool>/RTL_Datasets/RTL-Dataset-RTLPP/RTL-PP_sec_input/designs/rtlpp_10015.v"
+      },
+      "deps": [],
+      "missing_deps": [
+        "each"
+      ]
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "Nine_Bit_Twos_Complement",
+    "n_modules": 2,
+    "slice": "slice_17.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

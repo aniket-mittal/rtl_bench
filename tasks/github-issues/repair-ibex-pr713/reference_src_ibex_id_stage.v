@@ -1,0 +1,632 @@
+module ibex_id_stage (
+	clk_i,
+	rst_ni,
+	fetch_enable_i,
+	ctrl_busy_o,
+	illegal_insn_o,
+	instr_valid_i,
+	instr_rdata_i,
+	instr_rdata_alu_i,
+	instr_rdata_c_i,
+	instr_is_compressed_i,
+	instr_req_o,
+	instr_first_cycle_id_o,
+	instr_valid_clear_o,
+	id_in_ready_o,
+	branch_decision_i,
+	pc_set_o,
+	pc_mux_o,
+	exc_pc_mux_o,
+	exc_cause_o,
+	illegal_c_insn_i,
+	instr_fetch_err_i,
+	instr_fetch_err_plus2_i,
+	pc_id_i,
+	ex_valid_i,
+	lsu_valid_i,
+	lsu_load_i,
+	lsu_busy_i,
+	alu_operator_ex_o,
+	alu_operand_a_ex_o,
+	alu_operand_b_ex_o,
+	jt_mux_sel_ex_o,
+	bt_operand_imm_o,
+	mult_en_ex_o,
+	div_en_ex_o,
+	multdiv_sel_ex_o,
+	multdiv_operator_ex_o,
+	multdiv_signed_mode_ex_o,
+	multdiv_operand_a_ex_o,
+	multdiv_operand_b_ex_o,
+	multdiv_ready_id_o,
+	csr_access_o,
+	csr_op_o,
+	csr_op_en_o,
+	csr_save_if_o,
+	csr_save_id_o,
+	csr_save_wb_o,
+	csr_restore_mret_id_o,
+	csr_restore_dret_id_o,
+	csr_save_cause_o,
+	csr_mtval_o,
+	priv_mode_i,
+	csr_mstatus_tw_i,
+	illegal_csr_insn_i,
+	lsu_req_o,
+	lsu_we_o,
+	lsu_type_o,
+	lsu_sign_ext_o,
+	lsu_wdata_o,
+	lsu_req_done_i,
+	lsu_addr_incr_req_i,
+	lsu_addr_last_i,
+	csr_mstatus_mie_i,
+	irq_pending_i,
+	irqs_i,
+	irq_nm_i,
+	nmi_mode_o,
+	lsu_load_err_i,
+	lsu_store_err_i,
+	debug_mode_o,
+	debug_cause_o,
+	debug_csr_save_o,
+	debug_req_i,
+	debug_single_step_i,
+	debug_ebreakm_i,
+	debug_ebreaku_i,
+	trigger_match_i,
+	result_ex_i,
+	csr_rdata_i,
+	rf_raddr_a_o,
+	rf_rdata_a_i,
+	rf_raddr_b_o,
+	rf_rdata_b_i,
+	rf_waddr_id_o,
+	rf_wdata_id_o,
+	rf_we_id_o,
+	rf_waddr_wb_i,
+	rf_wdata_fwd_wb_i,
+	rf_write_wb_i,
+	en_wb_o,
+	instr_type_wb_o,
+	ready_wb_i,
+	outstanding_load_wb_i,
+	outstanding_store_wb_i,
+	perf_jump_o,
+	perf_branch_o,
+	perf_tbranch_o,
+	perf_dside_wait_o,
+	perf_mul_wait_o,
+	perf_div_wait_o,
+	instr_id_done_o,
+	instr_id_done_compressed_o
+);
+	reg _sv2v_0;
+	parameter [0:0] RV32E = 0;
+	parameter [0:0] RV32M = 1;
+	parameter [0:0] BranchTargetALU = 0;
+	parameter [0:0] WritebackStage = 0;
+	input wire clk_i;
+	input wire rst_ni;
+	input wire fetch_enable_i;
+	output wire ctrl_busy_o;
+	output wire illegal_insn_o;
+	input wire instr_valid_i;
+	input wire [31:0] instr_rdata_i;
+	input wire [31:0] instr_rdata_alu_i;
+	input wire [15:0] instr_rdata_c_i;
+	input wire instr_is_compressed_i;
+	output wire instr_req_o;
+	output wire instr_first_cycle_id_o;
+	output wire instr_valid_clear_o;
+	output wire id_in_ready_o;
+	input wire branch_decision_i;
+	output wire pc_set_o;
+	output wire [2:0] pc_mux_o;
+	output wire [1:0] exc_pc_mux_o;
+	output wire [5:0] exc_cause_o;
+	input wire illegal_c_insn_i;
+	input wire instr_fetch_err_i;
+	input wire instr_fetch_err_plus2_i;
+	input wire [31:0] pc_id_i;
+	input wire ex_valid_i;
+	input wire lsu_valid_i;
+	input wire lsu_load_i;
+	input wire lsu_busy_i;
+	output wire [4:0] alu_operator_ex_o;
+	output wire [31:0] alu_operand_a_ex_o;
+	output wire [31:0] alu_operand_b_ex_o;
+	output wire jt_mux_sel_ex_o;
+	output wire [11:0] bt_operand_imm_o;
+	output wire mult_en_ex_o;
+	output wire div_en_ex_o;
+	output wire multdiv_sel_ex_o;
+	output wire [1:0] multdiv_operator_ex_o;
+	output wire [1:0] multdiv_signed_mode_ex_o;
+	output wire [31:0] multdiv_operand_a_ex_o;
+	output wire [31:0] multdiv_operand_b_ex_o;
+	output wire multdiv_ready_id_o;
+	output wire csr_access_o;
+	output wire [1:0] csr_op_o;
+	output wire csr_op_en_o;
+	output wire csr_save_if_o;
+	output wire csr_save_id_o;
+	output wire csr_save_wb_o;
+	output wire csr_restore_mret_id_o;
+	output wire csr_restore_dret_id_o;
+	output wire csr_save_cause_o;
+	output wire [31:0] csr_mtval_o;
+	input wire [1:0] priv_mode_i;
+	input wire csr_mstatus_tw_i;
+	input wire illegal_csr_insn_i;
+	output wire lsu_req_o;
+	output wire lsu_we_o;
+	output wire [1:0] lsu_type_o;
+	output wire lsu_sign_ext_o;
+	output wire [31:0] lsu_wdata_o;
+	input wire lsu_req_done_i;
+	input wire lsu_addr_incr_req_i;
+	input wire [31:0] lsu_addr_last_i;
+	input wire csr_mstatus_mie_i;
+	input wire irq_pending_i;
+	input wire [17:0] irqs_i;
+	input wire irq_nm_i;
+	output wire nmi_mode_o;
+	input wire lsu_load_err_i;
+	input wire lsu_store_err_i;
+	output wire debug_mode_o;
+	output wire [2:0] debug_cause_o;
+	output wire debug_csr_save_o;
+	input wire debug_req_i;
+	input wire debug_single_step_i;
+	input wire debug_ebreakm_i;
+	input wire debug_ebreaku_i;
+	input wire trigger_match_i;
+	input wire [31:0] result_ex_i;
+	input wire [31:0] csr_rdata_i;
+	output wire [4:0] rf_raddr_a_o;
+	input wire [31:0] rf_rdata_a_i;
+	output wire [4:0] rf_raddr_b_o;
+	input wire [31:0] rf_rdata_b_i;
+	output wire [4:0] rf_waddr_id_o;
+	output reg [31:0] rf_wdata_id_o;
+	output wire rf_we_id_o;
+	input wire [4:0] rf_waddr_wb_i;
+	input wire [31:0] rf_wdata_fwd_wb_i;
+	input wire rf_write_wb_i;
+	output wire en_wb_o;
+	output wire [1:0] instr_type_wb_o;
+	input wire ready_wb_i;
+	input wire outstanding_load_wb_i;
+	input wire outstanding_store_wb_i;
+	output wire perf_jump_o;
+	output reg perf_branch_o;
+	output wire perf_tbranch_o;
+	output wire perf_dside_wait_o;
+	output wire perf_mul_wait_o;
+	output wire perf_div_wait_o;
+	output wire instr_id_done_o;
+	output wire instr_id_done_compressed_o;
+	wire illegal_insn_dec;
+	wire ebrk_insn;
+	wire mret_insn_dec;
+	wire dret_insn_dec;
+	wire ecall_insn_dec;
+	wire wfi_insn_dec;
+	wire wb_exception;
+	wire branch_in_dec;
+	wire branch_set;
+	reg branch_set_d;
+	wire jump_in_dec;
+	wire jump_set;
+	wire instr_first_cycle;
+	wire instr_executing;
+	wire instr_done;
+	wire controller_run;
+	wire stall_ld_hz;
+	wire stall_mem;
+	reg stall_multdiv;
+	reg stall_branch;
+	reg stall_jump;
+	wire stall_id;
+	wire stall_wb;
+	wire flush_id;
+	wire multicycle_done;
+	wire [31:0] imm_i_type;
+	wire [31:0] imm_s_type;
+	wire [31:0] imm_b_type;
+	wire [31:0] imm_u_type;
+	wire [31:0] imm_j_type;
+	wire [31:0] zimm_rs1_type;
+	wire [31:0] imm_a;
+	reg [31:0] imm_b;
+	wire rf_wdata_sel;
+	wire rf_we_dec;
+	reg rf_we_raw;
+	wire rf_ren_a;
+	wire rf_ren_b;
+	wire [31:0] rf_rdata_a_fwd;
+	wire [31:0] rf_rdata_b_fwd;
+	wire [4:0] alu_operator;
+	wire [1:0] alu_op_a_mux_sel;
+	wire [1:0] alu_op_a_mux_sel_dec;
+	wire alu_op_b_mux_sel;
+	wire alu_op_b_mux_sel_dec;
+	wire imm_a_mux_sel;
+	wire [2:0] imm_b_mux_sel;
+	wire [2:0] imm_b_mux_sel_dec;
+	wire mult_en_id;
+	wire mult_en_dec;
+	wire div_en_id;
+	wire div_en_dec;
+	wire multdiv_sel_dec;
+	wire multdiv_en_dec;
+	wire [1:0] multdiv_operator;
+	wire [1:0] multdiv_signed_mode;
+	wire lsu_we;
+	wire [1:0] lsu_type;
+	wire lsu_sign_ext;
+	wire lsu_req;
+	wire lsu_req_dec;
+	wire data_req_allowed;
+	reg csr_pipe_flush;
+	reg [31:0] alu_operand_a;
+	wire [31:0] alu_operand_b;
+	assign alu_op_a_mux_sel = (lsu_addr_incr_req_i ? 2'd1 : alu_op_a_mux_sel_dec);
+	assign alu_op_b_mux_sel = (lsu_addr_incr_req_i ? 1'd1 : alu_op_b_mux_sel_dec);
+	assign imm_b_mux_sel = (lsu_addr_incr_req_i ? 3'd6 : imm_b_mux_sel_dec);
+	assign imm_a = (imm_a_mux_sel == 1'd0 ? zimm_rs1_type : {32 {1'sb0}});
+	always @(*) begin : alu_operand_a_mux
+		if (_sv2v_0)
+			;
+		(* full_case, parallel_case *)
+		case (alu_op_a_mux_sel)
+			2'd0: alu_operand_a = rf_rdata_a_fwd;
+			2'd1: alu_operand_a = lsu_addr_last_i;
+			2'd2: alu_operand_a = pc_id_i;
+			2'd3: alu_operand_a = imm_a;
+			default: alu_operand_a = pc_id_i;
+		endcase
+	end
+	always @(*) begin : immediate_b_mux
+		if (_sv2v_0)
+			;
+		(* full_case, parallel_case *)
+		case (imm_b_mux_sel)
+			3'd0: imm_b = imm_i_type;
+			3'd1: imm_b = imm_s_type;
+			3'd2: imm_b = imm_b_type;
+			3'd3: imm_b = imm_u_type;
+			3'd4: imm_b = imm_j_type;
+			3'd5: imm_b = (instr_is_compressed_i ? 32'h00000002 : 32'h00000004);
+			3'd6: imm_b = 32'h00000004;
+			default: imm_b = 32'h00000004;
+		endcase
+	end
+	assign alu_operand_b = (alu_op_b_mux_sel == 1'd1 ? imm_b : rf_rdata_b_fwd);
+	assign rf_we_id_o = (rf_we_raw & instr_executing) & ~illegal_csr_insn_i;
+	always @(*) begin : rf_wdata_id_mux
+		if (_sv2v_0)
+			;
+		(* full_case, parallel_case *)
+		case (rf_wdata_sel)
+			1'd0: rf_wdata_id_o = result_ex_i;
+			1'd1: rf_wdata_id_o = csr_rdata_i;
+			default: rf_wdata_id_o = result_ex_i;
+		endcase
+	end
+	ibex_decoder #(
+		.RV32E(RV32E),
+		.RV32M(RV32M),
+		.BranchTargetALU(BranchTargetALU)
+	) decoder_i(
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.illegal_insn_o(illegal_insn_dec),
+		.ebrk_insn_o(ebrk_insn),
+		.mret_insn_o(mret_insn_dec),
+		.dret_insn_o(dret_insn_dec),
+		.ecall_insn_o(ecall_insn_dec),
+		.wfi_insn_o(wfi_insn_dec),
+		.jump_set_o(jump_set),
+		.instr_first_cycle_i(instr_first_cycle),
+		.instr_rdata_i(instr_rdata_i),
+		.instr_rdata_alu_i(instr_rdata_alu_i),
+		.illegal_c_insn_i(illegal_c_insn_i),
+		.imm_a_mux_sel_o(imm_a_mux_sel),
+		.imm_b_mux_sel_o(imm_b_mux_sel_dec),
+		.jt_mux_sel_o(jt_mux_sel_ex_o),
+		.imm_i_type_o(imm_i_type),
+		.imm_s_type_o(imm_s_type),
+		.imm_b_type_o(imm_b_type),
+		.imm_u_type_o(imm_u_type),
+		.imm_j_type_o(imm_j_type),
+		.zimm_rs1_type_o(zimm_rs1_type),
+		.rf_wdata_sel_o(rf_wdata_sel),
+		.rf_we_o(rf_we_dec),
+		.rf_raddr_a_o(rf_raddr_a_o),
+		.rf_raddr_b_o(rf_raddr_b_o),
+		.rf_waddr_o(rf_waddr_id_o),
+		.rf_ren_a_o(rf_ren_a),
+		.rf_ren_b_o(rf_ren_b),
+		.alu_operator_o(alu_operator),
+		.alu_op_a_mux_sel_o(alu_op_a_mux_sel_dec),
+		.alu_op_b_mux_sel_o(alu_op_b_mux_sel_dec),
+		.mult_en_o(mult_en_dec),
+		.div_en_o(div_en_dec),
+		.multdiv_sel_o(multdiv_sel_dec),
+		.multdiv_operator_o(multdiv_operator),
+		.multdiv_signed_mode_o(multdiv_signed_mode),
+		.csr_access_o(csr_access_o),
+		.csr_op_o(csr_op_o),
+		.data_req_o(lsu_req_dec),
+		.data_we_o(lsu_we),
+		.data_type_o(lsu_type),
+		.data_sign_extension_o(lsu_sign_ext),
+		.jump_in_dec_o(jump_in_dec),
+		.branch_in_dec_o(branch_in_dec)
+	);
+	always @(*) begin : csr_pipeline_flushes
+		if (_sv2v_0)
+			;
+		csr_pipe_flush = 1'b0;
+		if ((csr_op_en_o == 1'b1) && ((csr_op_o == 2'd1) || (csr_op_o == 2'd2))) begin
+			if ((instr_rdata_i[31:20] == 12'h300) || (instr_rdata_i[31:20] == 12'h304))
+				csr_pipe_flush = 1'b1;
+		end
+		else if ((csr_op_en_o == 1'b1) && (csr_op_o != 2'd0)) begin
+			if ((((instr_rdata_i[31:20] == 12'h7b0) || (instr_rdata_i[31:20] == 12'h7b1)) || (instr_rdata_i[31:20] == 12'h7b2)) || (instr_rdata_i[31:20] == 12'h7b3))
+				csr_pipe_flush = 1'b1;
+		end
+	end
+	assign illegal_insn_o = instr_valid_i & (illegal_insn_dec | illegal_csr_insn_i);
+	ibex_controller #(.WritebackStage(WritebackStage)) controller_i(
+		.clk_i(clk_i),
+		.rst_ni(rst_ni),
+		.fetch_enable_i(fetch_enable_i),
+		.ctrl_busy_o(ctrl_busy_o),
+		.illegal_insn_i(illegal_insn_o),
+		.ecall_insn_i(ecall_insn_dec),
+		.mret_insn_i(mret_insn_dec),
+		.dret_insn_i(dret_insn_dec),
+		.wfi_insn_i(wfi_insn_dec),
+		.ebrk_insn_i(ebrk_insn),
+		.csr_pipe_flush_i(csr_pipe_flush),
+		.instr_valid_i(instr_valid_i),
+		.instr_i(instr_rdata_i),
+		.instr_compressed_i(instr_rdata_c_i),
+		.instr_is_compressed_i(instr_is_compressed_i),
+		.instr_fetch_err_i(instr_fetch_err_i),
+		.instr_fetch_err_plus2_i(instr_fetch_err_plus2_i),
+		.pc_id_i(pc_id_i),
+		.instr_valid_clear_o(instr_valid_clear_o),
+		.id_in_ready_o(id_in_ready_o),
+		.controller_run_o(controller_run),
+		.instr_req_o(instr_req_o),
+		.pc_set_o(pc_set_o),
+		.pc_mux_o(pc_mux_o),
+		.exc_pc_mux_o(exc_pc_mux_o),
+		.exc_cause_o(exc_cause_o),
+		.lsu_addr_last_i(lsu_addr_last_i),
+		.load_err_i(lsu_load_err_i),
+		.store_err_i(lsu_store_err_i),
+		.wb_exception_o(wb_exception),
+		.branch_set_i(branch_set),
+		.jump_set_i(jump_set),
+		.csr_mstatus_mie_i(csr_mstatus_mie_i),
+		.irq_pending_i(irq_pending_i),
+		.irqs_i(irqs_i),
+		.irq_nm_i(irq_nm_i),
+		.nmi_mode_o(nmi_mode_o),
+		.csr_save_if_o(csr_save_if_o),
+		.csr_save_id_o(csr_save_id_o),
+		.csr_save_wb_o(csr_save_wb_o),
+		.csr_restore_mret_id_o(csr_restore_mret_id_o),
+		.csr_restore_dret_id_o(csr_restore_dret_id_o),
+		.csr_save_cause_o(csr_save_cause_o),
+		.csr_mtval_o(csr_mtval_o),
+		.priv_mode_i(priv_mode_i),
+		.csr_mstatus_tw_i(csr_mstatus_tw_i),
+		.debug_mode_o(debug_mode_o),
+		.debug_cause_o(debug_cause_o),
+		.debug_csr_save_o(debug_csr_save_o),
+		.debug_req_i(debug_req_i),
+		.debug_single_step_i(debug_single_step_i),
+		.debug_ebreakm_i(debug_ebreakm_i),
+		.debug_ebreaku_i(debug_ebreaku_i),
+		.trigger_match_i(trigger_match_i),
+		.stall_id_i(stall_id),
+		.stall_wb_i(stall_wb),
+		.flush_id_o(flush_id),
+		.perf_jump_o(perf_jump_o),
+		.perf_tbranch_o(perf_tbranch_o)
+	);
+	assign multdiv_en_dec = mult_en_dec | div_en_dec;
+	assign lsu_req = (instr_executing ? data_req_allowed & lsu_req_dec : 1'b0);
+	assign mult_en_id = (instr_executing ? mult_en_dec : 1'b0);
+	assign div_en_id = (instr_executing ? div_en_dec : 1'b0);
+	assign lsu_req_o = lsu_req;
+	assign lsu_we_o = lsu_we;
+	assign lsu_type_o = lsu_type;
+	assign lsu_sign_ext_o = lsu_sign_ext;
+	assign lsu_wdata_o = rf_rdata_b_fwd;
+	assign csr_op_en_o = (csr_access_o & instr_executing) & instr_id_done_o;
+	assign alu_operator_ex_o = alu_operator;
+	assign alu_operand_a_ex_o = alu_operand_a;
+	assign alu_operand_b_ex_o = alu_operand_b;
+	generate
+		if (BranchTargetALU) begin : g_bt_operand_imm
+			assign bt_operand_imm_o = imm_b_type[12:1];
+		end
+		else begin : g_no_bt_operand_imm
+			assign bt_operand_imm_o = 1'sb0;
+		end
+	endgenerate
+	assign mult_en_ex_o = mult_en_id;
+	assign div_en_ex_o = div_en_id;
+	assign multdiv_sel_ex_o = multdiv_sel_dec;
+	assign multdiv_operator_ex_o = multdiv_operator;
+	assign multdiv_signed_mode_ex_o = multdiv_signed_mode;
+	assign multdiv_operand_a_ex_o = rf_rdata_a_fwd;
+	assign multdiv_operand_b_ex_o = rf_rdata_b_fwd;
+	reg id_fsm_q;
+	reg id_fsm_d;
+	generate
+		if (BranchTargetALU) begin : g_branch_set_direct
+			assign branch_set = branch_set_d;
+		end
+		else begin : g_branch_set_flopped
+			reg branch_set_q;
+			always @(posedge clk_i or negedge rst_ni)
+				if (!rst_ni)
+					branch_set_q <= 1'b0;
+				else
+					branch_set_q <= branch_set_d;
+			assign branch_set = branch_set_q;
+		end
+	endgenerate
+	always @(posedge clk_i or negedge rst_ni) begin : id_pipeline_reg
+		if (!rst_ni)
+			id_fsm_q <= 1'd0;
+		else
+			id_fsm_q <= id_fsm_d;
+	end
+	always @(*) begin
+		if (_sv2v_0)
+			;
+		id_fsm_d = id_fsm_q;
+		rf_we_raw = rf_we_dec;
+		stall_multdiv = 1'b0;
+		stall_jump = 1'b0;
+		stall_branch = 1'b0;
+		branch_set_d = 1'b0;
+		perf_branch_o = 1'b0;
+		if (instr_executing)
+			(* full_case, parallel_case *)
+			case (id_fsm_q)
+				1'd0:
+					(* full_case, parallel_case *)
+					case (1'b1)
+						lsu_req_dec:
+							if (!WritebackStage)
+								id_fsm_d = 1'd1;
+							else if (~lsu_req_done_i)
+								id_fsm_d = 1'd1;
+						multdiv_en_dec:
+							if (~ex_valid_i) begin
+								id_fsm_d = 1'd1;
+								rf_we_raw = 1'b0;
+								stall_multdiv = 1'b1;
+							end
+						branch_in_dec: begin
+							id_fsm_d = (branch_decision_i ? 1'd1 : 1'd0);
+							stall_branch = branch_decision_i;
+							branch_set_d = branch_decision_i;
+							perf_branch_o = 1'b1;
+						end
+						jump_in_dec: begin
+							id_fsm_d = 1'd1;
+							stall_jump = 1'b1;
+						end
+						default: id_fsm_d = 1'd0;
+					endcase
+				1'd1: begin
+					if (multdiv_en_dec)
+						rf_we_raw = rf_we_dec & ex_valid_i;
+					if (multicycle_done & ready_wb_i)
+						id_fsm_d = 1'd0;
+					else begin
+						stall_multdiv = multdiv_en_dec;
+						stall_branch = branch_in_dec;
+						stall_jump = jump_in_dec;
+					end
+				end
+				default: id_fsm_d = 1'd0;
+			endcase
+	end
+	assign multdiv_ready_id_o = ready_wb_i;
+	assign stall_id = (((stall_ld_hz | stall_mem) | stall_multdiv) | stall_jump) | stall_branch;
+	assign instr_done = (~stall_id & ~flush_id) & instr_executing;
+	generate
+		if (WritebackStage) begin : genblk3
+			assign multicycle_done = (lsu_req_dec ? ~stall_mem : ex_valid_i);
+		end
+		else begin : genblk3
+			assign multicycle_done = (lsu_req_dec ? lsu_valid_i : ex_valid_i);
+		end
+	endgenerate
+	assign instr_first_cycle = instr_valid_i & (id_fsm_q == 1'd0);
+	assign instr_first_cycle_id_o = instr_first_cycle;
+	generate
+		if (WritebackStage) begin : gen_stall_mem
+			wire rf_rd_a_wb_match;
+			wire rf_rd_b_wb_match;
+			wire rf_rd_a_hz;
+			wire rf_rd_b_hz;
+			wire data_req_complete_d;
+			reg data_req_complete_q;
+			wire outstanding_memory_access;
+			wire instr_kill;
+			assign data_req_complete_d = (data_req_complete_q | (lsu_req & lsu_req_done_i)) & ~instr_id_done_o;
+			always @(posedge clk_i or negedge rst_ni)
+				if (~rst_ni)
+					data_req_complete_q <= 1'b0;
+				else
+					data_req_complete_q <= data_req_complete_d;
+			assign outstanding_memory_access = (outstanding_load_wb_i | outstanding_store_wb_i) & ~lsu_valid_i;
+			assign data_req_allowed = ~outstanding_memory_access & ~data_req_complete_q;
+			assign instr_kill = (instr_fetch_err_i | wb_exception) | ~controller_run;
+			assign instr_executing = ((instr_valid_i & ~instr_kill) & ~stall_ld_hz) & ~outstanding_memory_access;
+			assign stall_mem = instr_valid_i & ((lsu_req_dec & (~data_req_allowed | (~data_req_complete_q & ~lsu_req_done_i))) | outstanding_memory_access);
+			assign rf_rd_a_wb_match = (rf_waddr_wb_i == rf_raddr_a_o) & |rf_raddr_a_o;
+			assign rf_rd_b_wb_match = (rf_waddr_wb_i == rf_raddr_b_o) & |rf_raddr_b_o;
+			assign rf_rd_a_hz = rf_rd_a_wb_match & rf_ren_a;
+			assign rf_rd_b_hz = rf_rd_b_wb_match & rf_ren_b;
+			assign rf_rdata_a_fwd = (rf_rd_a_wb_match & rf_write_wb_i ? rf_wdata_fwd_wb_i : rf_rdata_a_i);
+			assign rf_rdata_b_fwd = (rf_rd_b_wb_match & rf_write_wb_i ? rf_wdata_fwd_wb_i : rf_rdata_b_i);
+			assign stall_ld_hz = ((outstanding_load_wb_i & lsu_load_i) & (rf_rd_a_hz | rf_rd_b_hz)) & rf_write_wb_i;
+			assign instr_type_wb_o = (~lsu_req_dec ? 2'd2 : (lsu_we ? 2'd1 : 2'd0));
+			assign en_wb_o = instr_done;
+			assign instr_id_done_o = en_wb_o & ready_wb_i;
+			assign stall_wb = en_wb_o & ~ready_wb_i;
+			assign perf_dside_wait_o = (instr_valid_i & ~instr_kill) & (outstanding_memory_access | stall_ld_hz);
+		end
+		else begin : genblk4
+			assign data_req_allowed = instr_first_cycle;
+			assign stall_mem = instr_valid_i & (lsu_busy_i | (lsu_req_dec & (~lsu_valid_i | instr_first_cycle)));
+			assign stall_ld_hz = 1'b0;
+			assign instr_executing = (instr_valid_i & ~instr_fetch_err_i) & controller_run;
+			assign rf_rdata_a_fwd = rf_rdata_a_i;
+			assign rf_rdata_b_fwd = rf_rdata_b_i;
+			wire unused_data_req_done_ex;
+			wire unused_lsu_load;
+			wire [4:0] unused_rf_waddr_wb;
+			wire unused_rf_write_wb;
+			wire unused_outstanding_load_wb;
+			wire unused_outstanding_store_wb;
+			wire unused_wb_exception;
+			wire unused_rf_ren_a;
+			wire unused_rf_ren_b;
+			wire [31:0] unused_rf_wdata_fwd_wb;
+			assign unused_data_req_done_ex = lsu_req_done_i;
+			assign unused_lsu_load = lsu_load_i;
+			assign unused_rf_waddr_wb = rf_waddr_wb_i;
+			assign unused_rf_write_wb = rf_write_wb_i;
+			assign unused_outstanding_load_wb = outstanding_load_wb_i;
+			assign unused_outstanding_store_wb = outstanding_store_wb_i;
+			assign unused_wb_exception = wb_exception;
+			assign unused_rf_ren_a = rf_ren_a;
+			assign unused_rf_ren_b = rf_ren_b;
+			assign unused_rf_wdata_fwd_wb = rf_wdata_fwd_wb_i;
+			assign instr_type_wb_o = 2'd2;
+			assign stall_wb = 1'b0;
+			assign perf_dside_wait_o = (instr_executing & lsu_req_dec) & ~lsu_valid_i;
+			assign en_wb_o = 1'b0;
+			assign instr_id_done_o = instr_done;
+		end
+	endgenerate
+	assign perf_mul_wait_o = stall_multdiv & mult_en_dec;
+	assign perf_div_wait_o = stall_multdiv & div_en_dec;
+	assign instr_id_done_compressed_o = instr_id_done_o & instr_is_compressed_i;
+	initial _sv2v_0 = 0;
+endmodule

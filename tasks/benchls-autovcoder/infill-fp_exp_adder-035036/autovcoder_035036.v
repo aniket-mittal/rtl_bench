@@ -1,0 +1,49 @@
+module autovcoder_035036 (
+    input wire        CLK,
+    RST,
+    Enable,
+    input wire [ 7:0] Ex_ext,
+    Ey_ext,
+    input wire [22:0] Mx_ext,
+    My_ext,
+
+    output wire [23:0] Mx_conc,
+    My_conc,
+    output reg  [ 9:0] Ez_add
+);
+
+  //internal signals
+  wire one_op_den;
+
+  wire zero_Ex, zero_Ey;
+  wire Conc_X, Conc_Y;
+
+  //Flip_Flops 
+  reg [7:0] Ex, Ey;
+  reg [22:0] Mx, My;
+
+
+  assign zero_Ex = ~|Ex;
+  assign zero_Ey = ~|Ey;
+
+  assign Conc_X = ~zero_Ex;
+  assign Conc_Y = ~zero_Ey;
+
+  assign Mx_conc = {Conc_X, Mx};
+  assign My_conc = {Conc_Y, My};
+
+
+
+  assign one_op_den = zero_Ex ^ zero_Ey;
+
+
+  [MASKED]
+
+
+  always @(*) begin
+    Ez_add = Ex + Ey + 10'b1110000001 + one_op_den;  // -10'b127
+  end
+
+
+endmodule
+

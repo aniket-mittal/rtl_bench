@@ -1,0 +1,516 @@
+{
+  "task_id": "benchls-github/infill-pcie_ptile_cfg",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "pcie_ptile_cfg",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "rst",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "rst",
+        "width": 1
+      },
+      {
+        "name": "tl_cfg_ctl",
+        "width": 16
+      },
+      {
+        "name": "tl_cfg_add",
+        "width": 5
+      },
+      {
+        "name": "tl_cfg_func",
+        "width": 3
+      }
+    ],
+    "outputs": [
+      {
+        "name": "cfg_memory_space_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_ido_cpl_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_perr_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_serr_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_fatal_err_rpt_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_nonfatal_err_rpt_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_corr_err_rpt_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_unsupported_req_rpt_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_bus_master_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_ext_tag_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_max_read_request_size",
+        "width": 3
+      },
+      {
+        "name": "cfg_max_payload_size",
+        "width": 3
+      },
+      {
+        "name": "cfg_ido_request_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_no_snoop_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_relaxed_ordering_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_device_num",
+        "width": 5
+      },
+      {
+        "name": "cfg_bus_num",
+        "width": 8
+      },
+      {
+        "name": "cfg_pm_no_soft_rst",
+        "width": 1
+      },
+      {
+        "name": "cfg_rcb_ctrl",
+        "width": 1
+      },
+      {
+        "name": "cfg_irq_disable",
+        "width": 1
+      },
+      {
+        "name": "cfg_pcie_cap_irq_msg_num",
+        "width": 5
+      },
+      {
+        "name": "cfg_sys_pwr_ctrl",
+        "width": 1
+      },
+      {
+        "name": "cfg_sys_atten_ind_ctrl",
+        "width": 2
+      },
+      {
+        "name": "cfg_sys_pwr_ind_ctrl",
+        "width": 2
+      },
+      {
+        "name": "cfg_num_vf",
+        "width": 16
+      },
+      {
+        "name": "cfg_atomic_egress_block",
+        "width": 1
+      },
+      {
+        "name": "cfg_ats_stu",
+        "width": 5
+      },
+      {
+        "name": "cfg_ats_cache_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_ari_forward_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_atomic_request_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_tph_st_mode",
+        "width": 3
+      },
+      {
+        "name": "cfg_tph_en",
+        "width": 2
+      },
+      {
+        "name": "cfg_vf_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_an_link_speed",
+        "width": 4
+      },
+      {
+        "name": "cfg_start_vf_index",
+        "width": 11
+      },
+      {
+        "name": "cfg_msi_address",
+        "width": 64
+      },
+      {
+        "name": "cfg_msi_mask",
+        "width": 32
+      },
+      {
+        "name": "cfg_send_f_err",
+        "width": 1
+      },
+      {
+        "name": "cfg_send_nf_err",
+        "width": 1
+      },
+      {
+        "name": "cfg_send_cor_err",
+        "width": 1
+      },
+      {
+        "name": "cfg_aer_irq_msg_num",
+        "width": 5
+      },
+      {
+        "name": "cfg_msi_ext_data_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_msix_func_mask",
+        "width": 1
+      },
+      {
+        "name": "cfg_msix_enable",
+        "width": 1
+      },
+      {
+        "name": "cfg_multiple_msi_enable",
+        "width": 3
+      },
+      {
+        "name": "cfg_64bit_msi",
+        "width": 1
+      },
+      {
+        "name": "cfg_msi_enable",
+        "width": 1
+      },
+      {
+        "name": "cfg_msi_data",
+        "width": 32
+      },
+      {
+        "name": "cfg_aer_uncor_err_mask",
+        "width": 32
+      },
+      {
+        "name": "cfg_aer_corr_err_mask",
+        "width": 32
+      },
+      {
+        "name": "cfg_aer_uncor_err_severity",
+        "width": 32
+      },
+      {
+        "name": "cfg_acs_egress_ctrl_vec",
+        "width": 8
+      },
+      {
+        "name": "cfg_acs_func_grp_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_acs_p2p_direct_tranl_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_acs_egress_ctrl_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_acs_up_forward_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_acs_p2p_compl_redirect_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_acs_p2p_req_redirect_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_acs_at_blocking_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_acs_validation_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_10b_tag_req_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_vf_10b_tag_req_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_prs_response_failure",
+        "width": 1
+      },
+      {
+        "name": "cfg_prs_uprgi",
+        "width": 1
+      },
+      {
+        "name": "cfg_prs_stopped",
+        "width": 1
+      },
+      {
+        "name": "cfg_prs_reset",
+        "width": 1
+      },
+      {
+        "name": "cfg_prs_enable",
+        "width": 1
+      },
+      {
+        "name": "cfg_ari_func_grp",
+        "width": 3
+      },
+      {
+        "name": "cfg_prs_outstanding_allocation",
+        "width": 32
+      },
+      {
+        "name": "cfg_disable_ltr_clr_msg",
+        "width": 1
+      },
+      {
+        "name": "cfg_ltr_m_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_fc_ph_cdts_inf",
+        "width": 1
+      },
+      {
+        "name": "cfg_fc_pd_cdts_inf",
+        "width": 1
+      },
+      {
+        "name": "cfg_fc_ch_cdts_inf",
+        "width": 1
+      },
+      {
+        "name": "cfg_fc_cd_cdts_inf",
+        "width": 1
+      },
+      {
+        "name": "cfg_end2end_tlp_pfx_blck",
+        "width": 1
+      },
+      {
+        "name": "cfg_pf_pasid_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_pf_pasid_execute_perm_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_pf_pasid_priv_mode_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_atten_button_pressed_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_cfg_pwr_fault_det_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_mrl_sensor_chged_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_pre_det_chged_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_hp_int_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_cmd_cpled_int_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_dll_state_change_en",
+        "width": 1
+      },
+      {
+        "name": "cfg_hp_slot_ctrl_access",
+        "width": 1
+      },
+      {
+        "name": "cfg_br_ctrl_serren",
+        "width": 1
+      },
+      {
+        "name": "cfg_ltr_max_latency",
+        "width": 32
+      },
+      {
+        "name": "cfg_tc_enable",
+        "width": 8
+      },
+      {
+        "name": "cfg_an_link_width",
+        "width": 6
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "pcie_ptile_cfg.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "pcie_ptile_cfg.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "pcie_ptile_cfg.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2037136810
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/pcie_ptile_cfg",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "pcie_ptile_cfg",
+    "parent_design": "pcie_ptile_cfg",
+    "origin": "SEC-Flow-Star-repos-5.corundum",
+    "origin_bucket": "S1",
+    "loc": 381,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 1181611921,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "pcie_ptile_cfg",
+      "region_tokens": 1820,
+      "region_chars": 11933,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "pcie_ptile_cfg.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_pcie_ptile_cfg.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "pcie_ptile_cfg_combined.v",
+      "sec_pcie_ptile_cfg.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "pcie_ptile_cfg",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/5.corundum/fpga/lib/pcie/rtl/pcie_ptile_cfg.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "pcie_ptile_cfg",
+    "n_modules": 1,
+    "slice": "slice_12.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

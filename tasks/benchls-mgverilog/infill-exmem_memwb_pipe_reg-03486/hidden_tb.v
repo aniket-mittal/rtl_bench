@@ -1,0 +1,102 @@
+// Hidden tests: 5000 cycles of seeded random inputs (seed 1424012467); the submission must match reference.v
+// cycle by cycle. Reference outputs that are x are don't care. Verifier only; the grader renames reference.v's
+// modules to <name>__ref before compiling.
+`timescale 1ns/1ps
+module tb;
+  localparam N = 5000;
+  localparam OW = 57;
+  reg clk;
+  reg [0:0] i_0;
+  reg [0:0] i_1;
+  reg [0:0] i_2;
+  reg [3:0] i_3;
+  reg [15:0] i_4;
+  reg [15:0] i_5;
+  reg [0:0] i_6;
+  reg [15:0] i_7;
+  reg [0:0] i_8;
+  wire [OW-1:0] out_dut, out_ref;
+  integer seed, c, b, bad, mismatches, shown;
+
+  mg_03486 dut (
+    .clk(clk),
+    .s7_exmem(i_0),
+    .rf_wen_exmem(i_1),
+    .mem2reg_exmem(i_2),
+    .rf_waddr_exmem(i_3),
+    .aluout_exmem(i_4),
+    .extended_exmem(i_5),
+    .nop_lw_exmem(i_6),
+    .pc_added_exmem(i_7),
+    .jal_exmem(i_8),
+    .rf_wen_memwb(out_dut[56:56]),
+    .mem2reg_memwb(out_dut[55:55]),
+    .rf_waddr_memwb(out_dut[54:51]),
+    .aluout_memwb(out_dut[50:35]),
+    .extended_memwb(out_dut[34:19]),
+    .s7_memwb(out_dut[18:18]),
+    .nop_lw_memwb(out_dut[17:17]),
+    .pc_added_memwb(out_dut[16:1]),
+    .jal_memwb(out_dut[0:0])
+  );
+  mg_03486__ref ref_i (
+    .clk(clk),
+    .s7_exmem(i_0),
+    .rf_wen_exmem(i_1),
+    .mem2reg_exmem(i_2),
+    .rf_waddr_exmem(i_3),
+    .aluout_exmem(i_4),
+    .extended_exmem(i_5),
+    .nop_lw_exmem(i_6),
+    .pc_added_exmem(i_7),
+    .jal_exmem(i_8),
+    .rf_wen_memwb(out_ref[56:56]),
+    .mem2reg_memwb(out_ref[55:55]),
+    .rf_waddr_memwb(out_ref[54:51]),
+    .aluout_memwb(out_ref[50:35]),
+    .extended_memwb(out_ref[34:19]),
+    .s7_memwb(out_ref[18:18]),
+    .nop_lw_memwb(out_ref[17:17]),
+    .pc_added_memwb(out_ref[16:1]),
+    .jal_memwb(out_ref[0:0])
+  );
+
+  task check;
+    begin
+      bad = 0;
+      for (b = 0; b < OW; b = b + 1)
+        if (out_ref[b] !== 1'bx && out_dut[b] !== out_ref[b]) bad = 1;
+      if (bad) begin
+        mismatches = mismatches + 1;
+        if (shown < 10) begin
+          $display("MISMATCH cycle %0d: expected=%h got=%h", c, out_ref, out_dut);
+          shown = shown + 1;
+        end
+      end
+    end
+  endtask
+
+  initial begin
+    seed = 1424012467;
+    clk = 1'b0;
+    mismatches = 0;
+    shown = 0;
+    for (c = 0; c < N; c = c + 1) begin
+      i_0 = {$random(seed)};
+      i_1 = {$random(seed)};
+      i_2 = {$random(seed)};
+      i_3 = {$random(seed)};
+      i_4 = {$random(seed)};
+      i_5 = {$random(seed)};
+      i_6 = {$random(seed)};
+      i_7 = {$random(seed)};
+      i_8 = {$random(seed)};
+      #4 check;
+      #1 clk = 1'b1;
+      #5 clk = 1'b0;
+    end
+    if (mismatches == 0) $display("PASS %0d/%0d cycles", N, N);
+    else $display("FAIL %0d/%0d cycles mismatched", mismatches, N);
+    $finish;
+  end
+endmodule

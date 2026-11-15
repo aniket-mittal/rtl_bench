@@ -1,0 +1,42 @@
+module altera_avalon_st_idle_inserter (
+
+      // Interface: clk
+      input              clk,
+      input              reset_n,
+      // Interface: ST in
+      output reg         in_ready,
+      input              in_valid,
+      input      [7: 0]  in_data,
+
+      // Interface: ST out 
+      input              out_ready,
+      output reg         out_valid,
+      output reg [7: 0]  out_data
+);
+
+   // ---------------------------------------------------------------------
+   //| Signal Declarations
+   // ---------------------------------------------------------------------
+
+   reg  received_esc;
+   wire escape_char, idle_char;
+
+   // ---------------------------------------------------------------------
+   //| Thingofamagick
+   // ---------------------------------------------------------------------
+
+   assign idle_char = (in_data == 8'h4a);
+   assign escape_char = (in_data == 8'h4d);
+
+   [MASKED]
+
+   always @* begin
+      //we are always valid
+      out_valid = 1'b1;
+      in_ready = out_ready & (~in_valid | ((~idle_char & ~escape_char) | received_esc));
+      out_data = (~in_valid) ? 8'h4a :    //if input is not valid, insert idle
+                 (received_esc) ? in_data ^ 8'h20 : //escaped once, send data XOR'd
+                 (idle_char | escape_char) ? 8'h4d : //input needs escaping, send escape_char
+                 in_data; //send data
+   end
+endmodule

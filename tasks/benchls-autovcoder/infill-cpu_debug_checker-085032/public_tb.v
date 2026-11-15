@@ -1,0 +1,212 @@
+// Public tests: 64 cycles with the expected outputs written in. Generated; do not edit.
+// Run: iverilog -g2012 -s tb -o sim public_tb.v <your .v files> && vvp sim
+// Prints PASS N/N cycles, or MISMATCH lines (inputs/expected/got, packed in interface order) and FAIL.
+// One stimulus word per cycle (inputs packed MSB-first, interface order); one expected word per cycle
+// (outputs packed MSB-first). 'x' digits in expected.hex are don't care.
+`timescale 1ns/1ps
+module tb;
+  localparam N = 64;
+  localparam IW = 501;
+  localparam OW = 32;
+  reg [IW-1:0] stim [0:N-1];
+  reg [OW-1:0] expv [0:N-1];
+  reg [OW-1:0] act [0:N-1];
+  reg [IW-1:0] in_vec;
+  wire [OW-1:0] out_vec;
+  reg clk;
+  reg [8*1024-1:0] stim_file, exp_file, act_file;
+  integer c, b, fd, mismatches, shown, bad;
+
+  autovcoder_085032 dut (
+    .check_addr(in_vec[500:469]),
+    .pc_in(in_vec[468:437]),
+    .pc_out(in_vec[436:405]),
+    .inst(in_vec[404:373]),
+    .rf_ra0(in_vec[372:368]),
+    .rf_ra1(in_vec[367:363]),
+    .rf_rd0(in_vec[362:331]),
+    .rf_rd1(in_vec[330:299]),
+    .rf_wa(in_vec[298:294]),
+    .rf_wd(in_vec[293:262]),
+    .rf_we(in_vec[261:261]),
+    .imm(in_vec[260:229]),
+    .alu_sr1(in_vec[228:197]),
+    .alu_sr2(in_vec[196:165]),
+    .alu_func(in_vec[164:161]),
+    .alu_ans(in_vec[160:129]),
+    .pc_jalr(in_vec[128:97]),
+    .dm_addr(in_vec[96:65]),
+    .dm_din(in_vec[64:33]),
+    .dm_dout(in_vec[32:1]),
+    .dm_we(in_vec[0:0]),
+    .check_data(out_vec[31:0])
+  );
+
+  task sample;
+    begin
+      act[c] = out_vec;
+    end
+  endtask
+
+  initial begin
+    clk = 1'b0;
+    in_vec = {IW{1'b0}};
+    stim[0] = 501'h0f431ad054a272bd3905d64460a6d9b73026c52f51bf024a1a0f2d6a6b9771c134461fbe38f5e9f312c88e577721c24a95f769e7c77cf14ae34fac2fbcc028;
+    stim[1] = 501'h1c85ae27ab61d1ddc9fddf28a27a6ba07541192f8722085d04b7726bd6969474a7c162a23478696a8f8eb04f7b9348423179af481848ed64586c61b8e7d20a;
+    stim[2] = 501'h02f6407b9db6d6fa333a9cb576f9f2c2b6ede5e5f0fb69df22dbaaa9f337c6a3218e7293e9f3c38a58e2d391c006b20d0537a3a3887cacf68cdb2e5e1812aa;
+    stim[3] = 501'h06253906e26fb9d9657a1a3fae1e0086d5923713ba1f333ea56234e50e405c5d827bc58297921ebf62b525115eb652b29dbb2275ee6b3f3c4b0e4733013e49;
+    stim[4] = 501'h0d2ad4e799b5067cc66156cd4eb6f0874012a977b94e8d70af289f210698e6476502f4b5725f1077b54560b11637026b82aeeae8504b6b45ff2250e2a8e9c5;
+    stim[5] = 501'h1f53fb9c17a778c8c61b892c0d64ae1578d6aa7c028a1563da357bc356717e09d53eb5f09b13887dc20dc197fb4c3e7a22c67cc06e2db202ffa2d2c4edbc3f;
+    stim[6] = 501'h0960464b0a3b2559f961ebbbc72adc5a91ebae0bf72abd2e59f0c1925556355c70c6d2f153a01fbaf9e855d6de8f8c0a0f6417451d17ddf5ec08cd89f37c6a;
+    stim[7] = 501'h1d423fdc3ebb23f3807c3c1245983103c0ab42d2e2a27debc2eba0cce406fd35f797f721167a991097164883d04a03422187ef185537ca6a584bfcf54b6362;
+    stim[8] = 501'h186f9df99ec278868380fc5a98afe1cdad3f6154849d1f4aa8808b452157d0b80da76ab08259365899cf3a8976407e71d6c6a706b66ae6b1149e3d95fb23af;
+    stim[9] = 501'h17329d084d76d912722bd6c9f5db305c3f32a590c9baca3ddd9adda692b43dbb231a5a9eabeb9e7fbbb6087ff2c05f2c3f8ac521a47061a610a67341b33009;
+    stim[10] = 501'h0c354a3da2a800e0c236c874985664a6efa2648ce888e9acfef00f6e53f7cd0a865e5de5200e0438314ee0cccdbc9b07148c318c29aaef55768a5200c3ea8b;
+    stim[11] = 501'h1da1e633112b94480087ead18243728d359f3ba06ce0f4eeb1680ffe29508dff930dc0ebc595ac98a793ce5ceebfdb67726ed671faba1dbbffcf1878b854dd;
+    stim[12] = 501'h055b84c974e94d90fe62fe5c4a954f2a1bddf65ac9a1b1ec282684936c0babfe97c98072a6846271d2152329f7fe86202000c54bc3f3707b2d5862c350e925;
+    stim[13] = 501'h011bdc7fd56703587d4465756d42b34855508efd512138d6a8af8d345cca57d577244a9db811cf3d06bb53edbabc5a43f1dd3b6536a9c3973913c1d558017d;
+    stim[14] = 501'h1f566c383a3cc7ea694c40653ead15e37decd9c1692ef5831a9332b8dd1194a8bba45d4f9ede8b143af1506bc24c0d7d41a83fef1b2d80f533f14dbb1381dc;
+    stim[15] = 501'h1ee516afc7353ae8d77b522da6bff5661d894a1bff3e36f354670b08796530f2c5622b819f4bd4f74f3835f31ce7f61abadaad675f43ebca2c9d16ab240cbc;
+    stim[16] = 501'h049d2c2d230bb41a36599cf0752ad61357dad5d29db9cb605ac5773b6f0b69410896514ccf8bf6ca5aa90594183c095fe293e1832c3f78b0b801c61beb73f7;
+    stim[17] = 501'h06181194920b1be94139d9c7b9c8720226dbca6aebe1bf1f7453c9dc61aa876ccd2bc0d360af98a7c7dd5e01732a5624a769abd96bbd1f78b7456261681304;
+    stim[18] = 501'h1ee5dae09f38f41147181581a898fcfc7bdad38ee3a8578ad0f36739abfe554ecc42c90be6c9e524a1661cd275dec9d40d2d9944ec9d82ea3954ad46f96fd2;
+    stim[19] = 501'h06cd513dd49eb9d98556d61799e8028a13e96539df75f53c33a53793bf461bab4a0ac9b366dc4e513920a20d25840b4e4494ea9bf5a602ae84bb2cd8278acb;
+    stim[20] = 501'h185f6cd5abf3f684f4facb64009a0d72b946adc533b5ffb443aac53a5765192a8623efce4e1066bceeb83b333047d0fe3badc70980ef836d16a1d83c045093;
+    stim[21] = 501'h13c94b2a9a5ade67c701e0f926d2b6dcdaa7a4babdf1742efac1d9fc5249fcc490c4a907902e23ef27f83fadbbdfd228e7e20efa4029931954b515c9a22f09;
+    stim[22] = 501'h1c84be06988076700466cf003b49ff7d5b7bd9f0fc35130fe1efa92146c7350e2509f5b0bd42b4c547aea26c832c0eaef535a206031fda21b596dd390f7db8;
+    stim[23] = 501'h1d192b9911a2ffbb868e9164cd9eec8538bcab0db9b0fe60528c7b7406c934a9dfdd271b59b45aae26c2cb2e6da8ced123c85d0cedbdaa1e0b552f458176fc;
+    stim[24] = 501'h189e42037da64fc6c924fd92009fbf793541d27c43eeaa593e6adf6de53f60af4b1974941f6ee024732320eeaaa17096972b74624c166b47341f5a6bb0b2fb;
+    stim[25] = 501'h120e33e6dc2c2d2461534169ac282236c6fc39ed4bac16803b8652dfb8a9643c032e1a9b412a3e2e4c4b4bc2c1c13f2dc7aa5fe1eed52c9e37c8e731d63b02;
+    stim[26] = 501'h1395fc9fed6196fefa14fdf023a26cdc6cde2cc8b4da647ffc0ad0b30632ed64b63dcccbc3128d3992dd8e061e855404190bc053bdef947aba421c537d6429;
+    stim[27] = 501'h1ec20be9f2347c73ea430dcb5687c9411f9a3a2e75606a82a5fb6a91cc33213bad0567fc407a617b97e28711747737b4af99e61d95944737c6f2a69ec57b8d;
+    stim[28] = 501'h191be2bfaf4fdb0363c5be7a2b7e89c2baccf9e977e95276e133ee399258f856f87b05b362deb432e15a8502f6c71b52ef465637b2bbeaa803ae60344e2af3;
+    stim[29] = 501'h02884f269bd28b6f2cc879394c34ef45fc6dfc26eb4ff7b11f9ed5f5eeb9580933458cf95a60403d2ebabda7d353276044aee578fde02393c30a6f05848816;
+    stim[30] = 501'h0e513fb7d3089e32e553286e69003cb315b7b74587fac245029eccbb667bcddcfd529cf45ca5a098c010810c4f357de727c36e69cb5422f081bc91e89ad962;
+    stim[31] = 501'h004a001a720b711ccd7d22374ef14bfc9d465fced30ea9a215026edbc21afd6ffd70bde2bd9c8b88b8930ff28cf58c68ff3e113bc251095240d9840a3a2172;
+    stim[32] = 501'h0bb6481cb79ad2cbfe873725c6ca8f49471e80375f1cef77e6e2d5e19721b6c609571d03e7f3d358c9de27d2a1e9dd27387d399c3fec7f072a4161ba064bf3;
+    stim[33] = 501'h0f7bfcf1270b1129d598eab145940a2601cf3900834063450c3d63b63dd84bb2942dc041caece0d6c73fd5a7fab21acdba9b45fddbc05424a350f2eee50cc5;
+    stim[34] = 501'h0d67a08d8b8e1c5a204c781aedd692024107944c888c20c9a916fc8159b00511cc5059889e900c824e14a3f8f19a3ab7431cc7335aff6882fd8862e0a44d37;
+    stim[35] = 501'h0a90b14dadd86b5b42d2067920a1ae6c39e54cbaf1b6301940ac5c5abebffd9100c3bd761fc8af0a3aa845aa25e4a7ac71fea12881d074a06ccd545b129752;
+    stim[36] = 501'h059425340e41b6ef3b2e24807fa4815165546823bdccf5ec35b195447099db3fbce2bf0f5790b2a9e7f2c346ef7526517ffa910e637e8d395fccd5a6e5db1b;
+    stim[37] = 501'h15109f38d1ce11f66218bdcce0195795496b7872c503e795d9d7baa3569b27a5302e155cfd23e705bf3e787a724fdaca368f39d0c31794907f883da531770b;
+    stim[38] = 501'h040b0d91e0eedcd28587c856c554e1052bc9d3842463e3260948636d214ce55ef4fbfe33d35f9e735bb6e5c899c765c4591b5aa8a68df800dfc9d7d830bcfa;
+    stim[39] = 501'h044999d32f774aaa3b14a9240161a28edc6c0d3b7361b000fad00ac2705079f063e1cbfd13eb9bf95b5b5668abbe0f9946eba309ff262d164e28e42890687a;
+    stim[40] = 501'h007985b48c44818c946c8ec92fb166b665dcc4d6b3e2530725234f57e813027b175ab2a6fa3b2bad86adfaae32296c5e3bf301c88a1374fe71caefc9fe7fa0;
+    stim[41] = 501'h1748896bb88bca1563b284e6e3f87b8ad6862172746f3add55c625a98f75d17377042b7434a8f3a1ba5f6b16ca4922ce02d1c988899d44de01fa29f39d52fc;
+    stim[42] = 501'h133429e852fe9e219e08badb270e5453b9d3114ec71516e18300868333ae50050c06f0d1b73919d7434f154e1fa865cd6366deebe336ad30e1f26b03fe6a23;
+    stim[43] = 501'h0b03c360b0fe2ecde79ed3fb00c10bdd6df286fd62de99bd0c33693f7fe1fc9cb978151ba100d0501dad580c74bc445eaf5b1232b70c90569a17dc618a15e6;
+    stim[44] = 501'h028571281cf00095d37792360fe29fa3ef0e01bb053aacbbb4fd7309bb821691367a1b71e5af214fd7a52e4605c7424976090d4e67ab108cecfa46e8543860;
+    stim[45] = 501'h1e27c94d749aaef67dd2c88b170b5af700a9875185064d5fb39c85884b883a51ab31d2d59f07ad8d8882b4fe4b8f4a2ceb33769fcba025f2175cb5d8ebc6e4;
+    stim[46] = 501'h04df32e334590bc64ef0dd3736311a22d7d4a9d77f8900fa165d770be644be81398dfc81db4af518f5f1598f34b307a82ed50fb32ea048e24b5763ea991f3e;
+    stim[47] = 501'h15bb16003ecadb952c7b7ac6b1b67ea53573ec8acfd39581618933b7b0448b13216f6051979a6cae986133c0ae65f2b849d831be46578da1452c68767dcef9;
+    stim[48] = 501'h0c78e640849aeab70a6e1ed2d8151be776629878930bbc68185f022764ae4a439ad4b8184d9e240dcf3fdf9ec38c15bbbfdbfa57903b57cfe7da57b02c38da;
+    stim[49] = 501'h01a9834df18300cce051bde6da030ccb16ab8a4d8b3b0432c87c926fa3e800c7ddd1b930ea06f4ff0866949db004c81f750150fe3dc9bb9ca5fa3344038756;
+    stim[50] = 501'h02a3864bb36c30629ce5e4ea17d0c1b71486369627e50bb2650ecab827d2f42b980571b3feee6cc4843aaceed9b5714a5aaa65f5f97d13ee1c7e9f78bd9214;
+    stim[51] = 501'h0ea989ad6c9fdc68791135738ac35bc5fcf4b08eaf42d31d2e6587ae7ed5dfdccd43255a92dc7a2d1b015759e233b48a0c212d8ca437dbe7551553ec182201;
+    stim[52] = 501'h11ecc180035a0a77dcdcc4e50c379ff89139d0f743a3f6b5a5510fb702407577c3e17d0a41f8ec87b0cb90008952b3f4811310069b26e6af5c808bb31721b2;
+    stim[53] = 501'h0b749bfb5910dba4b70b47e3f5c9097da634c20c4257e8c6ec90e685c967cf8eb6d1d39012b095275672919564b3fe9e80d994e9600b39cb7a4858aa6a243e;
+    stim[54] = 501'h1f7b35566583b2473b1345f0511526840392812a94acf70e778c3806aecc49571f65d61e7014a07acbb5425e63b2e749e2e448eadf72565e187be3a91f4db9;
+    stim[55] = 501'h13600d5cfcf4e269e3fc7cd4c27e3343cece1c54feaf260ef3f398d363e9ed8348dfb0051f97eaf54bad52aa39b55de74c21a1229d56c80a68ee2889d540d9;
+    stim[56] = 501'h0543669c34256321795042c0d3a628089915619411c855674191afa367e541c055b9386b99819c61d1db2810e2c89090d1f7a6f3700f86318caed590c8567d;
+    stim[57] = 501'h1fc333d9bd896d9cd46231eb8716552265ad4b73e60b220bca194045d8536fd3321ad5a824cbbf33a6caefbff58ee0f9421821472ee55f90ec28e255aea11d;
+    stim[58] = 501'h0290a47b0de940a357343b525f483c8ea11582383cfe2c6698c2134a14097b4d7a2dda839dd4f7ca4b8e8b2eb79e16ef44eb400d8b17cf19fbc472f85289a7;
+    stim[59] = 501'h1a70ed17bc0bf274d8c854975105961de3dd61c873745415bd794c0db267139c0f11bf7ba1f522ce49fcd5c6fa31e95be309787daeb81946aee93b71441acb;
+    stim[60] = 501'h01e15d7837ece76dadb1bf96b11d9f5601ccd4f11dd73af1e6b108f7fe1530eb722c285f8a75034daff752a64b81a71017d937f00053338b5088398010859f;
+    stim[61] = 501'h15f0e6600f677d7a421a29c492fc390d6791ceb7159b17e8490ecbfbb7db2b8160ddbca82ca3fb7927bd3ea7afedbb913b6c444119c6fafa9f19bc326a4068;
+    stim[62] = 501'h132a3d116468757660e3359b33c1b03da21b265af3825a89dbf9857c36346b9628bd3705755837f9414885533788017f8dc4cee77f9ee72767d730c8a792af;
+    stim[63] = 501'h1f4a16b1c176516fe3b7096ffa3f1ea70fef858423e3d1f962c874178903b16de894b3372c8c179497d378f47a8db73bd8bfc7c64c5959a07d4c276c248210;
+    for (c = 0; c < N; c = c + 1) begin
+      in_vec = stim[c];
+      #1 sample;
+      #1;
+    end
+    if ($value$plusargs("actual=%s", act_file)) begin
+      fd = $fopen(act_file, "w");
+      for (c = 0; c < N; c = c + 1) $fdisplay(fd, "%h", act[c]);
+      $fclose(fd);
+    end
+    if (!$test$plusargs("nocheck")) begin
+      expv[0] = 32'h00000000;
+      expv[1] = 32'h00000000;
+      expv[2] = 32'h00000000;
+      expv[3] = 32'h00000000;
+      expv[4] = 32'h00000000;
+      expv[5] = 32'h00000000;
+      expv[6] = 32'h00000000;
+      expv[7] = 32'h00000000;
+      expv[8] = 32'h00000000;
+      expv[9] = 32'h00000000;
+      expv[10] = 32'h00000000;
+      expv[11] = 32'h00000000;
+      expv[12] = 32'h00000000;
+      expv[13] = 32'h00000000;
+      expv[14] = 32'h00000000;
+      expv[15] = 32'h00000000;
+      expv[16] = 32'h00000000;
+      expv[17] = 32'h00000000;
+      expv[18] = 32'h0000001b;
+      expv[19] = 32'h00000000;
+      expv[20] = 32'h00000000;
+      expv[21] = 32'h00000000;
+      expv[22] = 32'h00000000;
+      expv[23] = 32'h00000000;
+      expv[24] = 32'h00000000;
+      expv[25] = 32'h00000000;
+      expv[26] = 32'h00000000;
+      expv[27] = 32'h00000000;
+      expv[28] = 32'h00000000;
+      expv[29] = 32'h00000000;
+      expv[30] = 32'h00000000;
+      expv[31] = 32'h00000000;
+      expv[32] = 32'h00000000;
+      expv[33] = 32'h00000000;
+      expv[34] = 32'h00000000;
+      expv[35] = 32'h00000000;
+      expv[36] = 32'h00000000;
+      expv[37] = 32'h00000000;
+      expv[38] = 32'h00000000;
+      expv[39] = 32'h00000000;
+      expv[40] = 32'h00000000;
+      expv[41] = 32'h00000000;
+      expv[42] = 32'h00000000;
+      expv[43] = 32'h0000001e;
+      expv[44] = 32'h00000000;
+      expv[45] = 32'h00000000;
+      expv[46] = 32'h00000000;
+      expv[47] = 32'hf656dca9;
+      expv[48] = 32'h00000016;
+      expv[49] = 32'h00000000;
+      expv[50] = 32'h00000000;
+      expv[51] = 32'h00000000;
+      expv[52] = 32'h00000000;
+      expv[53] = 32'h00000000;
+      expv[54] = 32'h00000000;
+      expv[55] = 32'h00000000;
+      expv[56] = 32'h00000000;
+      expv[57] = 32'h00000000;
+      expv[58] = 32'h00000000;
+      expv[59] = 32'h00000000;
+      expv[60] = 32'h00000000;
+      expv[61] = 32'h00000000;
+      expv[62] = 32'h00000000;
+      expv[63] = 32'h00000000;
+      mismatches = 0;
+      shown = 0;
+      for (c = 0; c < N; c = c + 1) begin
+        bad = 0;
+        for (b = 0; b < OW; b = b + 1)
+          if (expv[c][b] !== 1'bx && act[c][b] !== expv[c][b]) bad = 1;
+        if (bad) begin
+          mismatches = mismatches + 1;
+          if (shown < 10) begin
+            $display("MISMATCH cycle %0d: inputs=%h expected=%h got=%h", c, stim[c], expv[c], act[c]);
+            shown = shown + 1;
+          end
+        end
+      end
+      if (mismatches == 0) $display("PASS %0d/%0d cycles", N, N);
+      else $display("FAIL %0d/%0d cycles mismatched", mismatches, N);
+    end
+    $finish;
+  end
+endmodule

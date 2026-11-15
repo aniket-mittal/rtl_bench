@@ -1,0 +1,181 @@
+{
+  "task_id": "benchls-origen/infill-forwarding_operand_mux-067830",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_067830",
+  "interface": {
+    "clock": null,
+    "reset": null,
+    "inputs": [
+      {
+        "name": "i_Data_From_MEM",
+        "width": 32
+      },
+      {
+        "name": "i_Data_From_WB",
+        "width": 32
+      },
+      {
+        "name": "i_Data_From_vWB",
+        "width": 32
+      },
+      {
+        "name": "i_Rs1",
+        "width": 32
+      },
+      {
+        "name": "i_Rs2",
+        "width": 32
+      },
+      {
+        "name": "i_Immediate",
+        "width": 32
+      },
+      {
+        "name": "i_PC",
+        "width": 32
+      },
+      {
+        "name": "i_Fwrd_Ctrl1",
+        "width": 2
+      },
+      {
+        "name": "i_Fwrd_Ctrl2",
+        "width": 2
+      },
+      {
+        "name": "i_ALU_src1_Ctrl",
+        "width": 2
+      },
+      {
+        "name": "i_ALU_src2_Ctrl",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "o_Op1",
+        "width": 32
+      },
+      {
+        "name": "o_Op2",
+        "width": 32
+      },
+      {
+        "name": "o_Store_Data",
+        "width": 32
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_067830.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_067830.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_067830.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 2796106548
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_067830",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_067830",
+    "parent_design": "origen_067830",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 55,
+    "design_type": "combinational",
+    "mask_type": "block",
+    "mask_index": 2564316148,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_067830",
+      "region_tokens": 111,
+      "region_chars": 982,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "origen_067830.v",
+    "upstream_verification": {
+      "tool": "conformal",
+      "type": "LEC",
+      "primary_script_key": "conformal_rtl_origen_067830.do"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "conformal_rtl_origen_067830.do"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_067830",
+    "n_modules": 1,
+    "slice": "slice_13.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

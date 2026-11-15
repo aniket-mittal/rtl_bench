@@ -8,8 +8,10 @@ generated/           repair-<design>-bug<k>, spec2rtl-<design>-bug<k>   taskgen:
 verilog-eval/        spec2rtl-<problem>                                  verilog-eval problem statements
 rtllm/               spec2rtl-<design>                                   RTLLM design descriptions
 github-issues/       repair-<repo>-pr<n>                                 real bug fixes from GitHub (RTL-BenchLS Task 3)
-benchls-<dataset>/   infill-<design>[-block<k>]                          RTL-BenchLS designs with one block masked (Task 1 and 2), split by upstream dataset:
-                                                                          origen, rtlpp, mgverilog, autovcoder, github
+benchls-<dataset>/   infill-<name>-<number>                              RTL-BenchLS designs with one block masked (Task 1 and 2), split by upstream
+                                                                          dataset: origen, rtlpp, mgverilog, autovcoder, github. Upstream renamed most
+                                                                          modules to row ids, so <name> was written by Claude from the code; <number>
+                                                                          is the upstream id (full id in task.json)
 ```
 
 ## Inside a task

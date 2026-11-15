@@ -1,0 +1,7 @@
+module mg_08050(clk,d,q);
+input [31:0] d; 
+ input clk; 
+ output [31:0] q; 
+ wire unused; 
+ [MASKED] 
+ endmodule

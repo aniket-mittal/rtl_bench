@@ -1,0 +1,37 @@
+module mg_00619(add,i_0 ,i_1 ,i_2 ,i_3 ,i_4 ,i_5 ,i_6 ,i_7 ,i_8 ,i_9 ,i_10,i_11,i_12,i_13,i_14,i_15,i_16,i_17,i_18,i_19,i_20,i_21,i_22,i_23,i_24,i_25,i_26,i_27,i_28,i_29,i_30,i_31,o_i);
+input [4:0] add; 
+ input signed [15:0] i_0 ; 
+ input signed [15:0] i_1 ; 
+ input signed [15:0] i_2 ; 
+ input signed [15:0] i_3 ; 
+ input signed [15:0] i_4 ; 
+ input signed [15:0] i_5 ; 
+ input signed [15:0] i_6 ; 
+ input signed [15:0] i_7 ; 
+ input signed [15:0] i_8 ; 
+ input signed [15:0] i_9 ; 
+ input signed [15:0] i_10; 
+ input signed [15:0] i_11; 
+ input signed [15:0] i_12; 
+ input signed [15:0] i_13; 
+ input signed [15:0] i_14; 
+ input signed [15:0] i_15; 
+ input signed [15:0] i_16; 
+ input signed [15:0] i_17; 
+ input signed [15:0] i_18; 
+ input signed [15:0] i_19; 
+ input signed [15:0] i_20; 
+ input signed [15:0] i_21; 
+ input signed [15:0] i_22; 
+ input signed [15:0] i_23; 
+ input signed [15:0] i_24; 
+ input signed [15:0] i_25; 
+ input signed [15:0] i_26; 
+ input signed [15:0] i_27; 
+ input signed [15:0] i_28; 
+ input signed [15:0] i_29; 
+ input signed [15:0] i_30; 
+ input signed [15:0] i_31; 
+ output reg signed [15:0] o_i; 
+ [MASKED] 
+ endmodule

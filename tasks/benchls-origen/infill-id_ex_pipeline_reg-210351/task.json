@@ -1,0 +1,305 @@
+{
+  "task_id": "benchls-origen/infill-id_ex_pipeline_reg-210351",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_210351",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "idex_en",
+        "width": 1
+      },
+      {
+        "name": "memtoreg",
+        "width": 1
+      },
+      {
+        "name": "reg_write",
+        "width": 1
+      },
+      {
+        "name": "mem_read",
+        "width": 1
+      },
+      {
+        "name": "mem_write",
+        "width": 1
+      },
+      {
+        "name": "reg_dst",
+        "width": 1
+      },
+      {
+        "name": "alusrc_a",
+        "width": 1
+      },
+      {
+        "name": "branch",
+        "width": 1
+      },
+      {
+        "name": "jump",
+        "width": 1
+      },
+      {
+        "name": "halt",
+        "width": 1
+      },
+      {
+        "name": "word_en",
+        "width": 1
+      },
+      {
+        "name": "ld_en",
+        "width": 1
+      },
+      {
+        "name": "pc_plus2",
+        "width": 16
+      },
+      {
+        "name": "read_data1",
+        "width": 16
+      },
+      {
+        "name": "read_data2",
+        "width": 16
+      },
+      {
+        "name": "sign_extend",
+        "width": 16
+      },
+      {
+        "name": "instr_rt",
+        "width": 3
+      },
+      {
+        "name": "instr_rd",
+        "width": 3
+      },
+      {
+        "name": "rs",
+        "width": 3
+      },
+      {
+        "name": "alusrc_b",
+        "width": 1
+      },
+      {
+        "name": "aluop",
+        "width": 2
+      },
+      {
+        "name": "branch_label",
+        "width": 16
+      },
+      {
+        "name": "jump_addr",
+        "width": 16
+      }
+    ],
+    "outputs": [
+      {
+        "name": "memtoreg_reg",
+        "width": 1
+      },
+      {
+        "name": "reg_write_reg",
+        "width": 1
+      },
+      {
+        "name": "mem_read_reg",
+        "width": 1
+      },
+      {
+        "name": "mem_write_reg",
+        "width": 1
+      },
+      {
+        "name": "reg_dst_reg",
+        "width": 1
+      },
+      {
+        "name": "alusrc_a_reg",
+        "width": 1
+      },
+      {
+        "name": "branch_reg",
+        "width": 1
+      },
+      {
+        "name": "jump_reg",
+        "width": 1
+      },
+      {
+        "name": "halt_reg",
+        "width": 1
+      },
+      {
+        "name": "word_en_reg",
+        "width": 1
+      },
+      {
+        "name": "ld_en_reg",
+        "width": 1
+      },
+      {
+        "name": "pc_plus2_reg",
+        "width": 16
+      },
+      {
+        "name": "read_data1_reg",
+        "width": 16
+      },
+      {
+        "name": "read_data2_reg",
+        "width": 16
+      },
+      {
+        "name": "sign_extend_reg",
+        "width": 16
+      },
+      {
+        "name": "instr_rt_reg",
+        "width": 3
+      },
+      {
+        "name": "instr_rd_reg",
+        "width": 3
+      },
+      {
+        "name": "rs_reg",
+        "width": 3
+      },
+      {
+        "name": "alusrc_b_reg",
+        "width": 1
+      },
+      {
+        "name": "aluop_reg",
+        "width": 2
+      },
+      {
+        "name": "branch_label_reg",
+        "width": 16
+      },
+      {
+        "name": "jump_addr_reg",
+        "width": 16
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_210351.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_210351.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_210351.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1847576512
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_210351",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_210351",
+    "parent_design": "origen_210351",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 127,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 2469857384,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_210351",
+      "region_tokens": 193,
+      "region_chars": 1851,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "origen_210351.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_origen_210351.tcl"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_origen_210351.tcl"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_210351",
+    "n_modules": 1,
+    "slice": "slice_09.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

@@ -1,0 +1,30 @@
+module hpdmc_busif #(
+	parameter sdram_depth = 23
+) (
+	input sys_clk,
+	input sdram_rst,
+	
+	input [sdram_depth-1:0] fml_adr,
+	input fml_stb,
+	input fml_we,
+	output fml_ack,
+	
+	output mgmt_stb,
+	output mgmt_we,
+	output [sdram_depth-1-1:0] mgmt_address, /* in 16-bit words */
+	input mgmt_ack,
+	
+	input data_ack
+);
+
+reg mgmt_stb_en;
+
+assign mgmt_stb = fml_stb & mgmt_stb_en;
+assign mgmt_we = fml_we;
+assign mgmt_address = fml_adr[sdram_depth-1:1];
+
+assign fml_ack = data_ack;
+
+[MASKED]
+
+endmodule

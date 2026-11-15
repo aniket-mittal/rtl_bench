@@ -1,0 +1,22 @@
+module autovcoder_136951 (
+    input clk,
+    input rst,
+    input [15:0] x, // Input sample
+    output reg [15:0] y // Output sample
+);
+    // Coefficients for the filter (these are example values)
+    parameter signed [15:0] b0 = 16'h0A00; // Feedforward coefficient
+    parameter signed [15:0] b1 = 16'h0A00;
+    parameter signed [15:0] b2 = 16'h0A00;
+    parameter signed [15:0] b3 = 16'h0A00;
+    parameter signed [15:0] b4 = 16'h0A00;
+    parameter signed [15:0] a1 = 16'hFF00; // Feedback coefficient
+    parameter signed [15:0] a2 = 16'hFF00;
+    parameter signed [15:0] a3 = 16'hFF00;
+    parameter signed [15:0] a4 = 16'hFF00;
+
+    reg signed [31:0] x_reg[0:4]; // Input history
+    reg signed [31:0] y_reg[0:4]; // Output history
+
+    [MASKED]
+endmodule

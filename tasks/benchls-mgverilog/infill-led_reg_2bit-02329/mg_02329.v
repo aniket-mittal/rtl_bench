@@ -1,0 +1,6 @@
+module mg_02329 (input wire clk,output wire [1:0] leds);
+wire ena = 1'b1; 
+ reg [1:0] reg1; 
+ [MASKED] 
+ assign leds = (ena) ? reg1 : 2'bzz; 
+ endmodule

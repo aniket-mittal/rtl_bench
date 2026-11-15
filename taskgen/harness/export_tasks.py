@@ -201,8 +201,8 @@ def spec_md(t, editable, read_only, top, iface):
     return body + "\n".join(lines)
 
 
-def build(task_path, out_root):
-    t = rt.fill_defaults(rt.load_task(task_path))
+def build(json_path, out_root):
+    t = rt.fill_defaults(rt.load_task(json_path))
     top = t["top_module"]
     timeout = rt.tool_timeout(t)
     if not rt.interface_ok(t.get("interface")):
@@ -312,6 +312,43 @@ def safe_build(path, out):
     return r
 
 
+NAMES_FILE = HERE.parent / "runs" / "benchls_names.json"
+
+
+def finalize_names(out):
+    """Rename benchls-*/ folders to infill-<name>-<number> using taskgen/runs/benchls_names.json (from
+    name_designs.py). Deterministic: tasks are ordered by source id, and repeats of a name get -2, -3, ..."""
+    if not NAMES_FILE.exists():
+        return
+    names = json.loads(NAMES_FILE.read_text())
+    metas = []
+    for tj in Path(out).glob("benchls-*/*/task.json"):
+        metas.append((json.loads(tj.read_text()), tj.parent))
+    metas.sort(key=lambda x: x[0]["source_task_id"])
+    taken = {}
+    plan = []
+    for m, d in metas:
+        sid = m["source_task_id"].split("/")[-1]
+        did = m["provenance"].get("parent_design") or re.sub(r"_(block|module)_\d+$", "", sid)
+        num = re.match(r"^(?:mg|origen|rtlpp|autovcoder)_(\d+)$", did)
+        base = KIND_SHORT.get(m["kind"], m["kind"]) + "-" + names.get(did, re.sub(r"[^A-Za-z0-9_]+", "_", did).lower())
+        if num:
+            base += "-" + num.group(1)
+        key = (d.parent.name, base)
+        taken[key] = taken.get(key, 0) + 1
+        plan.append((m, d, base + ("" if taken[key] == 1 else f"-{taken[key]}")))
+    tmp = []
+    for m, d, new in plan:                     # two-phase rename so old and new names never clash
+        t = d.with_name(d.name + ".renaming")
+        d.rename(t)
+        tmp.append((m, t, new))
+    for m, t, new in tmp:
+        dest = t.with_name(new)
+        t.rename(dest)
+        m["task_id"] = f"{dest.parent.name}/{new}"
+        (dest / "task.json").write_text(json.dumps(m, indent=2) + "\n")
+
+
 def write_index(out):
     """index.jsonl: one line per task folder under out."""
     rows = []
@@ -346,6 +383,8 @@ def main():
                 print(f"{len(results)}/{len(paths)} ({sum(x['ok'] for x in results)} kept)", flush=True)
     bad = [r for r in results if not r["ok"]]
     Path(args.excluded).write_text("".join(json.dumps(r) + "\n" for r in bad))
+    if any(Path(i).name in ("rtl-benchls", "rtl-benchls-task1") for i in args.inputs):
+        finalize_names(out)
     rows = write_index(out)
     print(json.dumps({"inputs": len(paths), "kept": len(paths) - len(bad), "excluded": len(bad),
                       "index_rows": len(rows)}, indent=2))

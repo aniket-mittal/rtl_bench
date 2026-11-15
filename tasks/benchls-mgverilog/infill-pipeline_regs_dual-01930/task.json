@@ -1,0 +1,277 @@
+{
+  "task_id": "benchls-mgverilog/infill-pipeline_regs_dual-01930",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "mg_01930",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "abusWire1",
+        "width": 64
+      },
+      {
+        "name": "bbusWire1",
+        "width": 64
+      },
+      {
+        "name": "DselectWire1",
+        "width": 32
+      },
+      {
+        "name": "ALUImmWire1",
+        "width": 64
+      },
+      {
+        "name": "SWire1",
+        "width": 3
+      },
+      {
+        "name": "CinWire1",
+        "width": 1
+      },
+      {
+        "name": "immBit1",
+        "width": 1
+      },
+      {
+        "name": "lwSwFlag1",
+        "width": 2
+      },
+      {
+        "name": "setControlBits",
+        "width": 2
+      },
+      {
+        "name": "branchControlBit",
+        "width": 3
+      },
+      {
+        "name": "NZVCSetBit",
+        "width": 1
+      },
+      {
+        "name": "shiftBit1",
+        "width": 2
+      },
+      {
+        "name": "shamt",
+        "width": 6
+      },
+      {
+        "name": "DTAddrWire1",
+        "width": 64
+      },
+      {
+        "name": "MOVImmWire1",
+        "width": 64
+      },
+      {
+        "name": "movBit1",
+        "width": 1
+      },
+      {
+        "name": "moveImmShftAmt",
+        "width": 6
+      },
+      {
+        "name": "NOP",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "abusWire2",
+        "width": 64
+      },
+      {
+        "name": "bbusWire2",
+        "width": 64
+      },
+      {
+        "name": "ALUImmWire2",
+        "width": 64
+      },
+      {
+        "name": "SWire2",
+        "width": 3
+      },
+      {
+        "name": "CinWire2",
+        "width": 1
+      },
+      {
+        "name": "DselectWire2",
+        "width": 32
+      },
+      {
+        "name": "immBit2",
+        "width": 1
+      },
+      {
+        "name": "lwSwFlag2",
+        "width": 2
+      },
+      {
+        "name": "setControlBitsWire1",
+        "width": 2
+      },
+      {
+        "name": "branchControlBitWire1",
+        "width": 3
+      },
+      {
+        "name": "NZVCSetBitWire1",
+        "width": 1
+      },
+      {
+        "name": "shiftBit2",
+        "width": 2
+      },
+      {
+        "name": "shamtWire1",
+        "width": 6
+      },
+      {
+        "name": "DTAddrWire2",
+        "width": 64
+      },
+      {
+        "name": "MOVImmWire2",
+        "width": 64
+      },
+      {
+        "name": "movBit2",
+        "width": 1
+      },
+      {
+        "name": "moveImmShftAmtWire1",
+        "width": 6
+      },
+      {
+        "name": "NOPWire1",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "mg_01930.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "mg_01930.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "mg_01930.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 22137457
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/mg_01930",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "mg_01930",
+    "parent_design": "mg_01930",
+    "origin": "RTL-Dataset-MG-Verilog",
+    "origin_bucket": "S5",
+    "loc": 55,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 837870142,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "mg_01930",
+      "region_tokens": 80,
+      "region_chars": 550,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "mg_01930.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_mg_01930.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "mg_01930_combined.v",
+      "sec_mg_01930.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "mg_01930",
+        "file": "<upstream-pool>/RTL_Datasets/MG-Verilog_sec_input/designs/mg_01930.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "mg_01930",
+    "n_modules": 1,
+    "slice": "slice_11.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

@@ -1,0 +1,10 @@
+module mg_09840(clock,reset,strobe_in,enable,rate,strobe_out,count);
+parameter INITIAL_VAL = 24'd0; 
+ parameter INCREMENT_VAL = 24'h1; 
+  input wire clock, reset, enable, strobe_in; 
+  input wire [23: 0] rate; 
+  output wire strobe_out; 
+  output reg [23:0] count; 
+  assign strobe_out = count == rate; 
+  [MASKED] 
+ endmodule

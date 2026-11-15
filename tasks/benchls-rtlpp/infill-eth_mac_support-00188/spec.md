@@ -1,0 +1,80 @@
+# Fill in the masked region of `rtlpp_00188`
+
+The file `rtlpp_00188.v` holds a Verilog design whose top module is `rtlpp_00188` (combinational). Part of the design was removed, and the text `[MASKED]` appears exactly once in its place. That marker is the literal string `[MASKED]` (square brackets included), not a comment.
+
+**Your job:** replace `[MASKED]` with Verilog so the whole design again does what it is evidently meant to do. Work out the missing logic from the rest of the code: the port list, the declared signals, how those signals are used elsewhere, the module and signal names, and any comments.
+
+## What was masked
+
+- Mask type: **block**. The design has no single large statement, so 2 consecutive continuous `assign` statements in module `rtlpp_00188` were replaced together by `[MASKED]`. Write those `assign` statements in its place.
+- Design type: combinational. Origin: RTL-Dataset-RTLPP.
+
+## Rules
+
+- Edit only `rtlpp_00188.v`. When you are done it must not contain `[MASKED]`.
+- Keep every name the surrounding code uses (signals, ports, parameters, modules), and keep the rest of the file as it is. You may declare new internal signals if you need them.
+- Write synthesizable code that iverilog and yosys can compile. Use Verilog-2005, or SystemVerilog only where the file already uses SystemVerilog constructs.
+
+## Grading
+
+Your completed `rtlpp_00188` is simulated against the original design and checked for formal equivalence with it. Only behavior at the top-module ports counts. The code does not have to match the original text.
+
+---
+
+## Files
+
+Edit: `rtlpp_00188.v`. Only these files are graded.
+
+## Interface of `rtlpp_00188`
+
+| port | dir | width | note |
+|---|---|---|---|
+| `gtx_clk` | in | 1 |  |
+| `refclk` | in | 1 |  |
+| `glbl_rstn` | in | 1 | reset, active low |
+| `rx_axi_rstn` | in | 1 |  |
+| `tx_axi_rstn` | in | 1 |  |
+| `tx_ifg_delay` | in | 8 |  |
+| `tx_axis_mac_tdata` | in | 8 |  |
+| `tx_axis_mac_tvalid` | in | 1 |  |
+| `tx_axis_mac_tlast` | in | 1 |  |
+| `tx_axis_mac_tuser` | in | 1 |  |
+| `pause_req` | in | 1 |  |
+| `pause_val` | in | 16 |  |
+| `rgmii_rxd` | in | 4 |  |
+| `rgmii_rx_ctl` | in | 1 |  |
+| `rgmii_rxc` | in | 1 |  |
+| `rx_configuration_vector` | in | 80 |  |
+| `tx_configuration_vector` | in | 80 |  |
+| `gtx_clk_out` | out | 1 | |
+| `gtx_clk90_out` | out | 1 | |
+| `rx_enable` | out | 1 | |
+| `rx_statistics_vector` | out | 28 | |
+| `rx_statistics_valid` | out | 1 | |
+| `rx_mac_aclk` | out | 1 | |
+| `rx_reset` | out | 1 | |
+| `rx_axis_mac_tdata` | out | 8 | |
+| `rx_axis_mac_tvalid` | out | 1 | |
+| `rx_axis_mac_tlast` | out | 1 | |
+| `rx_axis_mac_tuser` | out | 1 | |
+| `tx_enable` | out | 1 | |
+| `tx_statistics_vector` | out | 32 | |
+| `tx_statistics_valid` | out | 1 | |
+| `tx_mac_aclk` | out | 1 | |
+| `tx_reset` | out | 1 | |
+| `tx_axis_mac_tready` | out | 1 | |
+| `speedis100` | out | 1 | |
+| `speedis10100` | out | 1 | |
+| `rgmii_txd` | out | 4 | |
+| `rgmii_tx_ctl` | out | 1 | |
+| `rgmii_txc` | out | 1 | |
+| `inband_link_status` | out | 1 | |
+| `inband_clock_speed` | out | 2 | |
+| `inband_duplex_status` | out | 1 | |
+
+## Testing
+
+    iverilog -g2012 -s tb -o sim public_tb.v rtlpp_00188.v && vvp sim
+
+It prints `PASS` or the mismatching cycles. Grading also runs hidden tests and a Yosys formal
+equivalence check against the reference, so passing the public tests is not enough on its own.

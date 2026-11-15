@@ -1,0 +1,44 @@
+module autovcoder_083666 (
+    A,
+    B,
+    Ci,
+    S,
+    Co
+);
+  input A;
+  input B;
+  input Ci;
+  output S;
+  output Co;
+
+  // Internal wires
+  wire n2;
+  wire n3;
+  wire n4;
+  wire n5;
+
+  XNOR2_X1 U2 (
+      .A (A),
+      .B (B),
+      .ZN(n5)
+  );
+  XNOR2_X1 U3 (
+      .A (n5),
+      .B (Ci),
+      .ZN(S)
+  );
+  INV_X1 U4 (
+      .A (A),
+      .ZN(n3)
+  );
+  INV_X1 U5 (
+      .A (Ci),
+      .ZN(n4)
+  );
+  INV_X1 U6 (
+      .A (B),
+      .ZN(n2)
+  );
+  [MASKED]
+endmodule
+

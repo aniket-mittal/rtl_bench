@@ -1,0 +1,176 @@
+{
+  "task_id": "benchls-origen/infill-sd_spi_shifter-063434",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "origen_063434",
+  "interface": {
+    "clock": "CLOCK",
+    "reset": {
+      "name": "nRESET",
+      "active_low": false
+    },
+    "inputs": [
+      {
+        "name": "nRESET",
+        "width": 1
+      },
+      {
+        "name": "CLKEN",
+        "width": 1
+      },
+      {
+        "name": "ENABLE",
+        "width": 1
+      },
+      {
+        "name": "nWR",
+        "width": 1
+      },
+      {
+        "name": "DI",
+        "width": 8
+      },
+      {
+        "name": "DUMMY",
+        "width": 1
+      },
+      {
+        "name": "SD_MISO",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "DO",
+        "width": 8
+      },
+      {
+        "name": "DONE",
+        "width": 1
+      },
+      {
+        "name": "SD_CS",
+        "width": 1
+      },
+      {
+        "name": "SD_CLK",
+        "width": 1
+      },
+      {
+        "name": "SD_MOSI",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "origen_063434.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "origen_063434.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "origen_063434.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1766483495
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/origen_063434",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "origen_063434",
+    "parent_design": "origen_063434",
+    "origin": "OriGen-processed",
+    "origin_bucket": "S2",
+    "loc": 56,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 1233950984,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "origen_063434",
+      "region_tokens": 148,
+      "region_chars": 998,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "origen_063434.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_origen_063434.tcl"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_origen_063434.tcl"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "origen_063434",
+    "n_modules": 1,
+    "slice": "slice_20.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

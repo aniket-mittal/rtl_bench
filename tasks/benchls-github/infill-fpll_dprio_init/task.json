@@ -1,0 +1,184 @@
+{
+  "task_id": "benchls-github/infill-fpll_dprio_init",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "fpll_dprio_init",
+  "interface": {
+    "clock": "clk",
+    "reset": {
+      "name": "reset_n",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "reset_n",
+        "width": 1
+      },
+      {
+        "name": "locked",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "dprio_address",
+        "width": 6
+      },
+      {
+        "name": "dprio_read",
+        "width": 1
+      },
+      {
+        "name": "dprio_byteen",
+        "width": 2
+      },
+      {
+        "name": "dprio_write",
+        "width": 1
+      },
+      {
+        "name": "dprio_writedata",
+        "width": 16
+      },
+      {
+        "name": "atpgmode",
+        "width": 1
+      },
+      {
+        "name": "mdio_dis",
+        "width": 1
+      },
+      {
+        "name": "scanen",
+        "width": 1
+      },
+      {
+        "name": "ser_shift_load",
+        "width": 1
+      },
+      {
+        "name": "dprio_init_done",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "fpll_dprio_init.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "fpll_dprio_init.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "fpll_dprio_init.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 788510871
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/fpll_dprio_init",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "fpll_dprio_init",
+    "parent_design": "fpll_dprio_init",
+    "origin": "SEC-Flow-Star-repos-28.darkriscv",
+    "origin_bucket": "S1",
+    "loc": 95,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 2522527729,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 4,
+      "n_candidates": 5,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "fpll_dprio_init",
+      "region_tokens": 28,
+      "region_chars": 251,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "fpll_dprio_init.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_fpll_dprio_init.tcl"
+    },
+    "lib_v": "trivial (no modules)",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "fpll_dprio_init_combined.v",
+      "sec_fpll_dprio_init.tcl"
+    ],
+    "description": null,
+    "sources": {
+      "top": {
+        "module": "fpll_dprio_init",
+        "file": "<upstream-pool>/Infructructure-Agents/Star-repos/28.darkriscv/boards/de10nano_cyclonev_mister/sys/pll_cfg/altera_pll_reconfig_core.v"
+      },
+      "deps": [],
+      "missing_deps": []
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "fpll_dprio_init",
+    "n_modules": 1,
+    "slice": "slice_16.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

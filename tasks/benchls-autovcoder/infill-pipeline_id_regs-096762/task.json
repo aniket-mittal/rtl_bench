@@ -1,0 +1,297 @@
+{
+  "task_id": "benchls-autovcoder/infill-pipeline_id_regs-096762",
+  "suite": "rtl-benchls",
+  "kind": "infill",
+  "difficulty": "unknown",
+  "top_module": "autovcoder_096762",
+  "interface": {
+    "clock": "clk",
+    "reset": null,
+    "inputs": [
+      {
+        "name": "clr",
+        "width": 1
+      },
+      {
+        "name": "newPC",
+        "width": 32
+      },
+      {
+        "name": "busA",
+        "width": 32
+      },
+      {
+        "name": "busB",
+        "width": 32
+      },
+      {
+        "name": "Inst",
+        "width": 32
+      },
+      {
+        "name": "ExtOp",
+        "width": 1
+      },
+      {
+        "name": "ALUSrc",
+        "width": 1
+      },
+      {
+        "name": "ALUop",
+        "width": 4
+      },
+      {
+        "name": "RegDst",
+        "width": 1
+      },
+      {
+        "name": "MemWr",
+        "width": 1
+      },
+      {
+        "name": "RegWr",
+        "width": 1
+      },
+      {
+        "name": "RegWr_4",
+        "width": 1
+      },
+      {
+        "name": "RegWr_3",
+        "width": 1
+      },
+      {
+        "name": "RegWr_2",
+        "width": 1
+      },
+      {
+        "name": "RegWr_1",
+        "width": 1
+      },
+      {
+        "name": "MemtoReg",
+        "width": 1
+      },
+      {
+        "name": "Branch",
+        "width": 1
+      },
+      {
+        "name": "Jump",
+        "width": 1
+      },
+      {
+        "name": "l_r",
+        "width": 1
+      },
+      {
+        "name": "lorr",
+        "width": 1
+      },
+      {
+        "name": "shift",
+        "width": 5
+      },
+      {
+        "name": "OVSel",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "newPC_f",
+        "width": 32
+      },
+      {
+        "name": "busA_f",
+        "width": 32
+      },
+      {
+        "name": "busB_f",
+        "width": 32
+      },
+      {
+        "name": "Inst_f",
+        "width": 32
+      },
+      {
+        "name": "ExtOp_f",
+        "width": 1
+      },
+      {
+        "name": "ALUSrc_f",
+        "width": 1
+      },
+      {
+        "name": "ALUop_f",
+        "width": 4
+      },
+      {
+        "name": "RegDst_f",
+        "width": 1
+      },
+      {
+        "name": "MemWr_f",
+        "width": 1
+      },
+      {
+        "name": "RegWr_f",
+        "width": 1
+      },
+      {
+        "name": "RegWr_4f",
+        "width": 1
+      },
+      {
+        "name": "RegWr_3f",
+        "width": 1
+      },
+      {
+        "name": "RegWr_2f",
+        "width": 1
+      },
+      {
+        "name": "RegWr_1f",
+        "width": 1
+      },
+      {
+        "name": "MemtoReg_f",
+        "width": 1
+      },
+      {
+        "name": "Branch_f",
+        "width": 1
+      },
+      {
+        "name": "Jump_f",
+        "width": 1
+      },
+      {
+        "name": "l_rf",
+        "width": 1
+      },
+      {
+        "name": "lorr_f",
+        "width": 1
+      },
+      {
+        "name": "shift_f",
+        "width": 5
+      },
+      {
+        "name": "OVSel_f",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "autovcoder_096762.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "autovcoder_096762.v"
+    ],
+    "read_only": [],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference.v"
+    ],
+    "reference": {
+      "autovcoder_096762.v": "reference.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "formal",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 1826920967
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles, public_tb and hidden_tb print PASS, and Yosys proves it equivalent to the reference (bounded counts when accept_bounded); else 0",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task1/autovcoder_096762",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task1_round_trip",
+    "original_task_id": "autovcoder_096762",
+    "parent_design": "autovcoder_096762",
+    "origin": "AutoVCoder-processed",
+    "origin_bucket": "S3",
+    "loc": 96,
+    "design_type": "sequential",
+    "mask_type": "block",
+    "mask_index": 3256583690,
+    "mask_target_module": null,
+    "mask_source": "rebuild",
+    "mask_reconstruction": {
+      "method": "block_index",
+      "candidate_index": 0,
+      "n_candidates": 1,
+      "index_in_range": false,
+      "block_kind": "always",
+      "in_module": "autovcoder_096762",
+      "region_tokens": 184,
+      "region_chars": 916,
+      "min_tokens": 21,
+      "threshold_relaxed": false
+    },
+    "upstream_golden_rtl_key": "autovcoder_096762.v",
+    "upstream_verification": {
+      "tool": "jaspergold",
+      "type": "SEC",
+      "primary_script_key": "sec_autovcoder_096762.tcl"
+    },
+    "lib_v": "absent",
+    "stdcells": null,
+    "stdcells_rejected": null,
+    "sim_tasks_removed": null,
+    "testbench_modules_removed": null,
+    "undefined_modules": [],
+    "dropped_files": [
+      "sec_autovcoder_096762.tcl"
+    ],
+    "description": null,
+    "sources": null,
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "upstream_commit": "5a8d15a",
+      "note": "Per sources/README.md: RTL-BenchLS data is CC-BY-4.0, code is MIT."
+    },
+    "converter": "harness/convert_rtlbenchls_task1.py",
+    "converted_as": "block infill (Task 1 has no spec; mask rebuilt as in Task 2)",
+    "original_design_name": "autovcoder_096762",
+    "n_modules": 1,
+    "slice": "slice_04.jsonl",
+    "golden_choice": "design file",
+    "mask_index_rule": "int(sha256(task_id + '/mask')[:8], 16) % n_candidates"
+  }
+}

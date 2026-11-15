@@ -1,0 +1,375 @@
+{
+  "task_id": "github-issues/repair-cv32e40p-pr575",
+  "suite": "rtl-benchls",
+  "kind": "repair",
+  "difficulty": "unknown",
+  "top_module": "cv32e40p_core",
+  "interface": {
+    "clock": "clk_i",
+    "reset": {
+      "name": "rst_ni",
+      "active_low": true
+    },
+    "inputs": [
+      {
+        "name": "rst_ni",
+        "width": 1
+      },
+      {
+        "name": "pulp_clock_en_i",
+        "width": 1
+      },
+      {
+        "name": "scan_cg_en_i",
+        "width": 1
+      },
+      {
+        "name": "boot_addr_i",
+        "width": 32
+      },
+      {
+        "name": "mtvec_addr_i",
+        "width": 32
+      },
+      {
+        "name": "dm_halt_addr_i",
+        "width": 32
+      },
+      {
+        "name": "hart_id_i",
+        "width": 32
+      },
+      {
+        "name": "dm_exception_addr_i",
+        "width": 32
+      },
+      {
+        "name": "instr_gnt_i",
+        "width": 1
+      },
+      {
+        "name": "instr_rvalid_i",
+        "width": 1
+      },
+      {
+        "name": "instr_rdata_i",
+        "width": 32
+      },
+      {
+        "name": "data_gnt_i",
+        "width": 1
+      },
+      {
+        "name": "data_rvalid_i",
+        "width": 1
+      },
+      {
+        "name": "data_rdata_i",
+        "width": 32
+      },
+      {
+        "name": "apu_gnt_i",
+        "width": 1
+      },
+      {
+        "name": "apu_rvalid_i",
+        "width": 1
+      },
+      {
+        "name": "apu_result_i",
+        "width": 32
+      },
+      {
+        "name": "apu_flags_i",
+        "width": 5
+      },
+      {
+        "name": "irq_i",
+        "width": 32
+      },
+      {
+        "name": "debug_req_i",
+        "width": 1
+      },
+      {
+        "name": "fetch_enable_i",
+        "width": 1
+      }
+    ],
+    "outputs": [
+      {
+        "name": "instr_req_o",
+        "width": 1
+      },
+      {
+        "name": "instr_addr_o",
+        "width": 32
+      },
+      {
+        "name": "data_req_o",
+        "width": 1
+      },
+      {
+        "name": "data_we_o",
+        "width": 1
+      },
+      {
+        "name": "data_be_o",
+        "width": 4
+      },
+      {
+        "name": "data_addr_o",
+        "width": 32
+      },
+      {
+        "name": "data_wdata_o",
+        "width": 32
+      },
+      {
+        "name": "apu_req_o",
+        "width": 1
+      },
+      {
+        "name": "apu_operands_o",
+        "width": 96
+      },
+      {
+        "name": "apu_op_o",
+        "width": 6
+      },
+      {
+        "name": "apu_flags_o",
+        "width": 15
+      },
+      {
+        "name": "irq_ack_o",
+        "width": 1
+      },
+      {
+        "name": "irq_id_o",
+        "width": 5
+      },
+      {
+        "name": "debug_havereset_o",
+        "width": 1
+      },
+      {
+        "name": "debug_running_o",
+        "width": 1
+      },
+      {
+        "name": "debug_halted_o",
+        "width": 1
+      },
+      {
+        "name": "core_sleep_o",
+        "width": 1
+      }
+    ]
+  },
+  "files": {
+    "agent": [
+      "spec.md",
+      "src/cv32e40p_core.v",
+      "src/cv32e40p_cs_registers.v",
+      "src/cv32e40p_decoder.v",
+      "src/cv32e40p_ex_stage.v",
+      "src/cv32e40p_aligner.v",
+      "src/cv32e40p_alu.v",
+      "src/cv32e40p_alu_div.v",
+      "src/cv32e40p_apu_disp.v",
+      "src/cv32e40p_clock_gate.v",
+      "src/cv32e40p_compressed_decoder.v",
+      "src/cv32e40p_controller.v",
+      "src/cv32e40p_ff_one.v",
+      "src/cv32e40p_fifo.v",
+      "src/cv32e40p_hwloop_regs.v",
+      "src/cv32e40p_id_stage.v",
+      "src/cv32e40p_if_stage.v",
+      "src/cv32e40p_int_controller.v",
+      "src/cv32e40p_load_store_unit.v",
+      "src/cv32e40p_mult.v",
+      "src/cv32e40p_obi_interface.v",
+      "src/cv32e40p_popcnt.v",
+      "src/cv32e40p_prefetch_buffer.v",
+      "src/cv32e40p_prefetch_controller.v",
+      "src/cv32e40p_register_file.v",
+      "src/cv32e40p_sleep_unit.v",
+      "public_tb.v"
+    ],
+    "spec": "spec.md",
+    "editable": [
+      "src/cv32e40p_core.v",
+      "src/cv32e40p_cs_registers.v",
+      "src/cv32e40p_decoder.v",
+      "src/cv32e40p_ex_stage.v"
+    ],
+    "read_only": [
+      "src/cv32e40p_aligner.v",
+      "src/cv32e40p_alu.v",
+      "src/cv32e40p_alu_div.v",
+      "src/cv32e40p_apu_disp.v",
+      "src/cv32e40p_clock_gate.v",
+      "src/cv32e40p_compressed_decoder.v",
+      "src/cv32e40p_controller.v",
+      "src/cv32e40p_ff_one.v",
+      "src/cv32e40p_fifo.v",
+      "src/cv32e40p_hwloop_regs.v",
+      "src/cv32e40p_id_stage.v",
+      "src/cv32e40p_if_stage.v",
+      "src/cv32e40p_int_controller.v",
+      "src/cv32e40p_load_store_unit.v",
+      "src/cv32e40p_mult.v",
+      "src/cv32e40p_obi_interface.v",
+      "src/cv32e40p_popcnt.v",
+      "src/cv32e40p_prefetch_buffer.v",
+      "src/cv32e40p_prefetch_controller.v",
+      "src/cv32e40p_register_file.v",
+      "src/cv32e40p_sleep_unit.v"
+    ],
+    "public": [
+      "public_tb.v"
+    ],
+    "hidden": [
+      "hidden_tb.v",
+      "reference_src_cv32e40p_core.v",
+      "reference_src_cv32e40p_cs_registers.v",
+      "reference_src_cv32e40p_decoder.v",
+      "reference_src_cv32e40p_ex_stage.v"
+    ],
+    "reference": {
+      "src/cv32e40p_core.v": "reference_src_cv32e40p_core.v",
+      "src/cv32e40p_cs_registers.v": "reference_src_cv32e40p_cs_registers.v",
+      "src/cv32e40p_decoder.v": "reference_src_cv32e40p_decoder.v",
+      "src/cv32e40p_ex_stage.v": "reference_src_cv32e40p_ex_stage.v"
+    }
+  },
+  "tools": [
+    "iverilog",
+    "vvp",
+    "yosys"
+  ],
+  "limits": {
+    "max_agent_steps": 50,
+    "wall_time_s": 1800,
+    "tool_timeout_s": 120
+  },
+  "grading": {
+    "verification": "sim_only",
+    "public_tb": {
+      "file": "public_tb.v",
+      "cycles": 64
+    },
+    "hidden_tb": {
+      "file": "hidden_tb.v",
+      "cycles": 5000,
+      "seed": 71881719
+    },
+    "formal": {
+      "method": "yosys_sat_tempinduct",
+      "max_steps": 60,
+      "timeout_s": 120,
+      "accept_bounded": true
+    },
+    "reward": "1 if it compiles and public_tb and hidden_tb print PASS; else 0 (sim_only: the formal check times out on this design)",
+    "command": "python3 taskgen/harness/grade.py <task dir> <submission dir>"
+  },
+  "source_task_id": "rtl-benchls/task3/openhwgroup_cv32e40p_575_574",
+  "provenance": {
+    "source": "rtl-benchls",
+    "benchmark_task": "task3_repo_issue",
+    "original_task_id": "openhwgroup_cv32e40p_575_574",
+    "repository": "openhwgroup/cv32e40p",
+    "pr_number": 575,
+    "issue_number": 574,
+    "pr_url": "https://github.com/openhwgroup/cv32e40p/pull/575",
+    "issue_url": "https://github.com/openhwgroup/cv32e40p/issues/574",
+    "pr_title": "Removed FPREC CSR",
+    "issue_title": "Unused FPREC CSR",
+    "issue_labels": [
+      "Component:RTL",
+      "PARAM:PULP_XPULP",
+      "PARAM:FPU"
+    ],
+    "base_commit": "36ccf783c7f5560c0fe33098eecd83e97ec3a73e",
+    "head_commit": "bbde05850778f67a778bfeb95c64d71ac1f1c511",
+    "base_ref": "master",
+    "lec_status": "useful_pass",
+    "additions": 0,
+    "deletions": 28,
+    "upstream_verilog_files": [
+      "rtl/cv32e40p_core.sv",
+      "rtl/cv32e40p_cs_registers.sv",
+      "rtl/cv32e40p_decoder.sv",
+      "rtl/cv32e40p_ex_stage.sv",
+      "rtl/include/cv32e40p_pkg.sv"
+    ],
+    "top_from_changed_module": "cv32e40p_core",
+    "top_is_ancestor": false,
+    "file_map": {
+      "rtl/src/cv32e40p_aligner.v": "rtl/cv32e40p_aligner.sv",
+      "rtl/src/cv32e40p_alu.v": "rtl/cv32e40p_alu.sv",
+      "rtl/src/cv32e40p_alu_div.v": "rtl/cv32e40p_alu_div.sv",
+      "rtl/src/cv32e40p_apu_disp.v": "rtl/cv32e40p_apu_disp.sv",
+      "rtl/src/cv32e40p_clock_gate.v": "bhv/cv32e40p_sim_clock_gate.sv",
+      "rtl/src/cv32e40p_compressed_decoder.v": "rtl/cv32e40p_compressed_decoder.sv",
+      "rtl/src/cv32e40p_controller.v": "rtl/cv32e40p_controller.sv",
+      "rtl/src/cv32e40p_core.v": "rtl/cv32e40p_core.sv",
+      "rtl/src/cv32e40p_cs_registers.v": "rtl/cv32e40p_cs_registers.sv",
+      "rtl/src/cv32e40p_decoder.v": "rtl/cv32e40p_decoder.sv",
+      "rtl/src/cv32e40p_ex_stage.v": "rtl/cv32e40p_ex_stage.sv",
+      "rtl/src/cv32e40p_ff_one.v": "rtl/cv32e40p_ff_one.sv",
+      "rtl/src/cv32e40p_fifo.v": "rtl/cv32e40p_fifo.sv",
+      "rtl/src/cv32e40p_hwloop_regs.v": "rtl/cv32e40p_hwloop_regs.sv",
+      "rtl/src/cv32e40p_id_stage.v": "rtl/cv32e40p_id_stage.sv",
+      "rtl/src/cv32e40p_if_stage.v": "rtl/cv32e40p_if_stage.sv",
+      "rtl/src/cv32e40p_int_controller.v": "rtl/cv32e40p_int_controller.sv",
+      "rtl/src/cv32e40p_load_store_unit.v": "rtl/cv32e40p_load_store_unit.sv",
+      "rtl/src/cv32e40p_mult.v": "rtl/cv32e40p_mult.sv",
+      "rtl/src/cv32e40p_obi_interface.v": "rtl/cv32e40p_obi_interface.sv",
+      "rtl/src/cv32e40p_popcnt.v": "rtl/cv32e40p_popcnt.sv",
+      "rtl/src/cv32e40p_prefetch_buffer.v": "rtl/cv32e40p_prefetch_buffer.sv",
+      "rtl/src/cv32e40p_prefetch_controller.v": "rtl/cv32e40p_prefetch_controller.sv",
+      "rtl/src/cv32e40p_register_file.v": "rtl/cv32e40p_register_file_ff.sv",
+      "rtl/src/cv32e40p_sleep_unit.v": "rtl/cv32e40p_sleep_unit.sv"
+    },
+    "editable_repo_paths": [
+      "rtl/cv32e40p_core.sv",
+      "rtl/cv32e40p_cs_registers.sv",
+      "rtl/cv32e40p_decoder.sv",
+      "rtl/cv32e40p_ex_stage.sv"
+    ],
+    "normalizations": [
+      "import_hoist",
+      "qualify_imported_types"
+    ],
+    "unresolved_references": [],
+    "base_vs_head": "unknown",
+    "base_vs_head_detail": "timeout after 60s",
+    "base_vs_head_timeout_s": 60,
+    "sv2v": {
+      "version": "0.0.13",
+      "applied": true
+    },
+    "sv2v_input_editable_repo_paths": [
+      "rtl/include/cv32e40p_pkg.sv",
+      "rtl/cv32e40p_core.sv",
+      "rtl/cv32e40p_cs_registers.sv",
+      "rtl/cv32e40p_decoder.sv",
+      "rtl/cv32e40p_ex_stage.sv"
+    ],
+    "rtl_license": {
+      "files": {
+        "LICENSE": "SHL-0.51"
+      },
+      "spdx": "SHL-0.51"
+    },
+    "license": {
+      "data": "CC-BY-4.0",
+      "code": "MIT",
+      "upstream": "https://github.com/hkust-zhiyao/RTL-BenchLS",
+      "note": "Per sources/README.md: RTL-BenchLS metadata is CC-BY-4.0, code MIT. The RTL itself is from the case's repository under that repository's license (see rtl_license)."
+    },
+    "converter": "harness/convert_rtlbenchls_task3.py"
+  }
+}
